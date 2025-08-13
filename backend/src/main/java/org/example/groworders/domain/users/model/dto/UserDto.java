@@ -69,7 +69,7 @@ public class UserDto {
         private LocalDate birthDate;
         private Role role;
 
-        public User toEntity() {
+        public User toEntity(String profileImageUrl) {
             return User.builder()
                     .accountId(accountId)
                     .email(email)
@@ -78,6 +78,7 @@ public class UserDto {
                     .phoneNumber(phoneNumber)
                     .birthDate(birthDate)
                     .role(role != null ? role : Role.USER)
+                    .profileImage(profileImageUrl)
                     .enabled(false)
                     .build();
         }
