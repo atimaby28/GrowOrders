@@ -24,32 +24,40 @@ public class OrderController {
         return ResponseEntity.status(200).body("주문생성성공");
     }
 
-//    @PostMapping("/modify")//주문수정
-//    public ResponseEntity modify(@RequestBody OrderDto.Modify dto){
-//        orderService.modify(dto);
-//
-//        return ResponseEntity.status(200).body("주문수정성공");
-//    }
+    @PutMapping("/modify/{id}")
+    public ResponseEntity<String> modify(@PathVariable Long id, @RequestBody OrderDto.Modify dto) {
+        orderService.updateOrder(id, dto);
+        return ResponseEntity.status(200).body("주문수정성공");
+    }
 
-    @GetMapping("/list")//주문관리
+    @GetMapping("/listBuyer")//주문관리-구매자
     public ResponseEntity list(){
-        List<OrderDto.OrderRes> response =  orderService.list();
+        List<OrderDto.OrderResBuyer> response =  orderService.list();
 
         return ResponseEntity.status(200).body(response);
     }
 
-    @GetMapping("/read")//주문상세
-    public ResponseEntity read(Integer idx){
-        OrderDto.OrderRes response = orderService.read(idx);
+    @GetMapping("/readCreate")//주문생성상세
+    public ResponseEntity read(Long id){
+        OrderDto.Register response = orderService.read(id);
 
         return ResponseEntity.status(200).body(response);
     }
 
-//    @GetMapping("/search")-주문검색
+//    @GetMapping("/searchBuyer")//주문검색-구매자
 //    public ResponseEntity search(String farmName){
-//        List<OrderDto.OrderRes> resposnse = orderService.search(farmName);
+//        List<OrderDto.OrderResBuyer> resposnse = orderService.search(farmName);
 //
 //        return ResponseEntity.status(200).body(resposnse);
 //    }
+    @GetMapping("/searchBuyer")
+    public ResponseEntity<List<OrderDto.OrderResBuyer>> search(
+            @RequestParam(required = false) String farmName,
+            @RequestParam(required = false) String cropName) {
+
+        List<OrderDto.OrderResBuyer> response = orderService.search(farmName, cropName);
+        return ResponseEntity.ok(response);
+    }
+
 
 }

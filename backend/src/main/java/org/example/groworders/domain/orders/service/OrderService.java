@@ -1,5 +1,6 @@
 package org.example.groworders.domain.orders.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.groworders.domain.orders.model.dto.OrderDto;
 import org.example.groworders.domain.orders.model.entity.Order;
@@ -19,30 +20,58 @@ public class OrderService {
         orderRepository.save(dto.toEntity());
     }
 
+//    @Transactional
 //    public void modify(OrderDto.Modify dto) {
-//        Optional<Order> result = orderRepository.findById(dto.getId());
+//        Order order = orderRepository.findById(dto.getId()).get();
+//
+//        dto.updateEntity(order);
+//
+//
 //    }
 
-    public List<OrderDto.OrderRes> list(){
+    public List<OrderDto.OrderResBuyer> list() {
         List<Order> orderList = orderRepository.findAll();
 
-        return orderList.stream().map(OrderDto.OrderRes::from).toList();
+        return orderList.stream().map(OrderDto.OrderResBuyer::from).toList();
     }
 
-    public OrderDto.OrderRes read(Integer id) {
+    public OrderDto.Register read(Long id) {
         Optional<Order> result = orderRepository.findById(id);
 
-        if(result.isPresent()) {
+        if (result.isPresent()) {
             Order entity = result.get();
 
-            return OrderDto.OrderRes.from(entity);
+            return OrderDto.Register.from(entity);
         }
         return null;
     }
 
-//    public List<OrderDto.OrderRes> search(String farmName) {
+    //    public List<OrderDto.OrderResBuyer> search(String farmName) {
 //        List<Order> result  = orderRepository.findByFarmName(farmName);
 //
-//        return result.stream().map(OrderDto.OrderRes::from).toList();
+//        return result.stream().map(OrderDto.OrderResBuyer::from).toList();
 //    }
+    public List<OrderDto.OrderResBuyer> search(String farmName, String cropName) {
+        // farmName, cropName 둘 다 null이면 빈 리스트 반환
+        if (farmName == null && cropName == null) {
+            return List.of();
+        }
+
+        List<Order> result = orderRepository.findByFarmOrder_NameOrCropOrder_CropName(farmName, cropName);
+        return result.stream()
+                .map(OrderDto.OrderResBuyer::from)
+                .toList();
+    }
+
+
+    public void updateOrder(Long id, OrderDto.Modify dto) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+
+
+        order.setQuantity(dto.getQuantity());
+        //order.setContent(dto.getContent());
+
+        orderRepository.save(order);
+    }
 }

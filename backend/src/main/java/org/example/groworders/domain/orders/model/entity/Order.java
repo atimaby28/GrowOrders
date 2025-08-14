@@ -1,10 +1,13 @@
 package org.example.groworders.domain.orders.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.example.groworders.domain.crops.model.entity.Crop;
+import org.example.groworders.domain.farm.model.entity.Farm;
+import org.example.groworders.domain.users.model.entity.User;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -13,10 +16,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idx;
+    private Integer id;
     private String name;
     private String crop;
     private Integer price;
@@ -25,26 +29,30 @@ public class Order {
     private String address;
     private String deliveryRequest;
     private String orderRequest;
+    private String cancel;
 
     @Enumerated(EnumType.STRING)
     private ShippingStatus shippingStatus;
+
+    @CreationTimestamp
+    private LocalDateTime orderDate;
 
     //private String cancel;
     //private Long userIdx;
     //private Integer cropIdx;
 
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_idx")
+    private User userOrder;
 
-//    @ManyToOne
-//    @JoinColumn(name = "farm_id")
-//    private Farm farm;
+    @ManyToOne
+    @JoinColumn(name = "farm_id")
+    private Farm farmOrder;
 
-//    @ManyToOne
-//    @JoinColumn(name = "crop_id")
-//    private Crop crop;
+    @ManyToOne
+    @JoinColumn(name = "crop_id")
+    private Crop cropOrder;
 
 }
 
