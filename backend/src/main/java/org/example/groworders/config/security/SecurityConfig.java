@@ -43,6 +43,7 @@ public class SecurityConfig {
                 (auth) -> auth
                         .requestMatchers("/login", "/user/signup").permitAll()
                         .requestMatchers("/test/*").hasRole("USER") // 특정 권한(USER)이 있는 사용자만 허용
+                        .requestMatchers("/swagger-ui/**").permitAll() //Swagger-ui 접근 권한 모두 허용
 //                        .requestMatchers("/test/*").authenticated() // 로그인한 모든 사용자만 허용
 //                        .anyRequest().authenticated()
                         .anyRequest().permitAll()
@@ -64,7 +65,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8081"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
 
