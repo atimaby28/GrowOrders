@@ -75,3 +75,6 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
 
+api:
+  weather:
+    apikey: ${WEATHER_API_KEY}
