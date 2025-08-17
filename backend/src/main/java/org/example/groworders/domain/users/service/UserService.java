@@ -1,5 +1,7 @@
 package org.example.groworders.domain.users.service;
 
+import io.awspring.cloud.s3.S3Operations;
+import io.awspring.cloud.s3.S3Resource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,8 @@ import org.example.groworders.domain.users.model.dto.UserDto;
 import org.example.groworders.domain.users.model.entity.User;
 import org.example.groworders.domain.users.repository.EmailVerifyRepository;
 import org.example.groworders.domain.users.repository.UserRepository;
+import org.example.groworders.utils.FileUploadUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +19,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,9 +33,17 @@ public class UserService implements UserDetailsService {
     private final JavaMailSender emailSender;
     private final EmailVerifyRepository emailVerifyRepository;
 
+    // @Value 어노테이션 : yml 파일에 작성한 내용 불러오는 어노테이션
+    @Value("${spring.cloud.aws.s3.bucket}")
+    private String s3BucketName;
+    private final S3Operations s3Operations;
+
     @Transactional(readOnly = false)
-    public void signup(UserDto.SignUp dto) throws MessagingException {
-        User user = userRepository.save(dto.toEntity());
+    public void signup(UserDto.SignUp dto, MultipartFile profileImageUrl) throws MessagingException, SQLException, IOException {
+
+        String filePath = upload(profileImageUrl);
+        User user = userRepository.save(dto.toEntity(filePath));
+
         // 메일 전송
         String uuid = UUID.randomUUID().toString();
 
@@ -68,6 +83,12 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
+    public String upload(MultipartFile file) throws SQLException, IOException, IOException {
+        String dirPath = FileUploadUtil.makeUploadPath();
+
+        S3Resource s3Resource = s3Operations.upload(s3BucketName, dirPath+file.getOriginalFilename(), file.getInputStream());
+        return s3Resource.getURL().toString();
+    }
 
     public void verify(String uuid) {
         Optional<EmailVerify> result = emailVerifyRepository.findByUuid(uuid);

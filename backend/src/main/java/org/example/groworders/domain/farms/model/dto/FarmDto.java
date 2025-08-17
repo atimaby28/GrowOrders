@@ -1,7 +1,6 @@
 package org.example.groworders.domain.farms.model.dto;
 
 import lombok.*;
-import org.example.groworders.domain.crops.model.Crop;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.inventories.model.dto.InventoryDto;
 import org.example.groworders.domain.users.model.entity.User;
@@ -12,9 +11,13 @@ import java.util.Objects;
 public class FarmDto {
 
     @Getter
-    public class FarmReq {
+    public static class Register {
         private String name;
-        private String description;
+        private String region;
+        private String address;
+        private Integer size;
+        private String contents;
+        private String profile_image_url;
         private Long userId;
 
         public Farm toEntity() {
@@ -24,7 +27,11 @@ public class FarmDto {
 
             return Farm.builder()
                     .name(name)
-                    .description(description)
+                    .region(region)
+                    .address(address)
+                    .size(size)
+                    .contents(contents)
+                    .profile_image_url(profile_image_url)
                     .user(user)
                     .build();
         }
@@ -32,23 +39,25 @@ public class FarmDto {
 
     @Getter
     @Builder
-    public static class FarmRes {
+    public static class FarmResponse {
         private Long id;
         private String name;
-        private String description;
+        private String region;
+        private String address;
+        private Integer size;
+        private String contents;
+        private String profile_image_url;
         private String owner;
-        private List<InventoryDto.InventoryRes> inventories;
 
-        public static FarmRes from(Farm entity) {
-            return FarmRes.builder()
+        public static FarmResponse from(Farm entity) {
+            return FarmResponse.builder()
                     .id(entity.getId())
                     .name(entity.getName())
-                    .description(entity.getDescription())
-                    .owner(entity.getUser().getName())
-                    .inventories(entity.getCrops().stream().map(Crop::getInventory)
-                            .filter(Objects::nonNull) // null 방지
-                            .map(InventoryDto.InventoryRes::from)
-                            .toList())
+                    .region(entity.getRegion())
+                    .address(entity.getAddress())
+                    .size(entity.getSize())
+                    .contents(entity.getContents())
+                    .profile_image_url(entity.getProfile_image_url())
                     .build();
         }
     }

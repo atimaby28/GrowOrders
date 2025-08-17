@@ -1,10 +1,7 @@
 package org.example.groworders.domain.users.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.groworders.domain.users.model.dto.EmailVerify;
 
 import java.time.LocalDate;
@@ -25,6 +22,8 @@ public class User {
     private String name;
     private String phoneNumber;
     private LocalDate birthDate;
+    @Setter
+    private String profileImage;
     private Boolean enabled;
 
     @Enumerated(EnumType.STRING)

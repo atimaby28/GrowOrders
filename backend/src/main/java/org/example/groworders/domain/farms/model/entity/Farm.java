@@ -1,8 +1,11 @@
 package org.example.groworders.domain.farms.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.example.groworders.domain.crops.model.Crop;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.users.model.entity.User;
 
 import java.util.List;
@@ -16,13 +19,23 @@ public class Farm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name; //농장 이름
-    private String description; //농장 설명
+    private String name;
+    private String address;
+    private Integer size;
+    private String contents;
+    private String profile_image_url;
+    private String region;
 
+//    selling_count INT DEFAULT 0,
+//    review_count INT DEFAULT 0,
+//    rating DECIMAL(2,1) DEFAULT 0.0
+
+    // 일대다 (user:farm)
     @ManyToOne
-    @JoinColumn(name="user_id")
-    private User user; //농장을 소유한 사용자 : 외래키
+    @JoinColumn(name = "user_id")
+    private User user;
 
+    // 일대다 (farm:crop)
     @OneToMany(mappedBy = "farm")
-    private List<Crop> crops; //소유한 작물
+    private List<Crop> cropList;
 }
