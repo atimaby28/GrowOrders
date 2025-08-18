@@ -3,6 +3,7 @@ package org.example.groworders.domain.farms.model.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.User;
 
@@ -21,7 +22,19 @@ public class FarmDto {
         private String contents;
         private String profile_image_url;
 
-        public Farm toEntity(User user) {
+//        public Farm toEntity(User user) {
+//            Farm entity = Farm.builder()
+//                    .name(name)
+//                    .region(region)
+//                    .address(address)
+//                    .size(size)
+//                    .contents(contents)
+//                    .profile_image_url(profile_image_url)
+//                    .user(user)
+//                    .build();
+//            return entity;
+//        }
+        public Farm toEntity(FarmDto.Register dto) {
             Farm entity = Farm.builder()
                     .name(name)
                     .region(region)
@@ -29,15 +42,15 @@ public class FarmDto {
                     .size(size)
                     .contents(contents)
                     .profile_image_url(profile_image_url)
-                    .user(user)
                     .build();
             return entity;
-        }
+}
     }
 
     @Getter
     @Builder
     public static class FarmResponse {
+//        private Long user_id;
         private Long id;
         private String name;
         private String region;
@@ -45,9 +58,11 @@ public class FarmDto {
         private Integer size;
         private String contents;
         private String profile_image_url;
+        private List<Crop> cropList;
 
         public static FarmResponse from(Farm entity) {
             return FarmResponse.builder()
+//                    .user_id(entity.getUser().getId())
                     .id(entity.getId())
                     .name(entity.getName())
                     .region(entity.getRegion())
@@ -55,6 +70,7 @@ public class FarmDto {
                     .size(entity.getSize())
                     .contents(entity.getContents())
                     .profile_image_url(entity.getProfile_image_url())
+                    .cropList(entity.getCropList())
                     .build();
         }
     }
