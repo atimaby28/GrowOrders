@@ -1,21 +1,8 @@
 <script setup>
-import PageNation from '@/views/components/PageNation.vue'
 import Modal from '@/views/components/Modal.vue'
 import { defineProps, ref } from 'vue'
-import { useRoute } from 'vue-router'
 
-const props = defineProps(['farmData']) //api 로 전달받은 농장 데이터
-const route = useRoute()
-
-// const selectedInventory = reactive({
-//   id: '',
-//   crop_type: '',
-//   crop_state: '',
-//   order_count: '',
-//   inventory_count: '',
-//   max_inventory_count: '',
-//   date: '',
-// })
+const props = defineProps(['inventories'])
 
 //선택된 재고 (행)
 const selectedInventory = ref(null)
@@ -23,28 +10,6 @@ const selectedInventory = ref(null)
 const inventory_edit = (inventory) => {
   selectedInventory.value = inventory
 }
-
-const farmIndex = Number(route.params.farm_index) //uri에서 farmIndex 추출
-const selectedFarm = props.farmData[farmIndex] //선택된 농장 정보 가져오기
-
-//페이지
-const pageCount = Math.ceil(selectedFarm?.inventory.length / 5) //페이지 개수
-const currentPage = ref(1)
-const rowsPerPage = 5 //페이지당 보여줄 행의 개수
-const currentPageList = ref([])
-
-//보여줄 데이터 자르기
-const pageSlice = (cp) => {
-  const start = (cp.value - 1) * rowsPerPage
-  const end = start + rowsPerPage
-  currentPageList.value = selectedFarm?.inventory.slice(start, end) || []
-}
-const currentPageChange = (page) => {
-  currentPage.value = page
-  pageSlice(currentPage) //클릭시마다 새로 반영
-}
-
-pageSlice(currentPage) //초기 한번 실행
 </script>
 
 <template>
@@ -74,8 +39,8 @@ pageSlice(currentPage) //초기 한번 실행
                   <th class="text-secondary opacity-7"></th>
                 </tr>
               </thead>
-              <tbody v-if="selectedFarm && selectedFarm?.inventory">
-                <tr v-for="inventory in currentPageList" :key="inventory.id">
+              <tbody v-if="props.inventories">
+                <tr v-for="inventory in props.inventories" :key="inventory.id">
                   <td>
                     <div class="d-flex px-2 py-1">
                       <div class="d-flex flex-column justify-content-center">
@@ -84,29 +49,29 @@ pageSlice(currentPage) //초기 한번 실행
                     </div>
                   </td>
                   <td>
-                    <p class="text-xs font-weight-bold mb-0">{{ inventory.crop_type }}</p>
+                    <p class="text-xs font-weight-bold mb-0">{{ inventory.type }}</p>
                   </td>
                   <td class="text-sm">
                     <span
                       :class="{
-                        'badge badge-sm bg-gradient-secondary-green': inventory.crop_state === '양호',
-                        'badge badge-sm bg-gradient-secondary-yellow': inventory.crop_state === '보통',
-                        'badge badge-sm bg-gradient-secondary-red': inventory.crop_state === '불량',
+                        'badge badge-sm bg-gradient-secondary-green': inventory.state === '양호',
+                        'badge badge-sm bg-gradient-secondary-yellow': inventory.state === '보통',
+                        'badge badge-sm bg-gradient-secondary-red': inventory.state === '불량',
                       }"
-                      >{{ inventory.crop_state }}</span
+                      >{{ inventory.state }}</span
                     >
                   </td>
                   <td>
-                    <p class="text-xs font-weight-bold mb-0">{{ inventory.order_count }} /㎡</p>
+                    <p class="text-xs font-weight-bold mb-0">{{ inventory.orderQuantity }} /㎡</p>
                   </td>
                   <td class="align-middle text-center text-xs font-weight-bold">
-                    <span>{{ inventory.inventory_count }} /㎡</span>
+                    <span>{{ inventory.expectedQuantity }} /㎡</span>
                   </td>
                   <td class="align-middle text-center text-xs font-weight-bold">
-                    <span>{{ inventory.max_inventory_count }} /㎡</span>
+                    <span>{{ inventory.maxExpectedQuantity }} /㎡</span>
                   </td>
                   <td class="align-middle text-center">
-                    <span class="text-secondary text-xs font-weight-bold">{{ inventory.date }}</span>
+                    <span class="text-secondary text-xs font-weight-bold">{{ inventory.expectedHarvestDate }}</span>
                   </td>
                   <td class="align-middle">
                     <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -123,10 +88,6 @@ pageSlice(currentPage) //초기 한번 실행
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="mt-4 row">
-    <page-nation :pageCount="pageCount" @currentPageChange="currentPageChange" />
   </div>
 </template>
 

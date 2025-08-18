@@ -1,46 +1,46 @@
 <script setup>
-import FarmInfoSlider from '@/views/components/FarmInfoSlider.vue'
-import inventory_api from '@/api/inventory'
+import api from '@/api/inventory'
+import InventorysTable from '@/views/components/InventorysTable.vue'
+import FarmInfoSlider from './components/FarmInfoSlider.vue'
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-import { onMounted, reactive } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-
-//
-const router = useRouter()
 const route = useRoute()
 
-//request Form
-const inventoryForm = reactive({ id: '' }) //Cookie에 저장된 농부 쿠키 대신할 예정
-
 //response Data 저장
-const InventoryList = reactive([])
-const getInventoryList = async () => {
-  const data = await inventory_api.getInventoryAPI(inventoryForm)
+const farmInfo = ref([]) //url param으로 받은 농장의 정보
+let inventoriesData = ref([]) //농장의 재고들 데이터 정보
+
+//사용자 토큰에서 가져온 농장 아이디 정보
+const farmsIdList = reactive([{ id: 1 }, { id: 2 }])
+
+const getInventoryList = async (farmId) => {
+  const data = await api.getInventory(farmId)
 
   if (data && data.success) {
-    if (data.results) {
-      InventoryList.push(...data.results.farms)
-      // 현재 경로가 정확히 '/inventory'일 때만 리디렉션
-      if (route.path === '/inventory') {
-        router.push(`/inventory/0`)
-      }
-    } else {
-      console.log(data)
-    }
+    farmInfo.value = data.data
+    inventoriesData.value = data.data.crops
   } else {
-    alert('회원 전용 기능입니다. 로그인을 하세요.')
+    alert('데이터를 불러오지 못하였습니다.')
   }
 }
 
-onMounted(async () => {
-  await getInventoryList()
+onMounted(() => {
+  getInventoryList(route.query.farmId)
 })
+
+//쿼리 param 변경 감지
+watch(
+  () => route.query.farmId,
+  (newParamFarmId) => {
+    getInventoryList(newParamFarmId)
+  },
+)
 </script>
 
 <template>
-  <div class="py-4 container-fluid">
-    <FarmInfoSlider :sendData="InventoryList" />
-    <router-view :farmData="InventoryList" :key="$route.fullPath" />
-    <!-- 컴포넌트 재랜더링 필요할때 route.fullPath 씀 -->
+  <div v-if="farmsIdList" class="py-4 container-fluid">
+    <FarmInfoSlider :key="route.query.farmId" :currentFarmId="route.query.farmId" :farmInfo="farmInfo" :farmsId="farmsIdList" />
+    <InventorysTable :inventories="inventoriesData" />
   </div>
 </template>

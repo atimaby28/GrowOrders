@@ -1,21 +1,22 @@
 <script setup>
-import { ref, defineProps } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineProps } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import tomato from '@/assets/img/orderlabs/tomato.jpg'
 
-const props = defineProps(['sendData'])
+//farm : 하나의 농장 정보, farmsId : 사용자 토큰에 있는 농장 아이디 객체
+const props = defineProps(['farmInfo', 'farmsId'])
+const route = useRoute()
 const router = useRouter()
-const currentIndex = ref(0) //props로 받은 sendData에서 현재 농장 인덱스 번호
 
-const changeFarm = (farm_index) => {
-  //마지막에서 다음 버튼 누르면 처음으로, 처음에서 이전 버튼 누르면 마지막으로
-  const total = props.sendData.length
-  if (total === 0) return //농장이 없으면 return
+const changeFarm = (farmId) => {
+  //[해야할 것] : 맨처음, 맨마지막에서 더 넘어가려고 할 때 처리 구현
 
-  currentIndex.value = (farm_index + total) % total
-  const selectedFarm = props.sendData[currentIndex.value]
-  if (selectedFarm) {
-    router.push(`/inventory/${currentIndex.value}`)
-    console.log(selectedFarm.farm_name)
+  const index = props.farmsId.findIndex((f) => f.id == farmId)
+  if (index != -1) {
+    router.push({
+      path: '/inventory', // 이동할 라우트 path
+      query: { farmId: props.farmsId[index].id }, // 쿼리 파라미터
+    })
   }
 }
 </script>
@@ -26,25 +27,25 @@ const changeFarm = (farm_index) => {
       <div class="carousel-wrapper">
         <div id="carouselExampleCaptions" class="carousel slide">
           <div class="carousel-indicators">
-            <button v-for="(farm, farm_index) in props.sendData" :key="farm.farm_id" type="button" data-bs-target="#carouselExampleCaptions" :data-bs-slide-to="farm_index" :class="{ active: farm_index === 0 }" :aria-label="`Slide ${farm_index + 1}`"></button>
+            <!-- active : 활성화 되어 보이는 슬라이드 -->
+            <button v-for="(farmId, farmIndex) in props.farmsId" :key="farmId.id" type="button" data-bs-target="#carouselExampleCaptions" :data-bs-slide-to="farmIndex" :class="{ active: farmId.id == route.query.farmId }" :aria-label="`Slide ${farmIndex + 1}`"></button>
           </div>
 
           <div class="carousel-inner">
-            <div v-for="(farm, farm_index) in props.sendData" :key="farm.farm_id" :class="['carousel-item', { active: farm_index === 0 }]">
-              <img :src="require(`@/assets/img/orderlabs/${farm.farm_img}`)" class="d-block w-100" alt="" />
-              <!-- 동적 이미지 가져오기 위해 require 사용-->
+            <div v-for="farmId in props.farmsId" :key="farmId.id" :class="['carousel-item', { active: farmId.id == route.query.farmId }]">
+              <img :src="tomato" class="d-block w-100" alt="" />
               <div class="carousel-caption d-none d-md-block">
-                <h5>{{ farm.farm_name }}</h5>
-                <p>Some representative placeholder content for the first slide.</p>
+                <h5>{{ props.farmInfo.name }}</h5>
+                <p>{{ props.farmInfo.contents }}</p>
               </div>
             </div>
           </div>
 
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev" @click.prevent="changeFarm(currentIndex - 1)">
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev" @click.prevent="changeFarm(Number(route.query.farmId) - 1)">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next" @click.prevent="changeFarm(currentIndex + 1)">
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next" @click.prevent="changeFarm(Number(route.query.farmId) + 1)">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>

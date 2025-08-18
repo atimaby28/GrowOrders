@@ -27,14 +27,14 @@ const props = defineProps(['data'])
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">작물 종류</label>
-                        <input class="form-control" type="text" :placeholder="props.data?.crop_type" disabled />
+                        <input class="form-control" type="text" :placeholder="props.data?.type" disabled />
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">예측 산출량</label>
                         <div class="input-group">
-                          <input class="form-control-80" type="text" :value="props.data?.inventory_count" />
+                          <input class="form-control-80" type="text" :value="props.data?.expectedQuantity" />
                           <span class="input-group-text form-control-20">/㎡</span>
                         </div>
                       </div>
@@ -42,7 +42,7 @@ const props = defineProps(['data'])
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">예측 수확일</label>
-                        <input class="form-control" type="date" :value="props.data?.date" />
+                        <input class="form-control" type="date" :value="props.data?.expectedHarvestDate" />
                       </div>
                     </div>
                   </div>
