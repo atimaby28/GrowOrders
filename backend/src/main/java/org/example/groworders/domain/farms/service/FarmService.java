@@ -16,12 +16,10 @@ import java.util.List;
 public class FarmService {
 
     private final FarmRepository farmRepository;
-    private final UserRepository userRepository;
 
     // 등록
     public void register(FarmDto.Register dto, Long userId) {
-        User user = userRepository.getReferenceById(userId);
-        farmRepository.save(dto.toEntity(user));
+        farmRepository.save(dto.toEntity(userId));
     }
 
     // 리스트

@@ -1,12 +1,11 @@
 package org.example.groworders.domain.farms.model.dto;
 
 import lombok.*;
+import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.farms.model.entity.Farm;
-import org.example.groworders.domain.inventories.model.dto.InventoryDto;
 import org.example.groworders.domain.users.model.entity.User;
 
 import java.util.List;
-import java.util.Objects;
 
 public class FarmDto {
 
@@ -18,9 +17,8 @@ public class FarmDto {
         private Integer size;
         private String contents;
         private String profile_image_url;
-        private Long userId;
 
-        public Farm toEntity() {
+        public Farm toEntity(Long userId) {
             User user = User.builder()
                     .id(userId)
                     .build();
@@ -48,6 +46,7 @@ public class FarmDto {
         private String contents;
         private String profile_image_url;
         private String owner;
+        private List<CropDto.CropResponse> crops;
 
         public static FarmResponse from(Farm entity) {
             return FarmResponse.builder()
@@ -58,6 +57,7 @@ public class FarmDto {
                     .size(entity.getSize())
                     .contents(entity.getContents())
                     .profile_image_url(entity.getProfile_image_url())
+                    .crops(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
                     .build();
         }
     }
