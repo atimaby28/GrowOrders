@@ -5,9 +5,15 @@ import org.example.groworders.common.model.BaseResponse;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
 import org.example.groworders.domain.farms.service.FarmService;
 import org.example.groworders.domain.users.model.dto.UserDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 
 //User
@@ -22,10 +28,9 @@ import org.springframework.web.bind.annotation.*;
 //@JoinColumn(name = "crop")
 //private Farm farm;
 
-
 //@ManyToOne
 //@JoinColumn(name = "crop")
-//private Farm crop;
+//private Crop crop;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,16 +39,27 @@ public class FarmController {
 
     private final FarmService farmservice;
 
-    @PostMapping("/register")
-    public ResponseEntity<BaseResponse<Void>> register(@RequestBody FarmDto.Register dto,
-                                                       @AuthenticationPrincipal UserDto.AuthUser authUser) {
-        farmservice.register(dto, authUser.getId());
-        return ResponseEntity.ok(BaseResponse.successMessage("농장 등록 성공"));
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> register(
+            @RequestPart("dto") FarmDto.Register dto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        FarmDto.FarmResponse result = farmservice.register(dto, image);
+        return ResponseEntity.ok(BaseResponse.success(result));
     }
 
+
+//    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> register(
+//            @RequestPart("dto") FarmDto.Register dto,
+//            @RequestPart(value = "image", required = false) MultipartFile image,
+//            @AuthenticationPrincipal UserDto.AuthUser authUser) {
+//        FarmDto.FarmResponse result = farmservice.register(dto, image, authUser.getId());
+//        return ResponseEntity.ok(BaseResponse.success(result));
+//    }
+
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<Void>> list() {
-        farmservice.listAll();
-        return ResponseEntity.ok(BaseResponse.successMessage("농장 출력 성공"));
+    public ResponseEntity<BaseResponse<List<FarmDto.FarmResponse>>> list() {
+        List<FarmDto.FarmResponse> result = farmservice.listAll();
+        return ResponseEntity.ok(BaseResponse.success(result));
     }
 }

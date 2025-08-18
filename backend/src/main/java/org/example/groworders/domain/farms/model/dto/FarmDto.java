@@ -1,7 +1,9 @@
 package org.example.groworders.domain.farms.model.dto;
 
-import lombok.*;
-import org.example.groworders.domain.crops.model.dto.CropDto;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.User;
 
@@ -9,7 +11,9 @@ import java.util.List;
 
 public class FarmDto {
 
+    // 농장 등록
     @Getter
+    @Setter
     public static class Register {
         private String name;
         private String region;
@@ -30,7 +34,6 @@ public class FarmDto {
                     .size(size)
                     .contents(contents)
                     .profile_image_url(profile_image_url)
-                    .user(user)
                     .build();
         }
     }
@@ -58,6 +61,20 @@ public class FarmDto {
                     .contents(entity.getContents())
                     .profile_image_url(entity.getProfile_image_url())
                     .crops(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    public static class FarmList {
+        private Boolean isSuccess;
+        private List<FarmResponse> result;
+
+        public static FarmList from(List<Farm> entityList) {
+            return FarmList.builder()
+                    .isSuccess(true)
+                    .result(entityList.stream().map(entity -> FarmResponse.from(entity)).toList())
                     .build();
         }
     }
