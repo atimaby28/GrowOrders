@@ -21,7 +21,7 @@ public class WeatherService {
     private static final String DEFAULT_TM = getCurrentDate() + "0900";
     private static final String DEFAULT_STN = "108";
 
-    public WeatherDto.ObservationDto fetchWeatherData() {
+    public WeatherDto.WeatherData fetchWeatherData() {
         try {
             String urlStr = API_URL + "?tm=" + DEFAULT_TM + "&stn=" + DEFAULT_STN + "&authKey=" + API_KEY;
             URL url = new URL(urlStr);
@@ -45,7 +45,7 @@ public class WeatherService {
                     String rn = tokens[16];    // 강수량
                     String si = tokens[34];    // 일사량
 
-                    return new WeatherDto.ObservationDto(tm, stn, ws, ta, hm, rn, si);
+                    return new WeatherDto.WeatherData(tm, stn, ws, ta, hm, rn, si);
                 }
             }
         } catch (Exception e) {

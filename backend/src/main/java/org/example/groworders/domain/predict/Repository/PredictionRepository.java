@@ -1,4 +1,4 @@
-package org.example.groworders.domain.predict.Repository;
+package org.example.groworders.domain.predict.repository;
 
 import org.example.groworders.domain.predict.model.entity.Prediction;
 import org.springframework.data.jpa.repository.JpaRepository;

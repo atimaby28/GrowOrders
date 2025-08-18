@@ -1,8 +1,11 @@
 package org.example.groworders.domain.predict.model.dto;
 
 import lombok.*;
+import org.example.groworders.domain.predict.model.entity.Prediction;
+import org.example.groworders.domain.weather.model.dto.WeatherDto;
 import org.example.groworders.domain.weather.model.entity.Weather;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class PredictionDto {
@@ -16,7 +19,22 @@ public class PredictionDto {
         private String cropName;
         private String cultivationType;
         private String growthStage;
-        private WeatherData weatherData;
+        private WeatherDto.WeatherData weatherData;
+
+        // WeatherData → Weather Entity 변환
+        public Weather toEntity(double predictedYield) {
+            return Weather.builder()
+                    .tm(weatherData.getTm())
+                    .stn(weatherData.getStn())
+                    .ws(weatherData.getWs())
+                    .ta(weatherData.getTa())
+                    .hm(weatherData.getHm())
+                    .rn(weatherData.getRn())
+                    .si(weatherData.getSi())
+                    .sowingDate(LocalDate.now())
+                    .predictYield(String.valueOf(predictedYield))
+                    .build();
+        }
     }
 
     @Setter
@@ -28,37 +46,7 @@ public class PredictionDto {
         private String cropName;
         private String cultivationType;
         private String growthStage;
-        private List<WeatherData> weatherDataList;
-    }
-
-
-    @Getter
-    @Setter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class WeatherData {
-        private String tm;
-        private String stn;
-        private String ws;
-        private String ta;
-        private String hm;
-        private String rn;
-        private String si;
-
-        // 엔티티 → DTO 변환
-        public static WeatherData fromEntity(Weather entity) {
-            return WeatherData.builder()
-                    .tm(entity.getTm())
-                    .stn(entity.getStn())
-                    .ws(entity.getWs())
-                    .ta(entity.getTa())
-                    .hm(entity.getHm())
-                    .rn(entity.getRn())
-                    .si(entity.getSi())
-                    .build();
-        }
-
+        private List<WeatherDto.WeatherData> weatherDataList;
     }
 
     @Getter
@@ -72,6 +60,24 @@ public class PredictionDto {
         private String growthStage;
         private BestMatch bestMatch;
         private String predictedYield;
+
+        public static Response fromEntity(Prediction prediction, WeatherDto.WeatherData inputData, double predictedYield) {
+            return Response.builder()
+                    .cropName(prediction.getCropName())
+                    .cultivateType(prediction.getCultivationType())
+                    .growthStage(prediction.getGrowthStage())
+                    .bestMatch(BestMatch.builder()
+                            .tm(inputData.getTm())
+                            .stn(inputData.getStn())
+                            .siMax(prediction.getCumulativeSolarMax())
+                            .siMin(prediction.getCumulativeSolarMin())
+                            .taMax(prediction.getOutsideTempMax())
+                            .taMin(prediction.getOutsideTempMin())
+                            .yield(prediction.getYield())
+                            .build())
+                    .predictedYield(String.valueOf(predictedYield))
+                    .build();
+        }
     }
 
     @Getter

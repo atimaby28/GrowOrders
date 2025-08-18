@@ -23,8 +23,8 @@ public class WeatherController {
             description = "온도, 습도, 일사량 등 여러 요인을 활용"
     )
     @GetMapping
-    public ResponseEntity<WeatherDto.ObservationDto> getCurrentWeather() {
-        WeatherDto.ObservationDto observation = weatherService.fetchWeatherData();
+    public ResponseEntity<WeatherDto.WeatherData> getCurrentWeather() {
+        WeatherDto.WeatherData observation = weatherService.fetchWeatherData();
         return ResponseEntity.ok(observation);
     }
 

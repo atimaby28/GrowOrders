@@ -1,15 +1,15 @@
 package org.example.groworders.domain.predict.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.groworders.domain.predict.Repository.PredictionRepository;
 import org.example.groworders.domain.predict.model.dto.PredictionDto;
 import org.example.groworders.domain.predict.model.entity.Prediction;
+import org.example.groworders.domain.predict.repository.PredictionRepository;
+import org.example.groworders.domain.weather.model.dto.WeatherDto;
 import org.example.groworders.domain.weather.model.entity.Weather;
 import org.example.groworders.domain.weather.repository.WeatherRepository;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +22,8 @@ public class PredictionService {
     private static final double HUMIDITY_WEIGHT = 0.2;
     private static final double PREVIOUS_YIELD_WEIGHT = 0.3; // 연속 예측 시 전날 영향
 
-    private final PredictionRepository predictionRepository;
     private final WeatherRepository weatherRepository;
+    private final PredictionRepository predictionRepository;
 
     // -------------------------------
     // 하루치 예측 (전날 영향 없음)
@@ -32,41 +32,16 @@ public class PredictionService {
             String cropName,
             String cultivationType,
             String growthStage,
-            PredictionDto.WeatherData inputData
+            WeatherDto.WeatherData inputData
     ) throws ChangeSetPersister.NotFoundException {
 
         Prediction bestMatch = findBestMatchCondition(cropName, cultivationType, growthStage, inputData);
 
-        // 오차율 계산 (정규화)
         double predictedYield = applyError(bestMatch, inputData);
 
-        weatherRepository.save(Weather.builder()
-                        .tm(inputData.getTm())
-                        .stn(inputData.getStn())
-                        .ws(inputData.getWs())
-                        .ta(inputData.getTa())
-                        .hm(inputData.getHm())
-                        .rn(inputData.getRn())
-                        .si(inputData.getSi())
-                        .sowingDate(LocalDate.now())
-                        .predictYield(String.valueOf(predictedYield))
-                .build());
+        weatherRepository.save(inputData.toEntity(predictedYield));
 
-        return PredictionDto.Response.builder()
-                .cropName(bestMatch.getCropName())
-                .cultivateType(bestMatch.getCultivationType())
-                .growthStage(bestMatch.getGrowthStage())
-                .bestMatch(PredictionDto.BestMatch.builder()
-                        .tm(inputData.getTm())
-                        .stn(inputData.getStn())
-                        .siMax(bestMatch.getCumulativeSolarMax())
-                        .siMin(bestMatch.getCumulativeSolarMin())
-                        .taMax(bestMatch.getOutsideTempMax())
-                        .taMin(bestMatch.getOutsideTempMin())
-                        .yield(bestMatch.getYield())
-                        .build())
-                .predictedYield(String.valueOf(predictedYield))
-                .build();
+        return PredictionDto.Response.fromEntity(bestMatch, inputData, predictedYield);
     }
 
     // -------------------------------
@@ -77,21 +52,21 @@ public class PredictionService {
             String cultivationType,
             String growthStage
     ) throws ChangeSetPersister.NotFoundException {
+
         List<Weather> entityList = weatherRepository.findBySowingYear(2025);
 
-        List<PredictionDto.WeatherData> weatherDataList = entityList.stream()
-                .map(PredictionDto.WeatherData::fromEntity)
+        List<WeatherDto.WeatherData> weatherDataList = entityList.stream()
+                .map(WeatherDto.WeatherData::fromEntity)
                 .toList();
 
         List<Double> yields = new ArrayList<>();
         double previousYield = 0.0;
 
-        for (PredictionDto.WeatherData weatherData : weatherDataList) {
+        for (WeatherDto.WeatherData weatherData : weatherDataList) {
             Prediction bestMatch = findBestMatchCondition(cropName, cultivationType, growthStage, weatherData);
 
             double predictedYield = applyError(bestMatch, weatherData);
 
-            // 전날 영향 반영
             if (previousYield > 0.0) {
                 predictedYield = predictedYield * (1 - PREVIOUS_YIELD_WEIGHT) + previousYield * PREVIOUS_YIELD_WEIGHT;
             }
@@ -110,7 +85,7 @@ public class PredictionService {
             String cropName,
             String cultivationType,
             String growthStage,
-            PredictionDto.WeatherData inputData
+            WeatherDto.WeatherData inputData
     ) throws ChangeSetPersister.NotFoundException {
 
         List<Prediction> conditions = predictionRepository.findByCropAndTypeAndStage(cropName, cultivationType, growthStage);
@@ -160,7 +135,7 @@ public class PredictionService {
     // -------------------------------
     // 오차율 반영 yield 계산
     // -------------------------------
-    private double applyError(Prediction bestMatch, PredictionDto.WeatherData inputData) {
+    private double applyError(Prediction bestMatch, WeatherDto.WeatherData inputData) {
         double solarRadiation = parseDoubleSafe(inputData.getSi()) * 1000;
         double temperature = parseDoubleSafe(inputData.getTa());
         Double humidity = inputData.getHm() != null ? parseDoubleSafe(inputData.getHm()) : null;

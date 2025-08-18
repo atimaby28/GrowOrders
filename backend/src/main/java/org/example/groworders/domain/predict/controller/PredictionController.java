@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.groworders.domain.predict.model.dto.PredictionDto;
 import org.example.groworders.domain.predict.service.PredictionService;
+import org.example.groworders.domain.weather.model.dto.WeatherDto;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class PredictionController {
     public ResponseEntity<PredictionDto.Response> predictDaily(@RequestBody PredictionDto.RequestDaily request) {
         try {
             // Weather API 호출
-            PredictionDto.WeatherData weather = restTemplate.getForObject("http://localhost:8080/weather", PredictionDto.WeatherData.class);
+            WeatherDto.WeatherData weather = restTemplate.getForObject("http://localhost:8080/weather", WeatherDto.WeatherData.class);
             PredictionDto.Response response = predictionService.predictDaily(
                     request.getCropName(),
                     request.getCultivationType(),

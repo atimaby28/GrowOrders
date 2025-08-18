@@ -3,6 +3,7 @@ package org.example.groworders.domain.users.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.groworders.common.model.BaseResponse;
 import org.example.groworders.domain.users.model.dto.UserDto;
@@ -29,7 +30,7 @@ public class UserController {
     )
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Void>> signup(
-            @RequestPart(value = "dto") UserDto.SignUp dto,
+            @Valid @RequestPart(value = "signupInfo") UserDto.SignUp dto,
             @RequestPart(value = "profileImageUrl", required = false) MultipartFile profileImageUrl
     ) throws MessagingException, IOException, SQLException {
         userService.signup(dto, profileImageUrl);
