@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.groworders.domain.orders.model.dto.OrderDto;
 import org.example.groworders.domain.orders.model.entity.Order;
+import org.example.groworders.domain.orders.model.entity.ShippingStatus;
 import org.example.groworders.domain.orders.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,13 @@ public class OrderService {
 //
 //    }
 
-    public List<OrderDto.OrderResBuyer> list() {
-        List<Order> orderList = orderRepository.findAll();
+    public List<OrderDto.OrderResBuyer> listBuyer() {
+        List<Order> orderListBuyer = orderRepository.findAll();
 
-        return orderList.stream().map(OrderDto.OrderResBuyer::from).toList();
+        return orderListBuyer.stream().map(OrderDto.OrderResBuyer::from).toList();
     }
 
-    public OrderDto.Register read(Long id) {
+    public OrderDto.Register readBuyer(Long id) {
         Optional<Order> result = orderRepository.findById(id);
 
         if (result.isPresent()) {
@@ -46,12 +47,23 @@ public class OrderService {
         return null;
     }
 
+    public OrderDto.Modify readFarmer (Long id) {
+        Optional<Order> result = orderRepository.findById(id);
+
+        if (result.isPresent()) {
+            Order entity = result.get();
+
+            return OrderDto.Modify.from(entity);
+        }
+        return null;
+    }
+
     //    public List<OrderDto.OrderResBuyer> search(String farmName) {
 //        List<Order> result  = orderRepository.findByFarmName(farmName);
 //
 //        return result.stream().map(OrderDto.OrderResBuyer::from).toList();
 //    }
-    public List<OrderDto.OrderResBuyer> search(String farmName, String cropName) {
+    public List<OrderDto.OrderResBuyer> searchBuyer (String farmName, String cropName) {
         // farmName, cropName 둘 다 null이면 빈 리스트 반환
         if (farmName == null && cropName == null) {
             return List.of();
@@ -62,6 +74,22 @@ public class OrderService {
                 .map(OrderDto.OrderResBuyer::from)
                 .toList();
     }
+
+    public List<OrderDto.OrderResFarmer> searchFarmer(String cropName, ShippingStatus shippingStatus) {
+        // 둘 다 null 이면 빈 리스트 반환
+        if (cropName == null && shippingStatus == null) {
+            return List.of();
+        }
+
+        List<Order> result = orderRepository.findByShippingStatusOrCropOrder_CropName(shippingStatus, cropName);
+
+        return result.stream()
+                .map(OrderDto.OrderResFarmer::from)
+                .toList();
+    }
+
+
+
 
 
     public void updateOrder(Long id, OrderDto.Modify dto) {
@@ -74,4 +102,11 @@ public class OrderService {
 
         orderRepository.save(order);
     }
+
+    public List<OrderDto.OrderResFarmer> listFarmer() {
+        List<Order> orderListFarmer = orderRepository.findAll();
+
+        return orderListFarmer.stream().map(OrderDto.OrderResFarmer::from).toList();
+    }
+
 }

@@ -11,6 +11,42 @@ import org.example.groworders.domain.orders.model.entity.ShippingStatus;
 public class OrderDto {
     @Getter
     @Builder
+    public static class OrderResFarmer {
+        private Integer id;
+        private Long userId; //user 관계
+        private String name; //user 관계
+        private String phoneNumber; //user 관계
+        private Long cropId; //crop 관계
+        private String cropName; // crop 관계
+        private Integer quantity;
+        private Integer totalPrice;
+
+        @Enumerated(EnumType.STRING)
+        private ShippingStatus shippingStatus;
+
+
+        public static OrderResFarmer from(Order entity){
+            return OrderResFarmer.builder()
+                    .id(entity.getId())
+                    .userId(entity.getUserOrder().getId())
+                    .name(entity.getUserOrder().getName())
+                    .phoneNumber(entity.getUserOrder().getPhoneNumber())
+                    .cropId(entity.getCropOrder().getId())
+                    .cropName(entity.getCropOrder().getCropName())
+                    .quantity(entity.getQuantity())
+                    .totalPrice(entity.getTotalPrice())
+                    .shippingStatus(entity.getShippingStatus())
+                    .build();
+
+        }
+
+    }
+
+
+
+
+    @Getter
+    @Builder
     public static class OrderResBuyer {
         private Integer id;
         private Long farmId; //farm 관계
@@ -106,6 +142,24 @@ public class OrderDto {
         private String orderRequest;    // 실제로는 "주문 요청사항"
         private ShippingStatus shippingStatus;
         private String cancel;
+
+        public static Modify from(Order entity){
+            return Modify.builder()
+                    .id(entity.getId())
+                    .name(entity.getName())
+                    .crop(entity.getCrop())
+                    .price(entity.getPrice())
+                    .quantity(entity.getQuantity())
+                    .totalPrice(entity.getTotalPrice())
+                    .address(entity.getAddress())
+                    .deliveryRequest(entity.getDeliveryRequest())
+                    .orderRequest(entity.getOrderRequest())
+                    .shippingStatus(entity.getShippingStatus())
+                    .cancel(entity.getCancel())
+                    .build();
+
+        }
+
 
 //        public Modify updateEntity(OrderDto.Modify dto) {
 //
