@@ -1,7 +1,8 @@
 package org.example.groworders.domain.crops.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import lombok.*;
 import org.example.groworders.common.model.BaseResponse;
 import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.crops.service.CropService;
@@ -20,7 +21,7 @@ public class CropController {
 
     //작물 등록
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse<Object>> register(@RequestBody CropDto.Register dto) {
+    public ResponseEntity<BaseResponse<Object>> register(@Valid @RequestBody CropDto.Register dto) {
         cropService.register(dto);
         return ResponseEntity.ok(BaseResponse.successMessage("작물 등록 성공"));
     }

@@ -1,6 +1,7 @@
 package org.example.groworders.domain.inventories.service;
 
 import lombok.*;
+import org.example.groworders.common.exception.BaseException;
 import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.crops.repository.CropRepository;
@@ -10,6 +11,10 @@ import org.example.groworders.domain.farms.repository.FarmRepository;
 import org.example.groworders.domain.inventories.model.dto.InventoryDto;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
+import static org.example.groworders.common.model.BaseResponseStatus.INVALID_CROP_INFO;
+
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
@@ -18,11 +23,11 @@ public class InventoryService {
 
     //재고 등록 및 수정
     public void save(InventoryDto.Register dto) {
-        Crop crop = cropRepository.findById(dto.getCropId()).get();
-        if(crop != null) {
-            crop.updateInventory(dto);
-            cropRepository.save(crop);
-        }
+        Crop crop = cropRepository.findById(dto.getCropId()).orElseThrow(()-> BaseException.from(INVALID_CROP_INFO));
+
+        //작물이 존재하면 등록 및 수정
+        crop.updateInventory(dto);
+        cropRepository.save(crop);
     }
 
     //재고 상세 조회
