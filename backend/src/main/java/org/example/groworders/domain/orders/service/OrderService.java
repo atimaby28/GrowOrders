@@ -97,10 +97,9 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
 
 
-        order.setQuantity(dto.getQuantity());
-        //order.setContent(dto.getContent());
 
-        orderRepository.save(order);
+        Order updatedOrder = dto.updateEntity(order);  // Builder로 새 객체 생성
+        orderRepository.save(updatedOrder);
     }
 
     public List<OrderDto.OrderResFarmer> listFarmer() {

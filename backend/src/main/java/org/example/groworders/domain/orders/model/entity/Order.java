@@ -21,19 +21,39 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(nullable = false, length = 10)
     private String name;
+
+    @Column(nullable = false, length = 10)
     private String crop;
+
+    @Column(nullable = false, length = 50)
     private Integer price;
+
+    @Column(nullable = false, length = 20)
     private Integer quantity;
+
+    @Column(nullable = false, length = 50)
     private Integer totalPrice;
+
+    @Column(length = 100)
     private String address;
+
+    @Column(length = 200)
     private String deliveryRequest;
+
+    @Column(length = 200)
     private String orderRequest;
+
+    @Column(length = 10)
     private String cancel;
 
+    @Column(length = 200)
     @Enumerated(EnumType.STRING)
     private ShippingStatus shippingStatus;
 
+    @Column(nullable = false, length = 50)
     @CreationTimestamp
     private LocalDateTime orderDate;
 
