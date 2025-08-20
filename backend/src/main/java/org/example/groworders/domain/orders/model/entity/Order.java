@@ -28,13 +28,13 @@ public class Order {
     @Column(nullable = false, length = 10)
     private String crop;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private Integer price;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private Integer quantity;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private Integer totalPrice;
 
     @Column(length = 100)
@@ -49,7 +49,7 @@ public class Order {
     @Column(length = 10)
     private String cancel;
 
-    @Column(length = 200)
+
     @Enumerated(EnumType.STRING)
     private ShippingStatus shippingStatus;
 
@@ -57,9 +57,6 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime orderDate;
 
-    //private String cancel;
-    //private Long userIdx;
-    //private Integer cropIdx;
 
 
     @ManyToOne

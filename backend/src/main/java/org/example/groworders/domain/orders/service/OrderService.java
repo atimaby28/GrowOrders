@@ -6,6 +6,8 @@ import org.example.groworders.domain.orders.model.dto.OrderDto;
 import org.example.groworders.domain.orders.model.entity.Order;
 import org.example.groworders.domain.orders.model.entity.ShippingStatus;
 import org.example.groworders.domain.orders.repository.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,19 +23,11 @@ public class OrderService {
         orderRepository.save(dto.toEntity());
     }
 
-//    @Transactional
-//    public void modify(OrderDto.Modify dto) {
-//        Order order = orderRepository.findById(dto.getId()).get();
-//
-//        dto.updateEntity(order);
-//
-//
-//    }
 
-    public List<OrderDto.OrderResBuyer> listBuyer() {
-        List<Order> orderListBuyer = orderRepository.findAll();
 
-        return orderListBuyer.stream().map(OrderDto.OrderResBuyer::from).toList();
+    public OrderDto.OrderList<OrderDto.OrderResBuyer> listBuyer(int page, int size) {
+        Page<Order> orders = orderRepository.findAll(PageRequest.of(page, size));
+        return OrderDto.OrderList.from(orders, OrderDto.OrderResBuyer::from);
     }
 
     public OrderDto.Register readBuyer(Long id) {
@@ -58,11 +52,6 @@ public class OrderService {
         return null;
     }
 
-    //    public List<OrderDto.OrderResBuyer> search(String farmName) {
-//        List<Order> result  = orderRepository.findByFarmName(farmName);
-//
-//        return result.stream().map(OrderDto.OrderResBuyer::from).toList();
-//    }
     public List<OrderDto.OrderResBuyer> searchBuyer (String farmName, String cropName) {
         // farmName, cropName 둘 다 null이면 빈 리스트 반환
         if (farmName == null && cropName == null) {
@@ -102,10 +91,9 @@ public class OrderService {
         orderRepository.save(updatedOrder);
     }
 
-    public List<OrderDto.OrderResFarmer> listFarmer() {
-        List<Order> orderListFarmer = orderRepository.findAll();
-
-        return orderListFarmer.stream().map(OrderDto.OrderResFarmer::from).toList();
+    public OrderDto.OrderList<OrderDto.OrderResFarmer> listFarmer(int page, int size) {
+        Page<Order> orders = orderRepository.findAll(PageRequest.of(page, size));
+        return OrderDto.OrderList.from(orders, OrderDto.OrderResFarmer::from);
     }
 
 }

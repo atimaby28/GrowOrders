@@ -2,6 +2,7 @@ package org.example.groworders.domain.orders.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +51,14 @@ public class OrderController {
             description =  "내가 주문했던 주문목록 조회할 때 전체 주문했던기록을 불러오는 기능"
     )
     @GetMapping("/listBuyer")
-    public ResponseEntity listBuyer() {
-        List<OrderDto.OrderResBuyer> response = orderService.listBuyer();
+    public ResponseEntity listBuyer(
+            @Schema(description = "페이지 번호, 1번부터 시작", required = true, example = "1") Integer page,
+            @Schema(description = "각 페이지당 게시글 수", required = true, example = "5") Integer size) {
+
+        if (page == null || page < 1) page = 1;
+        if (size == null || size < 1) size = 5;
+
+        OrderDto.OrderList<OrderDto.OrderResBuyer> response = orderService.listBuyer(page - 1, size);
 
         return ResponseEntity.status(200).body(response);
     }
@@ -78,12 +85,6 @@ public class OrderController {
         return ResponseEntity.status(200).body(response);
     }
 
-    //    @GetMapping("/searchBuyer")//주문검색-구매자
-//    public ResponseEntity search(String farmName){
-//        List<OrderDto.OrderResBuyer> resposnse = orderService.search(farmName);
-//
-//        return ResponseEntity.status(200).body(resposnse);
-//    }
 
     @Operation(
             summary = "주문검색 - 구매자가 보는 화면(농장이름, 작물이름 검색가능)",
@@ -115,10 +116,15 @@ public class OrderController {
             summary = "주문관리조회 - 판매자(농부)가 보는 화면(구매자로 구별 가능)- - 페이징 기능 없음",
             description =  "농장에 들어온 모든 주문(목록)을 조회할 때 불러오는 기능"
     )
-    @GetMapping("/listFarmer")//주문관리-농부
-    public ResponseEntity listFarmer(){
-        List<OrderDto.OrderResFarmer> response =  orderService.listFarmer();
+    @GetMapping("/listFarmer")
+    public ResponseEntity listFarmer(
+            @Schema(description = "페이지 번호, 1번부터 시작", required = true, example = "1") Integer page,
+            @Schema(description = "각 페이지당 게시글 수", required = true, example = "5") Integer size) {
 
+        if (page == null || page < 1) page = 1;
+        if (size == null || size < 1) size = 5;
+
+        OrderDto.OrderList<OrderDto.OrderResFarmer> response = orderService.listFarmer(page - 1, size);
         return ResponseEntity.status(200).body(response);
     }
 
