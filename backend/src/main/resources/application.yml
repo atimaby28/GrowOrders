@@ -7,7 +7,7 @@ spring:
       s3:
         bucket: ${AWS_BUCKET_NAME}
       region:
-        static: ap-northeast-2
+        static: ${AWS_REGION_NAME}
 
   security:
     oauth2:
