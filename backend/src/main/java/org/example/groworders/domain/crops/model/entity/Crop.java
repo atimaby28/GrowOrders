@@ -37,6 +37,10 @@ public class Crop {
     @ColumnDefault("0")
     private Integer area;
 
+    //재배 방식 : not null, 길이 2
+    @Column(nullable = false, length = 2)
+    private String cultivateType;
+
     @Temporal(TemporalType.DATE)
     private LocalDate expectedHarvestDate; //예측 수확일
     private Integer expectedQuantity; //예측 수확량

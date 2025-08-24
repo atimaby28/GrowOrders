@@ -14,6 +14,7 @@ const cropRegisterForm = reactive({
   sowingStartDate: '', //03. 파종 시작일
   state: '', //04. 작물 상태
   area: '', //05. 재배 면적
+  cultivateType: '', //06. 재배 방식
 })
 
 // 응답으로 받은 에러 메세지
@@ -38,12 +39,16 @@ const cropRegisterFormError = reactive({
     errorMessage: '',
     isValid: false,
   },
+  cultivateType: {
+    errorMessage: '',
+    isValid: false,
+  },
 })
 
 //품목 프로필 카드
 const selectedCropInfo = computed(() => cropInfoMap[cropRegisterForm.type] || null)
 
-// 등록 완료하면 인풋값 수정 못하게 리드온리 처리
+// 등록 완료하면 인풋값 수정 못하게 readOnly 처리
 const isReadOnly = computed(() => mode.value == 'detail')
 
 // 이미지 파일과 미리보기 URL을 상태로 관리
@@ -83,7 +88,7 @@ const cropInfoMap = {
 
 // 모든 필드 입력값 검증
 const isFormValid = computed(() => {
-  return cropRegisterFormError.farmId.isValid && cropRegisterFormError.type.isValid && cropRegisterFormError.state.isValid && cropRegisterFormError.sowingStartDate.isValid & cropRegisterFormError.area.isValid
+  return cropRegisterFormError.farmId.isValid && cropRegisterFormError.type.isValid && cropRegisterFormError.state.isValid && cropRegisterFormError.sowingStartDate.isValid && cropRegisterFormError.area.isValid && cropRegisterFormError.cultivateType.isValid
 })
 
 // 농장 아이디 선택 검증
@@ -156,6 +161,21 @@ const areaRules = [
     } else {
       cropRegisterFormError.area.errorMessage = '재배 면적을 입력 해주세요.'
       cropRegisterFormError.area.isValid = false
+      return false
+    }
+  },
+]
+
+// 재배 방식 선택 검증
+const cultivateTypeRules = [
+  (event) => {
+    if (event.target.value) {
+      cropRegisterFormError.cultivateType.errorMessage = null
+      cropRegisterFormError.cultivateType.isValid = true
+      return true
+    } else {
+      cropRegisterFormError.cultivateType.errorMessage = '재배 방식을 선택 해주세요.'
+      cropRegisterFormError.cultivateType.isValid = false
       return false
     }
   },
@@ -280,7 +300,6 @@ const onSubmit = async () => {
                       <option value="보통">보통</option>
                       <option value="불량">불량</option>
                     </select>
-
                     <p>
                       {{ cropRegisterFormError.state.errorMessage }}
                     </p>
@@ -297,10 +316,23 @@ const onSubmit = async () => {
                       <input type="number" class="form-control" id="cultivation-area" v-model="cropRegisterForm.area" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" placeholder="면적을 입력하세요" @blur="areaRules" />
                       <span class="input-group-text">㎡</span>
                     </div>
+                    <p>
+                      {{ cropRegisterFormError.type.errorMessage }}
+                    </p>
                   </div>
-                  <p>
-                    {{ cropRegisterFormError.type.errorMessage }}
-                  </p>
+
+                  <!-- 6. 재배 방식 -->
+                  <div class="col-md-6">
+                    <label for="example-text-input" class="form-control-label">재배 방식</label>
+                    <select class="form-control" id="crop-cultivateType-select" v-model="cropRegisterForm.cultivateType" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="cultivateTypeRules">
+                      <option value="">-- 재배 방식 선택 --</option>
+                      <option value="유리">유리</option>
+                      <option value="비닐">비닐</option>
+                    </select>
+                    <p>
+                      {{ cropRegisterFormError.cultivateType.errorMessage }}
+                    </p>
+                  </div>
                 </div>
 
                 <!--4층-->

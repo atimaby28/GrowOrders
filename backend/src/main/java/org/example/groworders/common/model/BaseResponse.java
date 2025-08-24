@@ -21,7 +21,6 @@ public class BaseResponse<T> {
     private Boolean success; // 요청 성공 여부
     private Integer code;     // 에러 코드 또는 성공 코드
     private String message;  // 메시지
-    private Integer code;    // 응답 코드
     private T data;          // 응답 데이터
 
     /**
@@ -47,16 +46,6 @@ public class BaseResponse<T> {
                 .build();
     }
 
-    //실패 응답
-    public static <T> BaseResponse<T> fail(BaseResponseStatus status, T data) {
-        return BaseResponse.<T>builder()
-                .success(status.isSuccess())
-                .message(status.getMessage())
-                .code(status.getCode())
-                .data(data)
-                .build();
-    }
-
     /**
      * 성공 응답 (코드 + 메시지 + 데이터)
      */
@@ -65,6 +54,16 @@ public class BaseResponse<T> {
                 .success(true)
                 .code(code)
                 .message(message)
+                .data(data)
+                .build();
+    }
+
+    /** 실패 응답 */
+    public static <T> BaseResponse<T> fail(BaseResponseStatus status, T data) {
+        return BaseResponse.<T>builder()
+                .success(status.isSuccess())
+                .message(status.getMessage())
+                .code(status.getCode())
                 .data(data)
                 .build();
     }
