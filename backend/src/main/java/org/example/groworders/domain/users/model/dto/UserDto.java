@@ -1,5 +1,6 @@
 package org.example.groworders.domain.users.model.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import org.example.groworders.domain.users.model.entity.Role;
@@ -13,6 +14,25 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+/*
+ * @Pattern : 정규표현식을 이용해서 원하는 값만 허용
+ * @Null : null만 허용
+ * @NotNull : 빈 문자열 "" , 공백은 허용 " ", null은 안됨
+ * @NotEmpty : " " 허용, null 밑 ""은 안됨
+ * @NotBlank : null, "", " " 다 안됨
+ * @Size(min=5, max=10) : 길이를 검증할 때 사용
+ * @Max : 최대만 지정
+ * @Min : 최소만 지정
+ * @Positive : 양수만 가능
+ * @PositiveOfZero : 양수 및 0까지 가능
+ * @Negative : 음수만 가능
+ * @NegativeOfZero : 음수 및 0까지 가능
+ * @Future : 현재 시간보다 미래만 허용
+ * @FutureOrPresent : 현재 시간과 미래만 허용
+ * @Past : 현재 시간보다 과거만 허용
+ * @PastOrPresent : 현재 시간과 과거만 허용
+ */
 
 public class UserDto {
     @Getter
@@ -61,12 +81,28 @@ public class UserDto {
 
     @Getter
     public static class SignUp {
+        @NotBlank(message = "계정 아이디는 필수입니다")
+        @Size(max = 20, message = "계정 아이디는 최대 20자리까지 가능합니다")
         private String accountId;
+
+        @NotBlank(message = "이메일은 필수입니다")
+        @Email(message = "이메일 형식을 사용해 주세요")
         private String email;
+
+        @NotBlank(message = "비밀번호는 필수입니다")
+        @Size(min = 8, message = "비밀번호는 최소 8자리 이상이어야 합니다")
         private String password;
+
+        @NotBlank(message = "이름은 필수입니다")
+        @Size(max = 30, message = "이름은 최대 30자리까지 가능합니다")
         private String name;
+
+        @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "전화번호 형식이 올바르지 않습니다")
         private String phoneNumber;
+
+        @Past(message = "생년월일은 과거 날짜여야 합니다")
         private LocalDate birthDate;
+
         private Role role;
 
         public User toEntity(String profileImageUrl) {
@@ -83,6 +119,7 @@ public class UserDto {
                     .build();
         }
     }
+
 
     @Getter
     @Builder
@@ -133,9 +170,6 @@ public class UserDto {
             return email;
         }
 
-        public String getPassword() {
-            return "{noop}" + password;
-        }
     }
 
 }

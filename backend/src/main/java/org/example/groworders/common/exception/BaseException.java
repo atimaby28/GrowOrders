@@ -5,10 +5,21 @@ import org.example.groworders.common.model.BaseResponseStatus;
 
 @Getter
 public class BaseException extends RuntimeException{
-    private BaseResponseStatus status;
+
+    private final BaseResponseStatus status;
+
+    public BaseException(BaseResponseStatus status) {
+        super(status.getMessage());
+        this.status = status;
+    }
 
     public BaseException(BaseResponseStatus status, String message) {
         super(message);
+        this.status = status;
+    }
+
+    public BaseException(BaseResponseStatus status, String message, Throwable cause) {
+        super(message, cause);
         this.status = status;
     }
 

@@ -1,6 +1,8 @@
 package org.example.groworders.common.exception;
 
 import org.example.groworders.common.model.BaseResponse;
+import org.example.groworders.common.model.BaseResponseStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,27 +18,46 @@ import static org.example.groworders.common.model.BaseResponseStatus.REQUEST_ERR
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private int httpStatusCodeMapper(int statusCode) {
-        if (statusCode >= 40000) { return 500; }
-        else { return 400;}
+    // 커스텀 BaseException 처리
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<BaseResponse<?>> handleBaseException(BaseException e) {
+        BaseResponse<?> response = BaseResponse.fail(
+                e.getStatus().getCode(),
+                e.getMessage() != null ? e.getMessage() : e.getStatus().getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    //클라이언트 요청 입력값 검증 예외처리
+    // DTO 검증 실패 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseResponse<Map<String, String>>> handleException(MethodArgumentNotValidException e) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<BaseResponse<?>> handleValidationException(MethodArgumentNotValidException e) {
+        StringBuilder errorMessage = new StringBuilder();
 
-        for (FieldError error : e.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            errorMessage.append(fieldError.getField())
+                    .append(": ")
+                    .append(fieldError.getDefaultMessage())
+                    .append("; ");
         }
 
-        return ResponseEntity.status(400).body(BaseResponse.fail(REQUEST_ERROR, errors));
+        BaseResponse<?> response = BaseResponse.fail(
+                BaseResponseStatus.METHOD_ARGUMENT_NOT_VALID.getCode(),
+                errorMessage.toString()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    // 그 외 모든 예외 처리
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<BaseResponse<?>> handleException(Exception e) {
+        e.printStackTrace();
 
-    //서비스 예외처리
-    @ExceptionHandler(BaseException.class)
-    public ResponseEntity handleException(BaseException e) {
-        return ResponseEntity.status(httpStatusCodeMapper(e.getStatus().getCode())).body(BaseResponse.fail(e.getStatus(), e.getMessage()));
+        BaseResponse<?> response = BaseResponse.fail(
+                BaseResponseStatus.SERVER_ERROR.getCode(),
+                BaseResponseStatus.SERVER_ERROR.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

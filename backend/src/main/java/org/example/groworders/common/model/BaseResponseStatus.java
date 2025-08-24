@@ -2,6 +2,9 @@ package org.example.groworders.common.model;
 
 import lombok.*;
 
+/**
+ * 에러 코드 관리
+ */
 @Getter
 public enum BaseResponseStatus {
     /**
@@ -28,10 +31,15 @@ public enum BaseResponseStatus {
     INVALID_EMAIL_RESET_TIMEOUT(false,20011,"이메일 변경 링크가 만료되었습니다. 다시 시도해주세요."),
     INVALID_CROP_INFO(false, 20012, "작물을 확인 해주세요."),
     INVALID_FARM_INFO(false,20013, "농장을 확인 해주세요."),
+    FILE_UPLOAD_ERROR(false, 20012, "파일 업로드 실패"),
+    PROFILE_IMAGE_UPLOAD_ERROR(false, 20013, "프로필 이미지 업로드 실패"),
+    EMAIL_VERIFY_FAIL(false, 20014, "이메일 검증 실패"),
+    METHOD_ARGUMENT_NOT_VALID(false, 20015, "MethodArgumentNotValid 오류"),
+
 
 
     /**
-     * 4000 : Response 오류
+     * 40000 : Response 오류
      */
     // Common
     RESPONSE_ERROR(false, 40001, "값을 불러오는데 실패하였습니다."),
