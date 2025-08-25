@@ -1,8 +1,6 @@
 package org.example.groworders.domain.farms.model.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,24 +14,30 @@ public class FarmDto {
 
     // 농장 등록
     @Getter
-    @Setter
     public static class Register {
-        @Size(max = 20) @NotBlank
+        @NotNull
+        private Long userId;
+
+        @NotBlank(message = "농장 이름를 입력해주세요.")
+        @Size(max = 20)
         private String name;
 
-        @NotBlank
+        @NotBlank(message = "농장 지역은 필수 선택입니다.")
         private String region;
 
-        @Size(max = 50) @NotBlank
+        @NotBlank(message = "농장 주소를 입력해주세요.")
+        @Size(max = 50)
         private String address;
 
+        @NotNull(message = "농장 면적을 입력해주세요.")
         @Min(value = 10)
         private Integer size;
 
+        @NotBlank(message = "농장 설명을 입력해주세요.")
         @Size(max = 100)
         private String contents;
 
-        private String profile_image_url;
+        private String profile_image_url; // 농장 프로필 사진은 필수 아님
 
         public Farm toEntity(Long userId) {
             User user = User.builder()

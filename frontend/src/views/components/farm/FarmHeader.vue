@@ -1,10 +1,9 @@
 <script setup>
 import ArgonButton from "@/components/ArgonButton.vue";
 
-// ✅ props 객체를 변수에 담지 말고 구조 분해해서 사용
 const { mode, canEdit } = defineProps({
-  mode: { type: String, required: true },        // 'register' | 'detail'
-  canEdit: { type: Boolean, default: false }     // 수정 버튼 노출 여부
+  mode: { type: String, required: true },      
+  canEdit: { type: Boolean, default: false }  
 });
 
 const emit = defineEmits(["submit", "edit"]);

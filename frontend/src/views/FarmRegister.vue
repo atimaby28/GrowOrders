@@ -5,21 +5,18 @@ import setNavPills from "@/assets/js/nav-pills.js";
 import setTooltip from "@/assets/js/tooltip.js";
 import CropCard from "@/components/CropCard.vue";
 import { useUserStore } from "@/store/users/login.js";
-import { storeToRefs } from 'pinia';
 import axios from '@/plugins/axiosinterceptor.js';
-
 import FarmHeader from "@/views/components/farm/FarmHeader.vue"
 import FarmForm from "@/views/components/farm/FarmForm.vue";
 import ImageUploader from "@/views/components/farm/ImageUploader.vue";
 
 
-
 // --- 상태 ---
-const mode = ref("register"); // 'register' | 'detail'
-const userStore = useUserStore();
-const { userInfo } = storeToRefs(userStore);
-const userId = computed(() => userInfo.value?.id ?? userInfo.value?.accountId ?? '');
-//const role = computed(() => userStore.userInfo.type); // '1'이면 농부
+const mode = ref("register");
+const userStore = useUserStore()
+const userId = computed(() => userStore.userId)
+// const role = computed(() => userStore.role)
+
 const isReadOnly = computed(() => mode.value !== "register");
 
 // 폼 상태
@@ -139,7 +136,6 @@ onBeforeUnmount(() => {
             <!-- <div class="card-body" v-if="role === '1'"> -->
             <div class="card-body">  
               <FarmForm
-                :readOnly="isReadOnly"
                 :userId="userId"
                 v-model:farmName="farmName"
                 v-model:selectedLocation="selectedLocation"
@@ -164,8 +160,9 @@ onBeforeUnmount(() => {
         <!-- 오른쪽: 품목 카드(있을 때만) -->
         <div class="col-md-4" v-if="selectedCropInfo">
           <CropCard :crop="selectedCropInfo" />
+          </div>
         </div>
       </div>
-    </div>
+    <!-- </div> -->
   </main>
 </template>

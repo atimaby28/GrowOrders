@@ -1,21 +1,14 @@
 <script setup>
-<<<<<<< HEAD
-// import { useRouter } from 'vue-router'
-=======
-/* ----------------- 📦 Imports ----------------- */
 import { onMounted, computed, reactive } from "vue";
->>>>>>> refs/remotes/origin/main
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 import Carousel from "./components/Carousel.vue";
 import CategoriesList from "./components/CategoriesList.vue";
-<<<<<<< HEAD
+
 // import US from "@/assets/img/orderlabs/girl.png";
 // import DE from "@/assets/img/orderlabs/boy.png";
 // import GB from "@/assets/img/orderlabs/man.png";
 // import BR from "@/assets/img/orderlabs/woman.png";
 
-=======
->>>>>>> refs/remotes/origin/main
 import ProjectCard from "./components/ProjectCard.vue";
 import api from "@/api/dashboard";
 
@@ -131,13 +124,6 @@ const fetchData = async () => {
       await api.weatherData()
     ]);
 
-<<<<<<< HEAD
-onMounted(async () => {
-  await getOrderList();
-  await getData();
-
-});
-=======
     state.summaryData = summary?.summary ?? [];
     state.farmMonitoringData = farmStatus ?? {};
     state.chartData = chart ?? [];
@@ -148,7 +134,6 @@ onMounted(async () => {
     console.error("데이터 로딩 실패:", error);
   }
 };
->>>>>>> refs/remotes/origin/main
 
 /* ----------------- ⏳ Lifecycle ----------------- */
 onMounted(fetchData);
@@ -158,148 +143,6 @@ onMounted(fetchData);
   <div class="py-4 container-fluid">
     <!-- 요약 카드 -->
     <div class="row">
-<<<<<<< HEAD
-      <div class="col-lg-12">
-        <div class="row">
-          <div
-            v-for="(data, index) in state.summaryData"
-            :key="index"
-            class="col-lg-3 col-md-6 col-12"
-          >
-            <mini-statistics-card
-              :title="data.title"
-              :value="data.value"
-              :description="`
-                <span
-                  class='text-sm font-weight-bolder ${
-                    data.change.trend === 'up' ? 'text-success' : 'text-danger'
-                  }'>
-                  ${data.change.trend === 'up' ? '+' : '-'}${data.change.percentage}%
-                </span> ${data.change.text}
-              `"
-              :icon="data.icon"
-            />
-            <PushClientSave />
-          </div>
-          <!-- <div class="col-lg-3 col-md-6 col-12">
-            <mini-statistics-card
-              title="예상 수익금"
-              value="$53,000"
-              description="<span
-                class='text-sm font-weight-bolder text-success'
-                >+55%</span> since yesterday"
-              :icon="{
-                component: 'ni ni-money-coins',
-                background: 'bg-gradient-primary',
-                shape: 'rounded-circle',
-              }"
-            />
-          </div>
-          <div class="col-lg-3 col-md-6 col-12">
-            <mini-statistics-card
-              title="예상 생산량"
-              value="2,300"
-              description="<span
-                class='text-sm font-weight-bolder text-success'
-                >+3%</span> since last week"
-              :icon="{
-                component: 'ni ni-world',
-                background: 'bg-gradient-danger',
-                shape: 'rounded-circle',
-              }"
-            />
-          </div>
-          <div class="col-lg-3 col-md-6 col-12">
-            <mini-statistics-card
-              title="요청 생산량"
-              value="+3,462"
-              description="<span
-                class='text-sm font-weight-bolder text-danger'
-                >-2%</span> since last quarter"
-              :icon="{
-                component: 'ni ni-paper-diploma',
-                background: 'bg-gradient-success',
-                shape: 'rounded-circle',
-              }"
-            />
-          </div>
-          <div class="col-lg-3 col-md-6 col-12">
-            <mini-statistics-card
-              title="판매량"
-              value="$103,430"
-              description="<span
-                class='text-sm font-weight-bolder text-success'
-                >+5%</span> than last month"
-              :icon="{
-                component: 'ni ni-cart',
-                background: 'bg-gradient-warning',
-                shape: 'rounded-circle',
-              }"
-            />
-          </div> -->
-        </div>
-        <div class="row">
-          <div class="col-lg-7 mb-lg">
-            <!-- line chart -->
-            <div class="card">
-              <div class="p-3 pb-0 card-header">
-                <div class="d-flex justify-content-between">
-                  <h6 class="mb-2">최근 주문자 정보</h6>
-                </div>
-              </div>
-              <div class="p-3 pb-0 table-responsive">
-                <table class="table align-items-center">
-                  <tbody>
-                    <tr v-for="(order, index) in top4Orders" :key="index">
-                      <td class="w-30">
-                        <div class="px-2 py-1 d-flex align-items-center">
-                          <div>
-                            <img
-                              :src="getImageUrl(order.img)"
-                              alt="Profile Img"
-                              style="width: 40px; height: 40px; object-fit: cover;"
-                            />
-                          </div>
-                          <div class="ms-4">
-                            <p class="mb-0 text-xs font-weight-bold">구매자:</p>
-                            <h6 class="mb-0 text-sm">{{ order.name }}</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="text-center">
-                          <p class="mb-0 text-xs font-weight-bold">판매품목:</p>
-                          <h6 class="mb-0 text-sm">{{ order.crop }}</h6>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="text-center">
-                          <p class="mb-0 text-xs font-weight-bold">총 주문금액:</p>
-                          <h6 class="mb-0 text-sm">{{ order.total }}</h6>
-                        </div>
-                      </td>
-                      <td class="text-sm align-middle">
-                        <div class="text-center col">
-                          <p class="mb-0 text-xs font-weight-bold">주문량:</p>
-                          <h6 class="mb-0 text-sm">{{ order.quantity }}</h6>
-                        </div>
-                      </td>
-                      <!-- 버튼용 td 추가 -->
-                      <td class="text-end">
-                        <router-link
-                          :to="{ name: 'OrderDetail', params: { orderId: order.orderId } }"
-                          class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto"
-                          style="text-decoration: none;"
-                        >
-                          <i
-                            :class="`ni ${isRTL ? 'ni-bold-left' : 'ni-bold-right'}`"
-                            aria-hidden="true"
-                          ></i>
-                        </router-link>
-                      </td>
-                    </tr>
-                  </tbody>
-=======
       <div
         v-for="(data, index) in state.summaryData"
         :key="index"
@@ -320,7 +163,6 @@ onMounted(fetchData);
         />
       </div>
     </div>
->>>>>>> refs/remotes/origin/main
 
     <!-- 주문자 정보 & 카테고리 -->
     <div class="row">

@@ -4,7 +4,6 @@ import ArgonInput from "@/components/ArgonInput.vue";
 
 const props = defineProps({
   readOnly: { type: Boolean, default: false },
-  // v-model: 개별 필드 바인딩
   userId: { type: [String, Number], default: '' },
   farmName: { type: String, default: "" },
   selectedLocation: { type: String, default: "" },
@@ -25,7 +24,7 @@ const roCls = computed(() => (props.readOnly ? "bg-light text-muted" : ""));
 </script>
 
 <template>
-  <!-- 사용자 아이디 (예시 값 그대로 유지) -->
+  <!-- 사용자 아이디 -->
   <div class="row">
     <div class="col-md-12">
       <label class="form-control-label">사용자 아이디</label>
