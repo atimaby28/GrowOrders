@@ -35,8 +35,12 @@ public class FarmDto {
 
         private String profile_image_url;
 
-        public Farm toEntity(User user) {
-            Farm entity = Farm.builder()
+        public Farm toEntity(Long userId) {
+            User user = User.builder()
+                    .id(userId)
+                    .build();
+
+            return Farm.builder()
                     .name(name)
                     .region(region)
                     .address(address)
@@ -45,21 +49,7 @@ public class FarmDto {
                     .profile_image_url(profile_image_url)
                     .user(user)
                     .build();
-            return entity;
         }
-
-//        public Farm toEntity(FarmDto.Register dto) {
-//            Farm entity = Farm.builder()
-//                    .name(name)
-//                    .region(region)
-//                    .address(address)
-//                    .size(size)
-//                    .contents(contents)
-//                    .profile_image_url(profile_image_url)
-//                    .build();
-//            return entity;
-//        }
-
     }
 
     // 농장 리스트
@@ -101,7 +91,7 @@ public class FarmDto {
                     .size(entity.getSize())
                     .contents(entity.getContents())
                     .profile_image_url(entity.getProfile_image_url())
-//                    .cropList(entity.getCropList())
+                    .cropList(entity.getCropList())
                     .build();
         }
     }

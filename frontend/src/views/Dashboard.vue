@@ -1,11 +1,9 @@
 <script setup>
 // import { useRouter } from 'vue-router'
-
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 // import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
 import Carousel from "./components/Carousel.vue";
 import CategoriesList from "./components/CategoriesList.vue";
-
 // import US from "@/assets/img/orderlabs/girl.png";
 // import DE from "@/assets/img/orderlabs/boy.png";
 // import GB from "@/assets/img/orderlabs/man.png";
@@ -102,6 +100,7 @@ const top4Orders = computed(() => {
 onMounted(async () => {
   await getOrderList();
   await getData();
+
 });
 
 // const router = useRouter()
@@ -164,6 +163,7 @@ onMounted(async () => {
               `"
               :icon="data.icon"
             />
+            <PushClientSave />
           </div>
           <!-- <div class="col-lg-3 col-md-6 col-12">
             <mini-statistics-card

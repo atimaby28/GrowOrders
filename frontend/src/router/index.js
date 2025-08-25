@@ -16,9 +16,9 @@ import Error from "../views/Error.vue";
 // 알림 추가
 import Notification from "../views/Notification.vue";
 // 생물 등록
-import Crop_register from "../views/Crop_register.vue";
+import Crop_register from "../views/CropRegister.vue";
 // 농장 등록
-import Farm_register from "../views/Farm_register.vue";
+import Farm_register from "../views/FarmRegister.vue";
 // 판매량 조회
 import Sales from "@/views/Sales.vue";
 // 재고 관리
