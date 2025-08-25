@@ -1,9 +1,14 @@
 <script setup>
-/* ----------------- 📦 Imports ----------------- */
 import { onMounted, computed, reactive } from "vue";
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 import Carousel from "./components/Carousel.vue";
 import CategoriesList from "./components/CategoriesList.vue";
+
+// import US from "@/assets/img/orderlabs/girl.png";
+// import DE from "@/assets/img/orderlabs/boy.png";
+// import GB from "@/assets/img/orderlabs/man.png";
+// import BR from "@/assets/img/orderlabs/woman.png";
+
 import ProjectCard from "./components/ProjectCard.vue";
 import api from "@/api/dashboard";
 

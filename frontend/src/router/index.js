@@ -14,14 +14,13 @@ import OrderDetail from "../views/order/OderDetail.vue";
 import OrderCreate from "../views/order/OrderCreate.vue";
 import Error from "../views/Error.vue";
 
-import Chat from "../views/Chat.vue";
 
 // 알림 추가
 import Notification from "../views/Notification.vue";
 // 생물 등록
-import Crop_register from "../views/Crop_register.vue";
+import CropRegister from "../views/CropRegister.vue";
 // 농장 등록
-import Farm_register from "../views/Farm_register.vue";
+import FarmRegister from "../views/FarmRegister.vue";
 // 판매량 조회
 import Sales from "@/views/Sales.vue";
 // 재고 관리
@@ -108,26 +107,21 @@ const routes = [
   },
   // 생물 추가
   {
-    path: "/crop-register",
-    name: "Crop Register",
-    component: Crop_register
+    path: "/crops/register",
+    name: "CropRegister",
+    component: CropRegister
   },
   // 농장 추가
   {
-    path: "/farm-register",
-    name: "Farm Register",
-    component: Farm_register
+    path: "/farms/register",
+    name: "FarmRegister",
+    component: FarmRegister
   },
   // 판매량 조회
   {
     path: "/sales",
     name: "Sales",
     component: Sales
-  },
-    {
-    path: "/chat",
-    name: "Chat",
-    component: Chat
   },
   // 재고 관리
   {

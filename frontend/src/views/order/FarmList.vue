@@ -5,12 +5,22 @@ import api from '../../api/order';
 const farmData = ref([]);
 
 // API 호출 후 data 배열에서 .data만 추출
+// onMounted(async () => {
+//   try {
+//     const res = await api.farmList();
+//     farmData.value = res.map(item => item.data);
+//   } catch (error) {
+//     console.error('API 호출 오류:', error);
+//   }
+// });
+
 onMounted(async () => {
   try {
-    const res = await api.farmList();
-    farmData.value = res.map(item => item.data);
-  } catch (error) {
-    console.error('API 호출 오류:', error);
+    const list = await api.farmList();               
+    farmData.value = Array.isArray(list) ? list : [];
+  } catch (e) {
+    console.error('API 호출 오류:', e);
+    farmData.value = [];
   }
 });
 
@@ -71,19 +81,19 @@ onMounted(async () => {
                   />
                   </div>
                   <div class="d-flex flex-column justify-content-center">
-                    <h6 class="mb-0 text-sm">{{ item.farm_name }}</h6>
-                    <p class="text-xs text-secondary mb-0">{{ item.farmId }}</p>
+                    <h6 class="mb-0 text-sm">{{ item.name }}</h6>
+                    <p class="text-xs text-secondary mb-0">{{ item.id }}</p>
                   </div>
                 </div>
               </td>
               <td><p class="text-xs font-weight-bold mb-0">{{ item.region }}</p></td>
-              <td><p class="text-xs font-weight-bold mb-0">{{ item.crop }}</p></td>
+              <!-- <td><p class="text-xs font-weight-bold mb-0">{{ item.crop }}</p></td>
               <td><p class="text-xs font-weight-bold mb-0">{{ item.cultivationMethod }}</p></td>
               <td><p class="text-xs font-weight-bold mb-0">{{ item.cultivationArea }}</p></td>
-              <td><p class="text-xs font-weight-bold mb-0">{{ item.price }}</p></td>
+              <td><p class="text-xs font-weight-bold mb-0">{{ item.price }}</p></td> -->
               <td class="align-middle text-center text-sm">
                 <router-link
-                  :to="{ name: 'OrderCreate', params: { FarmId: item.farmId } }"
+                  :to="{ name: 'OrderCreate', params: { FarmId: item.id } }"
                   class="badge text-xs badge-sm bg-gradient-success text-white"
                 >
                   <a href="/order-page" class="badge text-xs badge-sm bg-gradient-success text-white">
