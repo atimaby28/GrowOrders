@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.users.model.entity.User;
-
 import java.util.List;
 
 @Getter
@@ -16,26 +15,34 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Farm {
-    @Id
+    @Id // nullable = false 포함
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 20)
     private String name;
-    private String address;
-    private Integer size;
-    private String contents;
-    private String profile_image_url;
+
+    @Column(nullable = false)
     private String region;
 
-//    selling_count INT DEFAULT 0,
-//    review_count INT DEFAULT 0,
-//    rating DECIMAL(2,1) DEFAULT 0.0
+    @Column(nullable = false, length = 50)
+    private String address;
 
-    // 일대다 (user:farm)
-    @ManyToOne
+    @Column(nullable = false) // 허용 범위는 validation에서 처리
+    private Integer size;
+
+    @Column(length = 100) // 농장 소개글 생략 가능
+    private String contents;
+
+    // 농장 사진 생략 가능
+    private String profile_image_url;
+
+    // 다대일 (farm:user)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     // 일대다 (farm:crop)
-    @OneToMany(mappedBy = "farm")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "farm")
     private List<Crop> cropList;
 }
