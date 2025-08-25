@@ -13,14 +13,16 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 -->
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted  } from "vue";
 import { useStore } from "vuex";
+import { useUserStore } from "./store/users/useUserStore";
 import Sidenav from "./examples/Sidenav";
 import Configurator from "@/examples/Configurator.vue";
 import Navbar from "@/examples/Navbars/Navbar.vue";
 import AppFooter from "@/examples/Footer.vue";
 
 const store = useStore();
+const userStore = useUserStore();
 const isNavFixed = computed(() => store.state.isNavFixed);
 const darkMode = computed(() => store.state.darkMode);
 const isAbsolute = computed(() => store.state.isAbsolute);
@@ -41,6 +43,10 @@ const navClasses = computed(() => {
     "position-absolute px-4 mx-0 w-100 z-index-2": isAbsolute.value,
     "px-0 mx-4": !isAbsolute.value,
   };
+});
+
+onMounted(() => {
+  userStore.checkLogin(); // 새로고침 시 Pinia 상태 복원
 });
 </script>
 <template>

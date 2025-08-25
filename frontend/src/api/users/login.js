@@ -1,34 +1,33 @@
 import api from "@/plugins/axiosinterceptor";
 
-// 백엔드 호출 후 받은 데이터를 반환
-const farmerInfo = async (req) => {
+const signUp = async (req) => {
     let data = {};
-    let url = '/api/farmerList.json';
+    let url = '/users/signup';
 
-    await api.get(url, req)
+    await api.post(url, req)
         .then((res) => {
             data = res.data;
         })
         .catch((error) => {
-            data = error.data;
+            data = error.response?.data || error.message;
         });
-
     return data;
-}
+};
 
-const buyerInfo = async (req) => {
+const signIn = async (req) => {
     let data = {};
-    let url = '/api/buyerList.json';
-
-    await api.get(url, req)
+    let url = '/login';
+    
+    await api.post(url, req)
         .then((res) => {
             data = res.data;
         })
         .catch((error) => {
-            data = error.data;
+            data = error.response?.data || error.message;
         });
-
     return data;
-}
+};
 
-export default { farmerInfo, buyerInfo };
+
+
+export default { signUp, signIn };

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.example.groworders.domain.users.model.entity.Role;
 import org.example.groworders.domain.users.model.entity.User;
+import org.example.groworders.domain.users.service.S3PresignedUrlService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +40,7 @@ public class UserDto {
     public static class SignIn {
         private String email;
         private String password;
+        private Role role;
     }
 
     @Getter
@@ -48,6 +50,7 @@ public class UserDto {
         private String email;
         private String name;
         private Role role;
+        private String profileImage;
 
         public static SignInResponse from(AuthUser authUser) {
 
@@ -56,6 +59,7 @@ public class UserDto {
                     .email(authUser.getEmail())
                     .name(authUser.getName())
                     .role(authUser.getRole())
+                    .profileImage(authUser.getProfileImage())
                     .build();
         }
     }
@@ -130,6 +134,7 @@ public class UserDto {
         private String name;
         private Role role;
         private Boolean enabled;
+        private String profileImage;
         private Map<String, Object> attributes;
 
         @Override
@@ -142,7 +147,7 @@ public class UserDto {
             return enabled;
         }
 
-
+        // 기존 from(User) 유지 (Security용)
         public static AuthUser from(User entity) {
             return AuthUser.builder()
                     .id(entity.getId())
@@ -151,8 +156,23 @@ public class UserDto {
                     .name(entity.getName())
                     .role(entity.getRole() != null ? entity.getRole() : Role.USER)
                     .enabled(entity.getEnabled())
+                    .profileImage(entity.getProfileImage()) // DB에 저장된 URL
                     .build();
         }
+
+        // 클라이언트용 Presigned URL 포함
+        public static AuthUser from(User entity, String presignedUrl) {
+            return AuthUser.builder()
+                    .id(entity.getId())
+                    .email(entity.getEmail())
+                    .password(entity.getPassword())
+                    .name(entity.getName())
+                    .role(entity.getRole() != null ? entity.getRole() : Role.USER)
+                    .enabled(entity.getEnabled())
+                    .profileImage(presignedUrl) // Presigned URL
+                    .build();
+        }
+
 
         public User toEntity() {
             return User.builder()

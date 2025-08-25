@@ -8,6 +8,7 @@ import org.example.groworders.domain.users.model.dto.EmailVerify;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -53,8 +54,8 @@ public class User {
     @ColumnDefault("'USER'")
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EmailVerify> emailVerifyList;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmailVerify> emailVerifyList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     List<Farm> farmList;
