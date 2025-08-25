@@ -30,7 +30,7 @@ public class UserController {
     )
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Void>> signup(
-            @Valid @RequestPart(value = "signupInfo") UserDto.SignUp dto,
+            @RequestPart(value = "signupInfo") @Valid UserDto.SignUp dto,
             @RequestPart(value = "profileImageUrl", required = false) MultipartFile profileImageUrl
     ) throws MessagingException, IOException, SQLException {
         userService.signup(dto, profileImageUrl);

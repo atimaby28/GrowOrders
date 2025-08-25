@@ -1,37 +1,31 @@
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-import { useUserStore } from '@/store/users/login.js';
+import { useRoute, useRouter } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
+import { useUserStore } from "../../store/users/useUserStore.js";
 
 const showMenu = ref(false);
+const showUserMenu = ref(false);
 const store = useStore();
+const userStore = useUserStore();
 const isRTL = computed(() => store.state.isRTL);
 
 const route = useRoute();
-const userStore = useUserStore();
-
-// 로그인 상태 확인
-const checkAuth = async () => {
-  await userStore.checkLogin();
-  if (!userStore.isLogin) {
-    // router.push('/login');
-  }
-};
-
-const username = computed(() => {
-  return userStore.isLogin && userStore.userInfo 
-    ? userStore.userInfo.name 
-    : 'Guest';
-});
+const router = useRouter();
 
 const currentRouteName = computed(() => {
   return route.name;
 });
+
 const currentDirectory = computed(() => {
   let dir = route.path.split("/")[1];
   return dir.charAt(0).toUpperCase() + dir.slice(1);
+});
+
+// 마운트 시 로그인 상태 확인
+onMounted(() => {
+  userStore.checkLogin();
 });
 
 const minimizeSidebar = () => store.commit("sidebarMinimize");
@@ -40,25 +34,17 @@ const toggleConfigurator = () => store.commit("toggleConfigurator");
 const closeMenu = () => {
   setTimeout(() => {
     showMenu.value = false;
+    showUserMenu.value = false;
   }, 100);
 };
 
-
-
-// 컴포넌트 마운트 시
-onMounted(() => {
-  checkAuth();
-});
-
-const userTypeName = computed(() => {
-  if (!userStore.userInfo) return '';
-  return userStore.userInfo.type === 1
-    ? '농부님'
-    : userStore.userInfo.type === 2
-      ? '구매자님'
-      : '회원님';
-});
+const handleSignOut = () => {
+  userStore.logout();         // Pinia + EncryptStorage 상태 모두 초기화
+  showUserMenu.value = false; // 메뉴 닫기
+  router.push({ name: 'Signin' });
+};
 </script>
+
 <template>
   <nav
     class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl"
@@ -94,19 +80,75 @@ const userTypeName = computed(() => {
           </div>
         </div>
         <ul class="navbar-nav justify-content-end">
-          <li class="nav-item d-flex align-items-center">
+          <li v-if="!userStore.isLogin" class="nav-item d-flex align-items-center">
             <router-link
-              :to="userStore.userInfo?.type === 1 ? { name: 'FarmerDashboard' } : { name: 'BuyerDashboard' }"
+              :to="{ name: 'Signin' }"
               class="px-0 nav-link font-weight-bold text-white"
-              target="_blank"
             >
               <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
-              <span v-if="userStore.isLogin" class="d-sm-inline d-none">
-                반갑습니다 {{ username }} {{ userTypeName }} !!
-              </span>
+              <span v-if="isRTL" class="d-sm-inline d-none">يسجل دخول</span>
               <span v-else class="d-sm-inline d-none">Sign In</span>
             </router-link>
           </li>
+          
+          <li 
+            v-else
+            class="nav-item dropdown d-flex align-items-center"
+            :class="isRTL ? 'ps-2' : 'pe-2'"
+          >
+            <a
+              href="#"
+              class="p-0 nav-link text-white"
+              :class="[showUserMenu ? 'show' : '']"
+              id="dropdownUserMenuButton"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              @click="showUserMenu = !showUserMenu"
+              @blur="closeMenu"
+            >
+              <div class="d-flex align-items-center">
+                <img
+                  :src="userStore.user.profileImageUrl || 'https://avatars.githubusercontent.com/u/149382180?v=4'"
+                  alt="Profile"
+                  class="rounded-circle me-2"
+                  style="width: 32px; height: 32px; object-fit: cover;"
+                />
+                <!-- <i class="fa fa-user-circle me-2"></i> -->
+                <span class="d-sm-inline d-none">{{ userStore.user.name || userStore.user.email }}</span>
+              </div>
+            </a>
+            <ul
+              class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4"
+              :class="showUserMenu ? 'show' : ''"
+              aria-labelledby="dropdownUserMenuButton"
+            >
+              <li class="mb-2">
+                <router-link 
+                  :to="{ name: 'Profile' }" 
+                  class="dropdown-item border-radius-md"
+                  @click="showUserMenu = false"
+                >
+                  <div class="d-flex align-items-center">
+                    <i class="fa fa-user me-2"></i>
+                    <span>Profile</span>
+                  </div>
+                </router-link>
+              </li>
+              <li>
+                <a 
+                  href="#" 
+                  class="dropdown-item border-radius-md"
+                  @click="handleSignOut"
+                >
+                  <div class="d-flex align-items-center">
+                    <i class="fa fa-sign-out-alt me-2"></i>
+                    <span>Sign Out</span>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </li>
+
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a
               href="#"
@@ -141,6 +183,9 @@ const userTypeName = computed(() => {
               @blur="closeMenu"
             >
               <i class="cursor-pointer fa fa-bell"></i>
+              <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                <span class="visually-hidden">New alerts</span>
+              </span>
             </a>
             <ul
               class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4"
@@ -250,11 +295,6 @@ const userTypeName = computed(() => {
               </li>
             </ul>
           </li>
-          <div v-if="userStore.isLogin">
-            <li class="nav-item d-flex align-items-center">
-              <span class="d-sm-inline d-none px-0 nav-link font-weight-bold text-white" @click="userStore.logout">Logout</span>
-            </li>
-          </div>
         </ul>
       </div>
     </div>
