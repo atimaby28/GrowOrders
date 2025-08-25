@@ -1,84 +1,114 @@
 package org.example.groworders.domain.users.service;
 
+import io.awspring.cloud.s3.S3Operations;
+import io.awspring.cloud.s3.S3Resource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.example.groworders.common.exception.*;
 import org.example.groworders.domain.users.model.dto.EmailVerify;
 import org.example.groworders.domain.users.model.dto.UserDto;
 import org.example.groworders.domain.users.model.entity.User;
 import org.example.groworders.domain.users.repository.EmailVerifyRepository;
 import org.example.groworders.domain.users.repository.UserRepository;
+import org.example.groworders.utils.FileUploadUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
+
     private final UserRepository userRepository;
     private final JavaMailSender emailSender;
     private final EmailVerifyRepository emailVerifyRepository;
+    private final S3UploadService s3UploadService;
+    private final S3PresignedUrlService s3PresignedUrlService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Transactional(readOnly = false)
-    public void signup(UserDto.SignUp dto) throws MessagingException {
-        User user = userRepository.save(dto.toEntity());
-        // 메일 전송
-        String uuid = UUID.randomUUID().toString();
+    @Value("${spring.cloud.aws.s3.bucket}")
+    private String s3BucketName;
 
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+    @Transactional
+    public void signup(UserDto.SignUp dto, MultipartFile profileImageUrl) {
+        // 프로필 업로드
+        String filePath = s3UploadService.upload(profileImageUrl);
 
-        helper.setTo(dto.getEmail());
+        // 회원 저장
+        User user = dto.toEntity(filePath);
+        user.passwordEncrypted(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
 
-        String subject = "[내 사이트] 가입 환영";
-        String htmlContent = "<h2 style='color: #2e6c80;'>가입을 환영합니다!</h2>"
-                + "<p>아래 링크를 클릭하여 이메일 인증을 완료해주세요:</p>"
-                + "<a href='http://localhost:8080/users/verify?uuid=" + uuid + "'>이메일 인증하기</a>";
-
-        helper.setSubject(subject);
-        helper.setText(htmlContent, true);
-        emailSender.send(message);
-
-        // 랜덤한 값을 DB에 저장
-        EmailVerify emailVerify= EmailVerify.builder()
-                .uuid(uuid)
-                .user(user)
-                .build();
-
-        emailVerifyRepository.save(emailVerify);
+        // 3. 이메일 인증
+        sendVerificationEmail(user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> result =  userRepository.findByEmail(username);
-
-        if(result.isPresent()) {
-            User user = result.get();
-            return UserDto.AuthUser.from(user);
-        }
-
-        return null;
+    public UserDetails loadUserByUsername(String email) {
+        // Security용 UserDetails 반환
+        return userRepository.findByEmail(email)
+                .map(UserDto.AuthUser::from)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
+    @Transactional(readOnly = true)
+    public UserDto.AuthUser loadAuthUserWithPresignedUrl(String email) {
+        // 클라이언트용 AuthUser DTO
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
+        String presignedUrl = user.getProfileImage() != null
+                ? s3PresignedUrlService.generatePresignedUrl(user.getProfileImage(), Duration.ofMinutes(60))
+                : null;
+
+        return UserDto.AuthUser.from(user, presignedUrl);
+    }
+
+    @Transactional
     public void verify(String uuid) {
-        Optional<EmailVerify> result = emailVerifyRepository.findByUuid(uuid);
+        EmailVerify emailVerify = emailVerifyRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EmailVerifyException("이메일 인증에 실패했습니다."));
 
-        if(result.isPresent()) {
-            EmailVerify emailVerify = result.get();
-            User user = emailVerify.getUser();
-            user.userVerify();
-            userRepository.save(user);
-        } else {
-            System.out.println("인증 실패");
+        User user = emailVerify.getUser();
+        user.userVerify();
+        userRepository.save(user);
+    }
+
+    private void sendVerificationEmail(User user) {
+        String uuid = UUID.randomUUID().toString();
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(user.getEmail());
+            helper.setSubject("[내 사이트] 가입 환영");
+            String htmlContent = "<h2>가입을 환영합니다!</h2>"
+                    + "<a href='http://localhost:8080/users/verify?uuid=" + uuid + "'>이메일 인증하기</a>";
+            helper.setText(htmlContent, true);
+
+            emailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new EmailSendException("가입 이메일 전송 실패", e);
         }
+
+        EmailVerify emailVerify = EmailVerify.builder()
+                .uuid(uuid)
+                .user(user)
+                .build();
+        emailVerifyRepository.save(emailVerify);
     }
 }

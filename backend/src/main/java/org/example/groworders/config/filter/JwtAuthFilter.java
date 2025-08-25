@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.groworders.domain.users.model.dto.UserDto;
+import org.example.groworders.domain.users.model.entity.Role;
 import org.example.groworders.utils.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,21 +37,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if(claims!= null) {
                 String email = JwtUtil.getValue(claims, "email");
                 Long id = Long.parseLong(JwtUtil.getValue(claims, "id"));
+                Role role = Role.valueOf(JwtUtil.getValue(claims, "role"));
 
                 UserDto.AuthUser authUser = UserDto.AuthUser.builder()
                         .id(id)
                         .email(email)
+                        .role(role)
                         .build();
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         authUser,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_USER")) // 특정 권한 부여, 권한 앞에 ROLE_를 붙여야 함
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role.name())) // 특정 권한 부여, 권한 앞에 ROLE_를 붙여야 함
                 );
 
                 // 컨텍스트라는 공간에 인증된 사용자 정보 authentication를 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
 
             }
         }

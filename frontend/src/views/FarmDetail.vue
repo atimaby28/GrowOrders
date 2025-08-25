@@ -6,7 +6,7 @@ import setTooltip from "@/assets/js/tooltip.js";
 import ArgonInput from "@/components/ArgonInput.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 import CropCard from "@/components/CropCard.vue";
-import { useUserStore } from '@/store/users/login.js';
+import { useUserStore } from "@/stores/users/useUserStore.js";
 import { useRoute } from 'vue-router'
 import api from '@/api/order'
 

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.example.groworders.domain.users.model.entity.Role;
 
 import java.security.Key;
 import java.util.Date;
@@ -15,12 +16,12 @@ public class JwtUtil {
     private static final Key KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
     private static final Long EXP = 1000 * 60 * 120L;
 
-    public static String generateToken(String email, Long id) {
+    public static String generateToken(String email, Long id, Role role) {
 
         Map<String, String> claims =  new HashMap<>();
         claims.put("id", "" + id);
         claims.put("email", email);
-        claims.put("role", "USER");
+        claims.put("role", role.name());
 
         return Jwts.builder()
                 .setSubject(email)
@@ -42,5 +43,12 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    // 토큰 만료 체크
+    public static boolean isExpired(Claims claims) {
+        Date expiration = claims.getExpiration();
+        if (expiration == null) return true; // 만료 정보 없으면 만료 처리
+        return expiration.before(new Date()); // 현재 시간 이전이면 만료
     }
 }

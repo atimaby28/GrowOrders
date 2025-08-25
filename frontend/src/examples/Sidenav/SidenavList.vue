@@ -1,189 +1,127 @@
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useStore } from "vuex";
-import { useUserStore } from "@/store/users/login.js";
+import { useUserStore } from "../../store/users/useUserStore.js";
 
 import SidenavItem from "./SidenavItem.vue";
 
-const store = useStore();
-const isRTL = computed(() => store.state.isRTL);
 const userStore = useUserStore();
+const route = useRoute();
 
-let type = ref(1);
+// 현재 로그인한 유저 역할
+const role = computed(() => userStore.user?.role || null);
 
-// 로그인 타입 확인
-const checkType = async () => {
-  if (!userStore.userInfo || typeof userStore.userInfo.type === "undefined") {
-    console.warn("userInfo가 아직 로드되지 않았습니다.");
-    type.value = null;
-    return;
-  }
-
-  type.value = userStore.userInfo.type;
-};
-
-const getRoute = () => {
-  const route = useRoute();
-  const routeArr = route.path.split("/");
-  return routeArr[1];
-};
+// 현재 라우트의 첫 번째 path segment
+const currentRoute = computed(() => route.path.split("/")[1]);
 
 onMounted(() => {
   userStore.checkLogin();
-  checkType();
 });
+
+// 네비게이션 항목 정의
+const navItems = computed(() => [
+  {
+    to: "/farmer/dashboard",
+    label: "농부 메인 화면",
+    icon: "ni ni-tv-2 text-primary text-sm opacity-10",
+    role: ["FARMER"],
+    active: "FarmerDashboard"
+  },
+  {
+    to: "/buyer/dashboard",
+    label: "주문자 메인 화면",
+    icon: "ni ni-tv-2 text-primary text-sm opacity-10",
+    role: ["BUYER"],
+    active: "BuyerDashboard"
+  },
+  {
+    to: "/buyerlist",
+    label: "주문관리",
+    icon: "ni ni-calendar-grid-58 text-warning text-sm opacity-10",
+    role: ["FARMER"],
+    active: "tables"
+  },
+  {
+    to: "/farmlist",
+    label: "상품 검색",
+    icon: "ni ni-basket text-success text-sm opacity-10",
+    role: ["FARMER"],
+    active: "tables"
+  },
+  {
+    to: "/inventory",
+    label: "재고관리",
+    icon: "ni ni-calendar-grid-58 text-warning text-sm opacity-10",
+    role: ["FARMER"], // 문자열 타입 role
+    active: "inventory"
+  },
+  {
+    to: "/farm-register",
+    label: "농장등록",
+    icon: "ni ni-credit-card text-success text-sm opacity-10",
+    role: ["FARMER"],
+    active: "Farm Register"
+  },
+  {
+    to: "/crop-register",
+    label: "생물등록",
+    icon: "ni ni-app text-info text-sm opacity-10",
+    role: ["FARMER"],
+    active: "Crop Register"
+  },
+  {
+    to: "/error",
+    label: "배송관리",
+    icon: "ni ni-world-2 text-danger text-sm opacity-10",
+    active: "rtl-page"
+  },
+  {
+    to: "/sales",
+    label: "판매량 내역",
+    icon: "ni ni-calendar-grid-58 text-warning text-sm opacity-10",
+    role: ["FARMER"],
+    active: "Sales"
+  },
+  {
+    to: "/profile",
+    label: "Profile",
+    icon: "ni ni-single-02 text-dark text-sm opacity-10",
+    active: "profile"
+  }
+]);
+
+// 현재 role에 맞는 항목 필터링
+const filteredNavItems = computed(() =>
+  navItems.value.filter(item => {
+    if (!item.role) return true; // role 제한 없는 경우
+    return item.role.includes(role.value);
+  })
+);
 </script>
+
 <template>
-  <div
-    class="collapse navbar-collapse w-auto h-auto h-100"
-    id="sidenav-collapse-main"
-  >
+  <div class="collapse navbar-collapse w-auto h-auto h-100" id="sidenav-collapse-main">
     <ul class="navbar-nav">
-      <li class="nav-item" v-if="type === 1">
-        <sidenav-item
-          to="/farmer/dashboard"
-          :class="getRoute() === 'FarmerDashboard' ? 'active' : ''"
-          :navText="isRTL ? 'لوحة القيادة' : '농부 메인 화면'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
+      <template v-for="(item, index) in filteredNavItems" :key="index">
+        <!-- Profile 위에 ACCOUNT PAGES 추가 -->
+        <li v-if="item.label === 'Profile'" class="mt-3 nav-item">
+          <h6 class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6 ms-2">
+            ACCOUNT PAGES
+          </h6>
+        </li>
 
-      <li class="nav-item" v-if="type === 2">
-        <sidenav-item
-          to="/buyer/dashboard"
-          :class="getRoute() === 'BuyerDashboard' ? 'active' : ''"
-          :navText="isRTL ? 'لوحة القيادة' : '주문자 메인 화면'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="nav-item">
-        <sidenav-item
-          to="/buyerlist"
-          :class="getRoute() === 'tables' ? 'active' : ''"
-          :navText="isRTL ? 'الجداول' : '주문관리'"
-        >
-          <template v-slot:icon>
-            <i
-              class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"
-            ></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="nav-item">
-        <sidenav-item
-          to="/farmlist"
-          :class="getRoute() === 'tables' ? 'active' : ''"
-          :navText="isRTL ? 'الجداول' : '상품 검색'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-basket text-success text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="nav-item" v-if="type === 1">
-        <sidenav-item
-          to="/inventory"
-          :class="getRoute() === 'inventory' ? 'active' : ''"
-          :navText="isRTL ? 'الجداول' : '재고관리'"
-        >
-          <template v-slot:icon>
-            <i
-              class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"
-            ></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="nav-item" v-if="type === 1">
-        <sidenav-item
-          to="/farm-register"
-          :class="getRoute() === 'Farm Register' ? 'active' : ''"
-          :navText="isRTL ? 'الفواتیر' : '농장등록'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <!--생물등록 to 수정-->
-      <li class="nav-item" v-if="type === 1">
-        <sidenav-item
-          to="/crop-register"
-          :class="getRoute() === 'Crop Register' ? 'active' : ''"
-          :navText="isRTL ? 'الواقع الافتراضي' : '생물등록'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-app text-info text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="nav-item">
-        <sidenav-item
-          to="/error"
-          :class="getRoute() === 'rtl-page' ? 'active' : ''"
-          navText="배송관리"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-world-2 text-danger text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="nav-item">
-        <sidenav-item
-          to="/sales"
-          :class="getRoute() === 'Sales' ? 'active' : ''"
-          :navText="isRTL ? 'الجداول' : '판매량 내역'"
-        >
-          <template v-slot:icon>
-            <i
-              class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"
-            ></i>
-          </template>
-        </sidenav-item>
-      </li>
-
-      <li class="mt-3 nav-item">
-        <h6
-          v-if="isRTL"
-          class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6"
-          :class="isRTL ? 'me-4' : 'ms-2'"
-        >
-          صفحات المرافق
-        </h6>
-
-        <h6
-          v-else
-          class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6"
-          :class="isRTL ? 'me-4' : 'ms-2'"
-        >
-          ACCOUNT PAGES
-        </h6>
-      </li>
-
-      <li class="nav-item">
-        <sidenav-item
-          to="/profile"
-          :class="getRoute() === 'profile' ? 'active' : ''"
-          :navText="isRTL ? 'حساب تعريفي' : 'Profile'"
-        >
-          <template v-slot:icon>
-            <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
+        <li class="nav-item">
+          <sidenav-item
+            :to="item.to"
+            :class="currentRoute === item.active ? 'active' : ''"
+            :navText="item.label"
+          >
+            <template v-slot:icon>
+              <i :class="item.icon"></i>
+            </template>
+          </sidenav-item>
+        </li>
+      </template>
     </ul>
   </div>
 </template>

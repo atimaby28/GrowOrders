@@ -21,7 +21,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         System.out.println("LoginFilter 성공 로직.");
         UserDto.AuthUser authUser = (UserDto.AuthUser) authentication.getPrincipal();
 
-        String jwt = JwtUtil.generateToken(authUser.getEmail(), authUser.getId());
+        String jwt = JwtUtil.generateToken(authUser.getEmail(), authUser.getId(), authUser.getRole());
 
         if (jwt != null) {
             Cookie cookie = new Cookie("SWY_AT", jwt);
