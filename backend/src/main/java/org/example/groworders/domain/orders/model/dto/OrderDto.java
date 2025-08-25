@@ -1,5 +1,6 @@
 package org.example.groworders.domain.orders.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Min;
@@ -212,7 +213,9 @@ public class OrderDto {
     @AllArgsConstructor
     public static class OrderList<T> {
         private List<T> content;
+        @Schema(description = "페이지 번호, 1번부터 시작", required = true, example = "1")
         private int pageNumber;
+        @Schema(description = "각 페이지당 게시글 수", required = true, example = "10")
         private int pageSize;
         private long totalElements;
         private int totalPages;

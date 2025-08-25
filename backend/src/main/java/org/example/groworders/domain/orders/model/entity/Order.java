@@ -59,15 +59,15 @@ public class Order {
 
 
 
-    @ManyToOne
+    @ManyToOne//(fetch = FetchType.Lazy)
     @JoinColumn(name = "user_idx")
     private User userOrder;
 
-    @ManyToOne
+    @ManyToOne//(fetch = FetchType.Lazy)
     @JoinColumn(name = "farm_id")
     private Farm farmOrder;
 
-    @ManyToOne
+    @ManyToOne//(fetch = FetchType.Lazy)
     @JoinColumn(name = "crop_id")
     private Crop cropOrder;
 
