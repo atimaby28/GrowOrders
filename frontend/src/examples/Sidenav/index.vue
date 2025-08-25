@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import { useUserStore } from '@/store/users/login.js';
+import { useUserStore } from "../../store/users/useUserStore.js";
 import SidenavList from "./SidenavList.vue";
 import logo from "@/assets/img/logo-ct-dark.png";
 import logoWhite from "@/assets/img/logo-ct.png";

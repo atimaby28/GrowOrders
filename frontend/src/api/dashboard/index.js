@@ -61,4 +61,19 @@ const chartData = async () => {
     return data;
 }
 
-export default { orderList, dashboardNav, farmStatus, chartData }
+const weatherData = async () => {
+    let data ={};
+    let url = '/weather'
+
+        await api.get(url)
+        .then((res) => {
+            data = res.data;
+        })
+        .catch((error) => {
+            data = error.data;
+        });
+
+    return data;
+}
+
+export default { orderList, dashboardNav, farmStatus, chartData, weatherData }

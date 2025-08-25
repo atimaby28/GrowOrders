@@ -44,4 +44,11 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    // 토큰 만료 체크
+    public static boolean isExpired(Claims claims) {
+        Date expiration = claims.getExpiration();
+        if (expiration == null) return true; // 만료 정보 없으면 만료 처리
+        return expiration.before(new Date()); // 현재 시간 이전이면 만료
+    }
 }
