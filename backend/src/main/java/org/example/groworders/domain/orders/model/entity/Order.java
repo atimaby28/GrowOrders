@@ -2,12 +2,10 @@ package org.example.groworders.domain.orders.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.groworders.common.model.BaseEntity;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.farm.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.User;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 
 @Getter
@@ -17,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
-public class Order {
+public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -52,11 +50,6 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private ShippingStatus shippingStatus;
-
-    @Column(nullable = false, length = 50)
-    @CreationTimestamp
-    private LocalDateTime orderDate;
-
 
 
     @ManyToOne//(fetch = FetchType.Lazy)

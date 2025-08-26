@@ -46,7 +46,7 @@ public enum BaseResponseStatus {
     ORDERS_VALIDATION_FAIL(false, 40003, "결제 정보가 잘못되었습니다."),
     IAMPORT_ERROR(false, 40004, "결제 금액이 잘못되었습니다."),
     ORDERS_NOT_ORDERED(false, 40005, "결제 정보가 없습니다. 구매 후 이용해주세요."),
-
+    ORDER_NOT_FOUND(false, 40006, "해당 주문을 찾을 수 없습니다."),
     /**
      * 50000 : Database 오류
      */

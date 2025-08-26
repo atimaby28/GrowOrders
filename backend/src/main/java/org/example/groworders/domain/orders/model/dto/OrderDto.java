@@ -199,7 +199,6 @@ public class OrderDto {
                     .orderRequest(orderRequest != null ? orderRequest : order.getOrderRequest())
                     .shippingStatus(shippingStatus != null ? shippingStatus : order.getShippingStatus())
                     .cancel(cancel != null ? cancel : order.getCancel())
-                    .orderDate(order.getOrderDate()) // 기존 주문 날짜 유지
                     .userOrder(order.getUserOrder()) // 관계 객체 유지
                     .farmOrder(order.getFarmOrder())
                     .cropOrder(order.getCropOrder())
