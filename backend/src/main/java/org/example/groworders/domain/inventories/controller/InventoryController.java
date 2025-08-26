@@ -47,7 +47,7 @@ public class InventoryController {
     //재고 목록 조회
     @Operation(
             summary = "재고 목록 조회",
-            description = "param으로 농장 아이디를 전달 받아 농부가 소유한 농장의 재고 목록 조회")
+            description = "parameter로 농장 아이디를 전달 받아 농부가 소유한 농장의 재고 목록 조회")
     @GetMapping("/list")
     public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> list(Long farmId) {
         FarmDto.FarmResponse result = inventoryService.list(farmId);

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.User;
@@ -83,7 +84,7 @@ public class FarmDto {
         private Integer size;
         private String contents;
         private String profile_image_url;
-        private List<Crop> cropList;
+        private List<CropDto.CropResponse> cropList;
 
         public static FarmResponse from(Farm entity) {
             return FarmResponse.builder()
@@ -95,7 +96,7 @@ public class FarmDto {
                     .size(entity.getSize())
                     .contents(entity.getContents())
                     .profile_image_url(entity.getProfile_image_url())
-                    .cropList(entity.getCropList())
+                    .cropList(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
                     .build();
         }
     }
