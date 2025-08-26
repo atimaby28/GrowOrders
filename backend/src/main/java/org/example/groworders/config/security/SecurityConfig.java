@@ -57,6 +57,17 @@ public class SecurityConfig {
                         .requestMatchers("/test/*").hasRole("USER") // 특정 권한(USER)이 있는 사용자만 허용
 //                        .requestMatchers("/test/*").authenticated() // 로그인한 모든 사용자만 허용
 //                        .anyRequest().authenticated()
+                        // BUYER 전용
+                        .requestMatchers("/order/register").hasRole("BUYER")
+                        .requestMatchers("/order/modify/**").hasRole("BUYER")
+                        .requestMatchers("/order/listBuyer").hasRole("BUYER")
+                        .requestMatchers("/order/searchBuyer").hasRole("BUYER")
+                        // FARMER 전용
+                        .requestMatchers("/order/listFarmer").hasRole("FARMER")
+                        .requestMatchers("/order/searchFarmer").hasRole("FARMER")
+                        // BUYER, FARMER 모두 접근 가능
+                        .requestMatchers("/order/readCreate", "/order/readModify").hasAnyRole("BUYER", "FARMER")
+
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().permitAll()
         );

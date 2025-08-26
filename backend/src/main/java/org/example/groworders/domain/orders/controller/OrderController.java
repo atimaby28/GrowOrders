@@ -13,7 +13,9 @@ import org.example.groworders.common.model.BaseResponse;
 import org.example.groworders.domain.orders.model.dto.OrderDto;
 import org.example.groworders.domain.orders.model.entity.ShippingStatus;
 import org.example.groworders.domain.orders.service.OrderService;
+import org.example.groworders.domain.users.model.dto.UserDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,8 +65,10 @@ public class OrderController {
             )
     )
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse<?>> register(@Valid @RequestBody OrderDto.Register dto) {
-        orderService.register(dto);
+    public ResponseEntity<BaseResponse<?>> register(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
+            @Valid @RequestBody OrderDto.Register dto) {
+        orderService.register(authUser, dto);
 
         return ResponseEntity.status(200).body(BaseResponse.success(dto));
     }
@@ -104,8 +108,11 @@ public class OrderController {
             )
     )
     @PutMapping("/modify/{id}")
-    public ResponseEntity<BaseResponse<?>> modify(@PathVariable @Schema(description = "Id값으로 조회", required = true, example = "10111")Long id, @Valid @RequestBody OrderDto.Modify dto) {
-        orderService.updateOrder(id, dto);
+    public ResponseEntity<BaseResponse<?>> modify(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
+            @PathVariable @Schema(description = "Id값으로 조회", required = true, example = "10111")Long id,
+            @Valid @RequestBody OrderDto.Modify dto) {
+        orderService.updateOrder(authUser, id, dto);
         return ResponseEntity.status(200).body(BaseResponse.success(dto));
     }
 
@@ -145,13 +152,14 @@ public class OrderController {
     )
     @GetMapping("/listBuyer")
     public ResponseEntity<BaseResponse<?>> listBuyer(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
             @Schema(description = "페이지 번호, 1번부터 시작", required = true, example = "1") Integer page,
             @Schema(description = "각 페이지당 게시글 수", required = true, example = "10") Integer size) {
 
         if (page == null || page < 1) page = 1;
         if (size == null || size < 1) size = 10;
 
-        OrderDto.OrderList<OrderDto.OrderResBuyer> response = orderService.listBuyer(page - 1, size);
+        OrderDto.OrderList<OrderDto.OrderResBuyer> response = orderService.listBuyer(authUser,page - 1, size);
 
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
@@ -191,8 +199,10 @@ public class OrderController {
             )
     )
     @GetMapping("/readCreate")
-    public ResponseEntity<BaseResponse<?>> readBuyer(@Schema(description = "Id값으로 조회", required = true, example = "10111")Long id) {
-        OrderDto.Register response = orderService.readBuyer(id);
+    public ResponseEntity<BaseResponse<?>> readBuyer(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
+            @Schema(description = "Id값으로 조회", required = true, example = "10111")Long id) {
+        OrderDto.Register response = orderService.readBuyer(authUser,id);
 
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
@@ -232,9 +242,10 @@ public class OrderController {
             )
     )
     @GetMapping("/readModify")
-    public ResponseEntity<BaseResponse<?>> readFarmer(@Schema(description = "Id값으로 조회", required = true, example = "10111")Long id) {
-        OrderDto.Modify response = orderService.readFarmer(
-                id);
+    public ResponseEntity<BaseResponse<?>> readFarmer(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
+            @Schema(description = "Id값으로 조회", required = true, example = "10111")Long id) {
+        OrderDto.Modify response = orderService.readFarmer(authUser,id);
 
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
@@ -277,10 +288,11 @@ public class OrderController {
     //public ResponseEntity<List<OrderDto.OrderResBuyer>> searchBuyer(
     @GetMapping("/searchBuyer")//주문검색-구매자
     public ResponseEntity<BaseResponse<?>> searchBuyer(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
             @Schema(description = "농장이름", example = "사랑농장") String farmName,
             @Schema(description = "작물이름", example = "토마토") String cropName) {
 
-        List<OrderDto.OrderResBuyer> response = orderService.searchBuyer(farmName, cropName);
+        List<OrderDto.OrderResBuyer> response = orderService.searchBuyer(authUser, farmName, cropName);
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
 
@@ -321,10 +333,11 @@ public class OrderController {
     //public ResponseEntity<List<OrderDto.OrderResFarmer>> searchFarmer(
     @GetMapping("/searchFarmer") // 주문검색 - 판매자
     public ResponseEntity<BaseResponse<?>> searchFarmer(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
             @Schema(description = "작물이름", example = "토마토") String cropName,
             @Schema(description = "배송상태", example = "PREPARING") ShippingStatus shippingStatus) {
 
-        List<OrderDto.OrderResFarmer> response = orderService.searchFarmer(cropName, shippingStatus);
+        List<OrderDto.OrderResFarmer> response = orderService.searchFarmer(authUser, cropName, shippingStatus);
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
 
@@ -364,13 +377,14 @@ public class OrderController {
     )
     @GetMapping("/listFarmer")
     public ResponseEntity<BaseResponse<?>> listFarmer(
+            @AuthenticationPrincipal UserDto.AuthUser authUser,
             @Schema(description = "페이지 번호, 1번부터 시작", required = true, example = "1") Integer page,
             @Schema(description = "각 페이지당 게시글 수", required = true, example = "10") Integer size) {
 
         if (page == null || page < 1) page = 1;
         if (size == null || size < 1) size = 10;
 
-        OrderDto.OrderList<OrderDto.OrderResFarmer> response = orderService.listFarmer(page - 1, size);
+        OrderDto.OrderList<OrderDto.OrderResFarmer> response = orderService.listFarmer(authUser,page - 1, size);
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
 

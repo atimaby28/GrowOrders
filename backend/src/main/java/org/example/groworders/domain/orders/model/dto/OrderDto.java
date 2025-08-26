@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.example.groworders.domain.orders.model.entity.Order;
 import org.example.groworders.domain.orders.model.entity.ShippingStatus;
+import org.example.groworders.domain.users.model.dto.UserDto;
+import org.example.groworders.domain.users.model.entity.User;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -104,7 +106,7 @@ public class OrderDto {
         private String orderRequest;    // 실제로는 "주문 요청사항"
         private ShippingStatus shippingStatus;
 
-        public Order toEntity() {
+        public Order toEntity(UserDto.AuthUser authUser) {
             return Order.builder()
                     .name(name)
                     .crop(crop)
@@ -115,6 +117,7 @@ public class OrderDto {
                     .deliveryRequest(deliveryRequest)
                     .orderRequest(orderRequest)
                     .shippingStatus(shippingStatus)
+                    .userOrder(User.builder().id(authUser.getId()).build())
                     .build();
 
         }

@@ -26,6 +26,7 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     // cropName + status (OR 조건)
     List<Order> findByShippingStatusOrCropOrder_CropName(ShippingStatus status, String cropName);
 
-
+    // 판매자(농부) 본인 주문만 조회 (페이징 포함)
+    Page<Order> findByFarmOrder_Id(Long farmId, Pageable pageable);
 }
 
