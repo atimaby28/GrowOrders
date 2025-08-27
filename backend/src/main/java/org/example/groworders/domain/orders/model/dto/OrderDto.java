@@ -178,7 +178,7 @@ public class OrderDto {
 
         }
 
-        public Order updateEntity(Order order) {
+        public Order updateEntity(Order order, UserDto.AuthUser authUser) {
 //            if (name != null) order.setName(name);
 //            if (crop != null) order.setCrop(crop);
 //            if (price != null) order.setPrice(price);
@@ -202,7 +202,7 @@ public class OrderDto {
                     .orderRequest(orderRequest != null ? orderRequest : order.getOrderRequest())
                     .shippingStatus(shippingStatus != null ? shippingStatus : order.getShippingStatus())
                     .cancel(cancel != null ? cancel : order.getCancel())
-                    .userOrder(order.getUserOrder()) // 관계 객체 유지
+                    .userOrder(User.builder().id(authUser.getId()).build())// 관계 객체 유지
                     .farmOrder(order.getFarmOrder())
                     .cropOrder(order.getCropOrder())
                     .build();

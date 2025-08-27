@@ -104,7 +104,7 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("해당 주문을 찾을 수 없습니다."));
 
-        Order updatedOrder = dto.updateEntity(order);
+        Order updatedOrder = dto.updateEntity(order, authUser);
         orderRepository.save(updatedOrder);
     }
 
