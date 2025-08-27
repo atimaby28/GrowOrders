@@ -51,6 +51,7 @@ public class UserDto {
         private String name;
         private Role role;
         private String profileImage;
+        private List<Long> ownedFarm;
 
         public static SignInResponse from(AuthUser authUser) {
 
@@ -60,6 +61,7 @@ public class UserDto {
                     .name(authUser.getName())
                     .role(authUser.getRole())
                     .profileImage(authUser.getProfileImage())
+                    .ownedFarm(authUser.getOwnedFarms())
                     .build();
         }
     }
@@ -136,6 +138,7 @@ public class UserDto {
         private Boolean enabled;
         private String profileImage;
         private Map<String, Object> attributes;
+        private List<Long> ownedFarms;
 
         @Override
         public Map<String, Object> getAttributes() {
@@ -161,7 +164,7 @@ public class UserDto {
         }
 
         // 클라이언트용 Presigned URL 포함
-        public static AuthUser from(User entity, String presignedUrl) {
+        public static AuthUser from(User entity, String presignedUrl, List<Long> ownedFarms) {
             return AuthUser.builder()
                     .id(entity.getId())
                     .email(entity.getEmail())
@@ -170,6 +173,7 @@ public class UserDto {
                     .role(entity.getRole() != null ? entity.getRole() : Role.USER)
                     .enabled(entity.getEnabled())
                     .profileImage(presignedUrl) // Presigned URL
+                    .ownedFarms(ownedFarms)
                     .build();
         }
 

@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 public class InventoryController {
     private final InventoryService inventoryService;
 
+/*
     //재고 등록
     @Operation(
             summary = "재고 등록",
@@ -29,11 +30,15 @@ public class InventoryController {
         inventoryService.save(dto);
         return ResponseEntity.ok(BaseResponse.successMessage("재고 등록 성공"));
     }
+*/
 
     //재고 수정
+    @Operation(
+            summary = "예측 재고 수정",
+            description = "예측 재고 생산량, 예측 수확일, 파종 시작일을 입력 받고 농부의 각 농장에 있는 작물에 대한 예측 재고 수정한다.")
     @PostMapping("/update")
-    public ResponseEntity<BaseResponse<Object>> update(@RequestBody InventoryDto.Register dto) {
-        inventoryService.save(dto);
+    public ResponseEntity<BaseResponse<Object>> update(@Valid @RequestBody InventoryDto.Update dto) {
+        inventoryService.update(dto);
         return ResponseEntity.ok(BaseResponse.successMessage("재고 수정 성공"));
     }
 

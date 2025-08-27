@@ -3,8 +3,10 @@ import api from '@/api/crops'
 import ArgonInput from '@/components/ArgonInput.vue' //입력 컴포넌트
 import CropCard from '@/components/CropCard.vue' //오른쪽 작물 카드 컴포넌트
 import ArgonButton from '@/components/ArgonButton.vue' //버튼 컴포넌트
+import { useUserStore } from '../store/users/useUserStore.js'
 
 const mode = ref('register')
+const userStore = useUserStore()
 
 // 드롭다운 목록
 import { ref, reactive, computed } from 'vue'
@@ -12,7 +14,7 @@ const cropRegisterForm = reactive({
   farmId: '', // 01. 농장
   type: '', // 02. 품목
   sowingStartDate: '', //03. 파종 시작일
-  state: '', //04. 작물 상태
+  status: '', //04. 작물 상태
   area: '', //05. 재배 면적
   cultivateType: '', //06. 재배 방식
 })
@@ -27,7 +29,7 @@ const cropRegisterFormError = reactive({
     errorMessage: '',
     isValid: false,
   },
-  state: {
+  status: {
     errorMessage: '',
     isValid: false,
   },
@@ -88,7 +90,7 @@ const cropInfoMap = {
 
 // 모든 필드 입력값 검증
 const isFormValid = computed(() => {
-  return cropRegisterFormError.farmId.isValid && cropRegisterFormError.type.isValid && cropRegisterFormError.state.isValid && cropRegisterFormError.sowingStartDate.isValid && cropRegisterFormError.area.isValid && cropRegisterFormError.cultivateType.isValid
+  return cropRegisterFormError.farmId.isValid && cropRegisterFormError.type.isValid && cropRegisterFormError.status.isValid && cropRegisterFormError.sowingStartDate.isValid && cropRegisterFormError.area.isValid && cropRegisterFormError.cultivateType.isValid
 })
 
 // 농장 아이디 선택 검증
@@ -122,15 +124,15 @@ const typeRules = [
 ]
 
 // 작물 상태 선택 검증
-const stateRules = [
+const statusRules = [
   (event) => {
     if (event.target.value) {
-      cropRegisterFormError.state.errorMessage = null
-      cropRegisterFormError.state.isValid = true
+      cropRegisterFormError.status.errorMessage = null
+      cropRegisterFormError.status.isValid = true
       return true
     } else {
-      cropRegisterFormError.state.errorMessage = '작물 상태를 선택 해주세요.'
-      cropRegisterFormError.state.isValid = false
+      cropRegisterFormError.status.errorMessage = '작물 상태를 선택 해주세요.'
+      cropRegisterFormError.status.isValid = false
       return false
     }
   },
@@ -252,13 +254,11 @@ const onSubmit = async () => {
                 <!--1층 : 입력폼 묶어서 수평으로 정렬 -->
                 <div class="row">
                   <!--1.농장아이디-->
-                  <!--디비 연결후에 접속한 유저의 농장 id 끌고오기-->
                   <div class="col-md-6">
                     <label for="example-text-input" class="form-control-label">농장 아이디</label>
                     <select class="form-control" id="farm-select" v-model="cropRegisterForm.farmId" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="farmIdRules">
                       <option value="">-- 농장 선택 --</option>
-                      <option value="1">farm01</option>
-                      <option value="2">farm02</option>
+                      <option v-for="farm in userStore.user.ownedFarm" :value="farm" :key="farm">{{ farm }}</option>
                     </select>
                     <p>
                       {{ cropRegisterFormError.farmId.errorMessage }}
@@ -294,14 +294,14 @@ const onSubmit = async () => {
                   <!-- 4. 작물 상태-->
                   <div class="col-md-6">
                     <label for="example-text-input" class="form-control-label">작물 상태</label>
-                    <select class="form-control" id="crop-state-select" v-model="cropRegisterForm.state" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="stateRules">
+                    <select class="form-control" id="crop-status-select" v-model="cropRegisterForm.status" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="statusRules">
                       <option value="">-- 작물 상태 선택 --</option>
                       <option value="양호">양호</option>
                       <option value="보통">보통</option>
                       <option value="불량">불량</option>
                     </select>
                     <p>
-                      {{ cropRegisterFormError.state.errorMessage }}
+                      {{ cropRegisterFormError.status.errorMessage }}
                     </p>
                   </div>
                 </div>

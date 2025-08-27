@@ -24,16 +24,18 @@ public class Crop {
     private String type;
 
     //작물 상태 : 길이 2, 기본값 '양호'
+    @Enumerated(EnumType.STRING)
     @Column(length = 2)
-    @ColumnDefault("'양호'")
-    private String state;
+    @ColumnDefault("'BEST'")
+    private CropStatus status;
 
-    //파종 시작일 : YYYY-MM-DD, 기본값 현재 시간
-    @Temporal(TemporalType.DATE)
+    //파종 시작일 : not null, 기본값 현재 시간
+    @Column(nullable = false)
     @ColumnDefault("CURRENT_TIMESTAMP")
     private LocalDate sowingStartDate;
 
-    //재배 면적 : 기본값 0, 0 혹은 양수
+    //재배 면적 : not null, 기본값 0, 0 혹은 양수
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer area;
 
@@ -41,18 +43,30 @@ public class Crop {
     @Column(nullable = false, length = 2)
     private String cultivateType;
 
-    @Temporal(TemporalType.DATE)
+    //판매 상태
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'NOT_AVAILABLE'")
+    private SaleStatus saleStatus;
+
     private LocalDate expectedHarvestDate; //예측 수확일
     private Integer expectedQuantity; //예측 수확량
     private Integer maxExpectedQuantity; //최대 수확량
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "farm_id")
     private Farm farm; //작물을 소유한 농장 : 외래키
 
-    public void updateInventory(InventoryDto.Register dto) {
+    public void registerInventory(InventoryDto.Register dto) {
         expectedHarvestDate = dto.getExpectedHarvestDate();
         expectedQuantity = dto.getExpectedQuantity();
         maxExpectedQuantity = dto.getMaxExpectedQuantity();
+    }
+
+    public void updateInventory(InventoryDto.Update dto) {
+        area = dto.getArea();
+        expectedHarvestDate = dto.getExpectedHarvestDate();
+        expectedQuantity = dto.getExpectedQuantity();
+        maxExpectedQuantity = dto.getMaxExpectedQuantity();
+        sowingStartDate = dto.getSowingStartDate();
     }
 }

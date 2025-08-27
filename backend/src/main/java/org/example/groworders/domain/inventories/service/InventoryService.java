@@ -22,11 +22,20 @@ public class InventoryService {
     private final CropRepository cropRepository;
     private final FarmRepository farmRepository;
 
-    //재고 등록 및 수정
+    //재고 등록
     public void save(InventoryDto.Register dto) {
-        Crop crop = cropRepository.findById(dto.getCropId()).orElseThrow(() -> BaseException.from(INVALID_CROP_INFO));
+        Crop crop = cropRepository.findById(dto.getCropId()).orElseThrow(()-> BaseException.from(INVALID_CROP_INFO));
 
-        //작물이 존재하면 등록 및 수정
+        //작물이 존재하면 예측 재고 등록
+        crop.registerInventory(dto);
+        cropRepository.save(crop);
+    }
+
+    //재고 수정
+    public void update(InventoryDto.Update dto) {
+        Crop crop = cropRepository.findById(dto.getCropId()).orElseThrow(()-> BaseException.from(INVALID_CROP_INFO));
+
+        //작물이 존재하면 수정
         crop.updateInventory(dto);
         cropRepository.save(crop);
     }

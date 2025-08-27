@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -74,7 +75,9 @@ public class UserService implements UserDetailsService {
                 ? s3PresignedUrlService.generatePresignedUrl(user.getProfileImage(), Duration.ofMinutes(60))
                 : null;
 
-        return UserDto.AuthUser.from(user, presignedUrl);
+        List<Long> ownedFarms = userRepository.findByIdWithFarm(user.getId());
+
+        return UserDto.AuthUser.from(user, presignedUrl, ownedFarms);
     }
 
     @Transactional
