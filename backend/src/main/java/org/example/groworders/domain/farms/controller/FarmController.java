@@ -1,6 +1,7 @@
 package org.example.groworders.domain.farms.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.groworders.common.model.BaseResponse;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
@@ -9,7 +10,6 @@ import org.example.groworders.domain.users.model.dto.UserDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -44,11 +44,37 @@ public class FarmController {
     )
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> register(
-            @Validated
-            @RequestPart("dto") FarmDto.Register dto,
+            @Valid @RequestPart("dto") FarmDto.Register dto,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @AuthenticationPrincipal UserDto.AuthUser authUser) {
         FarmDto.FarmResponse result = farmservice.register(dto, image, authUser.getId());
+        return ResponseEntity.ok(BaseResponse.success(result));
+    }
+
+    // 농장 상세 조회
+    @Operation(
+            summary = "농장 정보",
+            description = "농장 정보를 조회한다."
+    )
+    @GetMapping(value="/{farmId}")
+    public ResponseEntity<BaseResponse<FarmDto.FarmResponse>>  detail(@PathVariable Long farmId) {
+        FarmDto.FarmResponse result = farmservice.read(farmId);
+        return ResponseEntity.ok(BaseResponse.success(result));
+    }
+
+    // 농장 정보 수정
+    @Operation(
+            summary = "농장 정보 수정",
+            description = "농장 정보를 수정한다."
+    )
+    @PutMapping(value="/{farmId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> update(
+            @PathVariable Long farmId,
+            @Valid @RequestPart("dto") FarmDto.Update dto,
+            @RequestPart(value="image", required=false) MultipartFile image,
+            @AuthenticationPrincipal UserDto.AuthUser authUser
+    ) {
+        FarmDto.FarmResponse result = farmservice.update(farmId, dto, image, authUser.getId());
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 
@@ -62,6 +88,7 @@ public class FarmController {
         List<FarmDto.FarmResponse> result = farmservice.listAll();
         return ResponseEntity.ok(BaseResponse.success(result));
     }
+
 
 // 농장 서치
 //    @GetMapping("/search")

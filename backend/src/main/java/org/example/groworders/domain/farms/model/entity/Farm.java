@@ -1,15 +1,13 @@
 package org.example.groworders.domain.farms.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.users.model.entity.User;
 import java.util.List;
 
 @Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
