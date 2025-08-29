@@ -12,6 +12,8 @@ import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.User;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FarmDto {
 
@@ -37,9 +39,9 @@ public class FarmDto {
         @Size(max = 100)
         private String contents;
 
-        private String profile_image_url; // 농장 프로필 사진은 필수 아님
+        private String farmImageUrl; // 농장 프로필 사진은 필수 아님
 
-        public Farm toEntity(Long userId) {
+        public Farm toEntity(Long userId, String farmImageUrl) {
             User user = User.builder()
                     .id(userId)
                     .build();
@@ -50,11 +52,12 @@ public class FarmDto {
                     .address(address)
                     .size(size)
                     .contents(contents)
-                    .profile_image_url(profile_image_url)
+                    .farmImage(farmImageUrl)
                     .user(user)
                     .build();
         }
     }
+
     // 농장 정보
     @Getter
     public static class Read{
@@ -64,7 +67,7 @@ public class FarmDto {
         private Integer size;
         private String contents;
         @Nullable
-        private String profile_image_url;
+        private String farmImage;
 
         public static Farm from(Farm entity) {
             return Farm.builder()
@@ -73,7 +76,7 @@ public class FarmDto {
                     .address(entity.getAddress())
                     .size(entity.getSize())
                     .contents(entity.getContents())
-                    .profile_image_url(entity.getProfile_image_url())
+                    .farmImage(entity.getFarmImage())
                     .cropList(entity.getCropList())
                     .build();
         }
@@ -101,7 +104,7 @@ public class FarmDto {
         @Size(max = 100)
         private String contents;
 
-        private String profile_image_url;
+        private String farmImage;
 
         public void update(Farm entity) {
             entity.setName(name);
@@ -109,7 +112,7 @@ public class FarmDto {
             entity.setAddress(address);
             entity.setSize(size);
             entity.setContents(contents);
-            entity.setProfile_image_url(profile_image_url);
+            entity.setFarmImage(farmImage);
         }
     }
 
@@ -127,8 +130,6 @@ public class FarmDto {
         }
     }
 
-
-
     // FarmResponse
     @Getter
     @Builder
@@ -140,7 +141,11 @@ public class FarmDto {
         private String address;
         private Integer size;
         private String contents;
-        private String profile_image_url;
+        private String farmImage;
+        private String cropType;
+        private String cropCultivateType;
+        private Integer cropExpectedQuantity;
+        // private Integer cropPrice;
 
         public static FarmResponse from(Farm entity) {
             return FarmResponse.builder()
@@ -151,11 +156,9 @@ public class FarmDto {
                     .address(entity.getAddress())
                     .size(entity.getSize())
                     .contents(entity.getContents())
-                    .profile_image_url(entity.getProfile_image_url())
+                    .farmImage(entity.getFarmImage())
                     //.cropList(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
                     .build();
         }
     }
-
-
 }

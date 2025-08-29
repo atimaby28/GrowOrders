@@ -44,10 +44,10 @@ public class FarmController {
     )
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> register(
-            @Valid @RequestPart("dto") FarmDto.Register dto,
-            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart("dto") @Valid FarmDto.Register dto,
+            @RequestPart(value = "farmImageUrl", required = false) MultipartFile farmImageUrl,
             @AuthenticationPrincipal UserDto.AuthUser authUser) {
-        FarmDto.FarmResponse result = farmservice.register(dto, image, authUser.getId());
+        FarmDto.FarmResponse result = farmservice.register(dto, farmImageUrl, authUser.getId());
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 
@@ -88,12 +88,4 @@ public class FarmController {
         List<FarmDto.FarmResponse> result = farmservice.listAll();
         return ResponseEntity.ok(BaseResponse.success(result));
     }
-
-
-// 농장 서치
-//    @GetMapping("/search")
-//    public ResponseEntity search(String name) {
-//        List<FarmDto.FarmResponse> response = farmservice.search(name);
-//        return ResponseEntity.status(200).body(response);
-//    }
 }

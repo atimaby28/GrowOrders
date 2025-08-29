@@ -84,13 +84,13 @@ const routes = [
     props: true,
   },
   {
-    path: "/Farms/:FarmId",
-    name: "OrderCreate",
-    component: OrderCreate,
+    path: "/farms/:id",
+    name: "farmDetail",
+    component: FarmRegister,
     props: true,
   },
   {
-    path: "/farmlist",
+    path: "/farms/list",
     name: "FarmList",
     component: FarmList
   },
@@ -116,6 +116,12 @@ const routes = [
     path: "/farms/register",
     name: "FarmRegister",
     component: FarmRegister
+  },
+  // 주문 추가
+  {
+    path: "/orders/register",
+    name: "OrderCreate",
+    component: OrderCreate
   },
   // 판매량 조회
   {

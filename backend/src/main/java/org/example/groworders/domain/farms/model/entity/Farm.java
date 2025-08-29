@@ -33,7 +33,7 @@ public class Farm {
     private String contents;
 
     // 농장 사진 생략 가능
-    private String profile_image_url;
+    private String farmImage;
 
     // 다대일 (farm:user)
     @ManyToOne(fetch = FetchType.LAZY)

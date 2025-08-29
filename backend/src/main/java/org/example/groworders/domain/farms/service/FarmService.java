@@ -3,8 +3,6 @@ package org.example.groworders.domain.farms.service;
 import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.martijndwars.webpush.Notification;
-import org.example.groworders.config.notification.event.PushEvent;
 import org.example.groworders.config.notification.model.entity.NotificationSub;
 import org.example.groworders.config.notification.repository.NotificationRepository;
 import org.example.groworders.config.notification.service.NotificationService;
@@ -12,15 +10,13 @@ import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.crops.repository.CropRepository;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
 import org.example.groworders.domain.farms.model.entity.Farm;
-import org.example.groworders.domain.farms.repository.FarmQueryRepository;
 import org.example.groworders.domain.farms.repository.FarmRepository;
-import org.springframework.context.ApplicationEventPublisher;
+import org.example.groworders.domain.users.service.S3UploadService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,27 +26,26 @@ public class FarmService {
     private final CropRepository cropRepository;
     private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
-    //private final UserRepository userRepository;
+    private final S3UploadService s3UploadService;
     //private final ApplicationEventPublisher publisher;
 
+    @Value("${spring.cloud.aws.s3.bucket}")
+    private String s3BucketName;
 
     // 농장 등록
     @Transactional
     public FarmDto.FarmResponse register(FarmDto.Register dto,
-                                         @Nullable MultipartFile image,
+                                         @Nullable MultipartFile farmImageUrl,
                                          Long userId) {
-        Farm farm = farmRepository.save(dto.toEntity(userId));
+        // 농장 이미지 업로드
+        String filePath = s3UploadService.upload(farmImageUrl);
+        Farm farm = farmRepository.save(dto.toEntity(userId, filePath));
 
         // 테스트용: 농장 등록 시 농부에게 알림 전송
         //publisher.publishEvent(new PushEvent().farmRegisterEvent(userId));
+        //Optional<NotificationSub> sub = notificationRepository.findById(farm.getUser().getId());
+        //notificationService.send();
 
-        Optional<NotificationSub> sub = notificationRepository.findById(farm.getUser().getId());
-
-
-        Notification.builder()
-                        .endpoint(sub.en)
-
-        notificationService.send();
         return FarmDto.FarmResponse.from(farm);
     }
 
@@ -79,22 +74,9 @@ public class FarmService {
         return FarmDto.FarmResponse.from(farm);
     }
 
-
     // 농장 리스트
     public List<FarmDto.FarmResponse> listAll() {
         List<Farm> farmList = farmRepository.findAll();
-       List<Crop> cropList = cropRepository.findAll().stream().collect(Collectors.toList());
-
         return farmList.stream().map(FarmDto.FarmResponse::from).toList();
     }
-
-
-
-
-//    // 농장 서치
-//    public List<FarmDto.FarmResponse> search(String name) {
-//        List<Farm> result = farmRepository.findByName(name);
-//        return result.stream().map(FarmDto.FarmResponse::from).toList();
-//    }
-
 }
