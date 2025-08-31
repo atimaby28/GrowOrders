@@ -15,6 +15,6 @@ public interface CropRepository extends JpaRepository<Crop, Long> {
      * LEFT JOIN crop ON farm.id = crop.farm_id
      * WHERE farm.id = [farmId];
      * */
-    @Query("SELECT DISTINCT f FROM Farm f LEFT JOIN FETCH f.cropList WHERE f.id = :farmId")
+    @Query("SELECT f FROM Farm f LEFT JOIN FETCH f.cropList WHERE f.id = :farmId")
     Optional<Farm> findByIdWithCrop(Long farmId);
 }

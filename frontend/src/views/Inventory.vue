@@ -22,6 +22,11 @@ let farmInfo = reactive({
   cropList: [],
 })
 
+//재고 검색 필터 변경시 재고 값 변경
+const updateCropList = (cropList) => {
+  farmInfo.cropList = cropList
+}
+
 //재고 목록 조회 api 호출
 const getInventoryList = async (farmId) => {
   const data = await api.getInventory(farmId)
@@ -33,6 +38,7 @@ const getInventoryList = async (farmId) => {
   }
 }
 
+//페이지 로드시 데이터 가져오기
 onMounted(() => {
   getInventoryList(route.query.farmId)
 })
@@ -49,6 +55,6 @@ watch(
 <template>
   <div v-if="userStore.user.ownedFarm" class="py-4 container-fluid">
     <FarmInfoSlider :key="route.query.farmId" :currentFarmId="route.query.farmId" :farmInfo="farmInfo" />
-    <InventorysTable :inventories="farmInfo.cropList" />
+    <InventorysTable :inventories="farmInfo.cropList" @updateCropList="updateCropList" @change="updateCropList" />
   </div>
 </template>

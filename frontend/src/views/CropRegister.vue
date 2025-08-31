@@ -19,7 +19,7 @@ const cropRegisterForm = reactive({
   cultivateType: '', //06. 재배 방식
 })
 
-// 응답으로 받은 에러 메세지
+// 에러 메세지
 const cropRegisterFormError = reactive({
   farmId: {
     errorMessage: '',
@@ -47,7 +47,16 @@ const cropRegisterFormError = reactive({
   },
 })
 
-//품목 프로필 카드
+// 농장 선택에 따라 선택 가능한 작물 종류 재계산
+const availableCropTypeOptions = computed(() => {
+  const allCropTypeOptions = ['토마토', '딸기', '파프리카']
+  if (!cropRegisterForm.farmId) return allCropTypeOptions
+
+  const farm = userStore.user.ownedFarm.find((f) => f.id == cropRegisterForm.farmId)
+  return allCropTypeOptions.filter((crop) => !farm.cropType.includes(crop))
+})
+
+// 품목 프로필 카드
 const selectedCropInfo = computed(() => cropInfoMap[cropRegisterForm.type] || null)
 
 // 등록 완료하면 인풋값 수정 못하게 readOnly 처리
@@ -183,14 +192,9 @@ const cultivateTypeRules = [
   },
 ]
 
-// 등록 버튼 클릭시
+// 등록 버튼 클릭시, 등록 api 호출
 const onSubmit = async () => {
-  console.log('cropRegisterForm')
-  console.log(JSON.stringify(cropRegisterForm))
-
   const data = await api.cropRegister(cropRegisterForm)
-  console.log('eeeeeeeee')
-  console.log(data)
 
   if (data) {
     if (data.success) {
@@ -243,7 +247,7 @@ const onSubmit = async () => {
                   <p class="mb-0 b" v-if="mode == 'detail'">생물 상세</p>
 
                   <!--등록버튼-->
-                  <argon-button v-if="mode === 'register'" :color="isFormValid ? 'success' : 'secondary'" :style="{ color: !isFormValid ? 'white' : '' }" size="sm" class="ms-auto" :disabled="!isFormValid">등록</argon-button>
+                  <argon-button v-if="mode === 'register'" :style="{ color: !isFormValid ? 'white' : '' }" size="sm" class="ms-auto" :disabled="!isFormValid">등록</argon-button>
                   <!--수정 버튼-->
                   <argon-button v-if="mode === 'detail'" :color="isFormValid ? 'warning' : 'secondary'" :style="{ color: !isFormValid ? 'white' : '' }" size="sm" class="ms-auto"> 수정 </argon-button>
                 </div>
@@ -255,28 +259,32 @@ const onSubmit = async () => {
                 <div class="row">
                   <!--1.농장아이디-->
                   <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">농장 아이디</label>
-                    <select class="form-control" id="farm-select" v-model="cropRegisterForm.farmId" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="farmIdRules">
-                      <option value="">-- 농장 선택 --</option>
-                      <option v-for="farm in userStore.user.ownedFarm" :value="farm" :key="farm">{{ farm }}</option>
-                    </select>
-                    <p>
-                      {{ cropRegisterFormError.farmId.errorMessage }}
-                    </p>
+                    <div class="form-group">
+                      <label for="example-text-input" class="form-control-label">농장 아이디</label>
+                      <select class="form-control" id="farm-select" v-model="cropRegisterForm.farmId" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @change="farmIdRules">
+                        <option value="">-- 농장 선택 --</option>
+                        <option v-for="farm in userStore.user.ownedFarm" :value="farm.id" :key="farm.id">{{ farm.name }}</option>
+                      </select>
+                      <!-- 경고 문구 -->
+                      <div v-if="cropRegisterFormError.farmId.errorMessage">
+                        <label class="form-control-label text-danger">{{ cropRegisterFormError.farmId.errorMessage }}</label>
+                      </div>
+                    </div>
                   </div>
 
                   <!--2.품목-->
                   <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">품목</label>
-                    <select class="form-control" id="crop-select" v-model="cropRegisterForm.type" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="typeRules">
-                      <option value="">-- 품목 선택 --</option>
-                      <option value="토마토">토마토</option>
-                      <option value="딸기">딸기</option>
-                      <option value="파프리카">파프리카</option>
-                    </select>
-                    <p>
-                      {{ cropRegisterFormError.type.errorMessage }}
-                    </p>
+                    <div class="form-group">
+                      <label for="example-text-input" class="form-control-label">품목</label>
+                      <select class="form-control" id="crop-select" v-model="cropRegisterForm.type" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @change="typeRules">
+                        <option value="">-- 품목 선택 --</option>
+                        <option v-for="crop in availableCropTypeOptions" :key="crop" :value="crop">{{ crop }}</option>
+                      </select>
+                      <!-- 경고 문구 -->
+                      <div v-if="cropRegisterFormError.type.errorMessage">
+                        <label class="form-control-label text-danger">{{ cropRegisterFormError.type.errorMessage }}</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -285,24 +293,28 @@ const onSubmit = async () => {
                   <!--3. 파종일-->
                   <div class="col-md-6">
                     <label for="example-text-input" class="form-control-label">파종일</label>
-                    <argon-input type="date" v-model="cropRegisterForm.sowingStartDate" :readonly="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="sowingStartDateRules" />
-                    <p>
-                      {{ cropRegisterFormError.sowingStartDate.errorMessage }}
-                    </p>
+                    <argon-input type="date" v-model="cropRegisterForm.sowingStartDate" :readonly="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @change="sowingStartDateRules" />
+                    <!-- 경고 문구 -->
+                    <div v-if="cropRegisterFormError.sowingStartDate.errorMessage">
+                      <label class="form-control-label text-danger">{{ cropRegisterFormError.sowingStartDate.errorMessage }}</label>
+                    </div>
                   </div>
 
                   <!-- 4. 작물 상태-->
                   <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">작물 상태</label>
-                    <select class="form-control" id="crop-status-select" v-model="cropRegisterForm.status" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="statusRules">
-                      <option value="">-- 작물 상태 선택 --</option>
-                      <option value="양호">양호</option>
-                      <option value="보통">보통</option>
-                      <option value="불량">불량</option>
-                    </select>
-                    <p>
-                      {{ cropRegisterFormError.status.errorMessage }}
-                    </p>
+                    <div class="form-group">
+                      <label for="example-text-input" class="form-control-label">작물 상태</label>
+                      <select class="form-control" id="crop-status-select" v-model="cropRegisterForm.status" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @change="statusRules">
+                        <option value="">-- 작물 상태 선택 --</option>
+                        <option value="BEST">양호</option>
+                        <option value="NORMAL">보통</option>
+                        <option value="BAD">불량</option>
+                      </select>
+                      <!-- 경고 문구 -->
+                      <div v-if="cropRegisterFormError.status.errorMessage">
+                        <label class="form-control-label text-danger">{{ cropRegisterFormError.status.errorMessage }}</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -310,28 +322,34 @@ const onSubmit = async () => {
                 <div class="row">
                   <!--5. 재배 면적-->
                   <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">재배 면적</label>
-                    <!--단위 고정시키기-->
-                    <div class="input-group">
-                      <input type="number" class="form-control" id="cultivation-area" v-model="cropRegisterForm.area" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" placeholder="면적을 입력하세요" @blur="areaRules" />
-                      <span class="input-group-text">㎡</span>
+                    <div class="form-group">
+                      <label for="example-text-input" class="form-control-label">재배 면적</label>
+                      <!--단위 고정시키기-->
+                      <div class="input-group">
+                        <input type="number" class="form-control" id="cultivation-area" v-model="cropRegisterForm.area" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" placeholder="면적을 입력하세요" @change="areaRules" />
+                        <span class="input-group-text">㎡</span>
+                      </div>
+                      <!-- 경고 문구 -->
+                      <div v-if="cropRegisterFormError.area.errorMessage">
+                        <label class="form-control-label text-danger">{{ cropRegisterFormError.area.errorMessage }}</label>
+                      </div>
                     </div>
-                    <p>
-                      {{ cropRegisterFormError.type.errorMessage }}
-                    </p>
                   </div>
 
                   <!-- 6. 재배 방식 -->
                   <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">재배 방식</label>
-                    <select class="form-control" id="crop-cultivateType-select" v-model="cropRegisterForm.cultivateType" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @blur="cultivateTypeRules">
-                      <option value="">-- 재배 방식 선택 --</option>
-                      <option value="유리">유리</option>
-                      <option value="비닐">비닐</option>
-                    </select>
-                    <p>
-                      {{ cropRegisterFormError.cultivateType.errorMessage }}
-                    </p>
+                    <div class="form-group">
+                      <label for="example-text-input" class="form-control-label">재배 방식</label>
+                      <select class="form-control" id="crop-cultivateType-select" v-model="cropRegisterForm.cultivateType" :disabled="isReadOnly" :class="isReadOnly ? 'bg-light text-muted' : ''" @change="cultivateTypeRules">
+                        <option value="">-- 재배 방식 선택 --</option>
+                        <option value="유리">유리</option>
+                        <option value="비닐">비닐</option>
+                      </select>
+                      <!-- 경고 문구 -->
+                      <div v-if="cropRegisterFormError.cultivateType.errorMessage">
+                        <label class="form-control-label text-danger">{{ cropRegisterFormError.cultivateType.errorMessage }}</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

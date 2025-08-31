@@ -1,7 +1,6 @@
 <script setup>
 import { defineProps } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import tomato from '@/assets/img/orderlabs/tomato.jpg'
 import { useUserStore } from '@/store/users/useUserStore.js'
 
 const props = defineProps(['farmInfo'])
@@ -9,7 +8,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const currentFarmIndex = userStore.user.ownedFarm.findIndex((f) => f == route.query.farmId) //현재 농장의 인덱스 번호
+const currentFarmIndex = userStore.user.ownedFarm.findIndex((f) => f.id == route.query.farmId) //현재 농장의 인덱스 번호
 
 /* 이전 슬라이드 농장 정보 */
 const changeFarmPrev = () => {
@@ -17,14 +16,14 @@ const changeFarmPrev = () => {
   if (currentFarmIndex - 1 < 0) {
     router.push({
       path: '/inventory', // 이동할 라우트 path
-      query: { farmId: userStore.user.ownedFarm[userStore.user.ownedFarm.length - 1] }, // 쿼리 파라미터
+      query: { farmId: userStore.user.ownedFarm[userStore.user.ownedFarm.length - 1].id }, // 쿼리 파라미터
     })
   }
   //있으면 이전 농장 슬라이드로
   else {
     router.push({
       path: '/inventory',
-      query: { farmId: userStore.user.ownedFarm[currentFarmIndex - 1] },
+      query: { farmId: userStore.user.ownedFarm[currentFarmIndex - 1].id },
     })
   }
 }
@@ -35,14 +34,14 @@ const changeFarmNext = () => {
   if (currentFarmIndex + 1 > userStore.user.ownedFarm.length - 1) {
     router.push({
       path: '/inventory',
-      query: { farmId: userStore.user.ownedFarm[0] },
+      query: { farmId: userStore.user.ownedFarm[0].id },
     })
   }
   //있으면 다음 농장 슬라이드로
   else {
     router.push({
       path: '/inventory',
-      query: { farmId: userStore.user.ownedFarm[currentFarmIndex + 1] },
+      query: { farmId: userStore.user.ownedFarm[currentFarmIndex + 1].id },
     })
   }
 }
@@ -55,12 +54,12 @@ const changeFarmNext = () => {
         <div id="carouselExampleCaptions" class="carousel slide">
           <div class="carousel-indicators">
             <!-- active : 활성화 되어 보이는 슬라이드 -->
-            <button v-for="(farmId, farmIndex) in userStore.user.ownedFarm" :key="farmId" type="button" data-bs-target="#carouselExampleCaptions" :data-bs-slide-to="farmIndex" :class="{ active: farmId == route.query.farmId }" :aria-label="`Slide ${farmIndex + 1}`"></button>
+            <button v-for="(farm, farmIndex) in userStore.user.ownedFarm" :key="farm.id" type="button" data-bs-target="#carouselExampleCaptions" :data-bs-slide-to="farmIndex" :class="{ active: farm.id == route.query.farmId }" :aria-label="`Slide ${farmIndex + 1}`"></button>
           </div>
 
           <div class="carousel-inner">
-            <div v-for="farmId in userStore.user.ownedFarm" :key="farmId" :class="['carousel-item', { active: farmId == route.query.farmId }]">
-              <img :src="tomato" class="d-block w-100" alt="" />
+            <div v-for="farm in userStore.user.ownedFarm" :key="farm.id" :class="['carousel-item', { active: farm.id == route.query.farmId }]">
+              <img :src="props.farmInfo.profile_image_url" class="d-block w-100" alt="" />
               <div class="carousel-caption d-none d-md-block">
                 <h5>{{ props.farmInfo.name }}</h5>
                 <p>{{ props.farmInfo.contents }}</p>

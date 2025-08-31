@@ -1,8 +1,15 @@
 <script setup>
 import api from '@/api/inventory'
-import { reactive, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { reactive, watch, computed } from 'vue'
+import { useUserStore } from '@/store/users/useUserStore.js'
 
 const props = defineProps(['inventoryId'])
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+
+const currentFarmIndex = userStore.user.ownedFarm.findIndex((f) => f.id == route.query.farmId) //현재 농장의 인덱스 번호
 
 //화면에 그릴 재고 상세 데이터
 let inventory = reactive({
@@ -16,12 +23,116 @@ let inventory = reactive({
   sowingStartDate: '', //파종 시작일
 })
 
+// 에러 메세지
+const cropDetailFormError = reactive({
+  area: {
+    errorMessage: '',
+    isValid: false,
+  },
+  sowingStartDate: {
+    errorMessage: '',
+    isValid: false,
+  },
+  expectedHarvestDate: {
+    errorMessage: '',
+    isValid: false,
+  },
+  expectedQuantity: {
+    errorMessage: '',
+    isValid: false,
+  },
+  maxExpectedQuantity: {
+    errorMessage: '',
+    isValid: false,
+  },
+})
+
+// 모든 필드 입력값 검증
+const isFormValid = computed(() => {
+  return cropDetailFormError.area.isValid && cropDetailFormError.sowingStartDate.isValid && cropDetailFormError.expectedHarvestDate.isValid && cropDetailFormError.expectedQuantity.isValid && cropDetailFormError.maxExpectedQuantity.isValid
+})
+
+// 재배 면적 입력 검증
+const areaRules = [
+  (event) => {
+    if (event.target.value) {
+      cropDetailFormError.area.errorMessage = null
+      cropDetailFormError.area.isValid = true
+      return true
+    } else {
+      cropDetailFormError.area.errorMessage = '재배 면적을 입력 해주세요.'
+      cropDetailFormError.area.isValid = false
+      return false
+    }
+  },
+]
+
+// 파종 시작일 선택 검증
+const sowingStartDateRules = [
+  (event) => {
+    if (event.target.value) {
+      cropDetailFormError.sowingStartDate.errorMessage = null
+      cropDetailFormError.sowingStartDate.isValid = true
+      return true
+    } else {
+      cropDetailFormError.sowingStartDate.errorMessage = '파종 시작일을 선택 해주세요.'
+      cropDetailFormError.sowingStartDate.isValid = false
+      return false
+    }
+  },
+]
+
+// 예측 수확일 선택 검증
+const expectedHarvestDateRules = [
+  (event) => {
+    if (event.target.value) {
+      cropDetailFormError.expectedHarvestDate.errorMessage = null
+      cropDetailFormError.expectedHarvestDate.isValid = true
+      return true
+    } else {
+      cropDetailFormError.expectedHarvestDate.errorMessage = '예측 수확일을 선택 해주세요.'
+      cropDetailFormError.expectedHarvestDate.isValid = false
+      return false
+    }
+  },
+]
+
+// 예측 산출량 입력 검증
+const expectedQuantityRules = [
+  (event) => {
+    if (event.target.value) {
+      cropDetailFormError.expectedQuantity.errorMessage = null
+      cropDetailFormError.expectedQuantity.isValid = true
+      return true
+    } else {
+      cropDetailFormError.expectedQuantity.errorMessage = '예측 산출량을 입력 해주세요.'
+      cropDetailFormError.expectedQuantity.isValid = false
+      return false
+    }
+  },
+]
+
+// 최대 예측 산출량 입력 검증
+const maxExpectedQuantityRules = [
+  (event) => {
+    if (event.target.value) {
+      cropDetailFormError.maxExpectedQuantity.errorMessage = null
+      cropDetailFormError.maxExpectedQuantity.isValid = true
+      return true
+    } else {
+      cropDetailFormError.maxExpectedQuantity.errorMessage = '최대 예측 산출량을 입력 해주세요.'
+      cropDetailFormError.maxExpectedQuantity.isValid = false
+      return false
+    }
+  },
+]
+
 //재고 수정 요청 데이터
 const inventoryEditForm = reactive({
   cropId: null,
 })
 
-//수정 버튼 누르면, 수정 api 호출
+//수정 버튼 클릭시, 수정 api 호출
 const updateInventory = async () => {
   Object.assign(inventoryEditForm, inventory) //reactive 객체 내부 값 업데이트
   inventoryEditForm.cropId = props.inventoryId
@@ -30,6 +141,10 @@ const updateInventory = async () => {
   if (data && data.success) {
     //다시 목록으로 돌아가도록 redirect
     console.log('수정 성공')
+    router.push({
+      path: '/inventory',
+      query: { farmId: userStore.user.ownedFarm[currentFarmIndex].id },
+    })
   } else {
     alert('재고를 수정하지 못하였습니다.')
   }
@@ -41,6 +156,13 @@ const getInventoryDetail = async () => {
 
   if (data && data.success) {
     Object.assign(inventory, data.data)
+
+    //필드 값이 있으면 isValid를 true로 설정
+    cropDetailFormError.area.isValid = !!data.data.area
+    cropDetailFormError.sowingStartDate.isValid = !!data.data.sowingStartDate
+    cropDetailFormError.expectedHarvestDate.isValid = !!data.data.expectedHarvestDate
+    cropDetailFormError.expectedQuantity.isValid = !!data.data.expectedQuantity
+    cropDetailFormError.maxExpectedQuantity.isValid = !!data.data.maxExpectedQuantity
   } else {
     alert('데이터를 불러오지 못하였습니다.')
   }
@@ -83,49 +205,74 @@ watch(
                         <input class="form-control" type="text" :placeholder="inventory.type" disabled />
                       </div>
                     </div>
+                    <!-- 재배 면적 -->
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">재배 면적</label>
                         <div class="input-group">
-                          <input class="form-control" type="text" v-model="inventory.area" />
+                          <input class="form-control" type="text" v-model="inventory.area" @change="areaRules" />
                           <span class="input-group-text form-control-20">/㎡</span>
+                        </div>
+                        <!-- 경고 문구 -->
+                        <div v-if="cropDetailFormError.area.errorMessage">
+                          <label class="form-control-label text-danger">{{ cropDetailFormError.area.errorMessage }}</label>
                         </div>
                       </div>
                     </div>
+                    <!-- 재배 방식 -->
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">재배 방식</label>
                         <input class="form-control" type="text" :placeholder="inventory.cultivateType" disabled />
                       </div>
                     </div>
+                    <!-- 파종 시작일 -->
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">파종 시작일</label>
-                        <input class="form-control" type="date" v-model="inventory.sowingStartDate" />
+                        <input class="form-control" type="date" v-model="inventory.sowingStartDate" @change="sowingStartDateRules" />
+                        <!-- 경고 문구 -->
+                        <div v-if="cropDetailFormError.sowingStartDate.errorMessage">
+                          <label class="form-control-label text-danger">{{ cropDetailFormError.sowingStartDate.errorMessage }}</label>
+                        </div>
                       </div>
                     </div>
-
+                    <!-- 예측 수확일 -->
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">예측 수확일</label>
-                        <input class="form-control" type="date" v-model="inventory.expectedHarvestDate" />
+                        <input class="form-control" type="date" v-model="inventory.expectedHarvestDate" @change="expectedHarvestDateRules" />
+                        <!-- 경고 문구 -->
+                        <div v-if="cropDetailFormError.expectedHarvestDate.errorMessage">
+                          <label class="form-control-label text-danger">{{ cropDetailFormError.expectedHarvestDate.errorMessage }}</label>
+                        </div>
                       </div>
                     </div>
+                    <!-- 예측 산출량 -->
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">예측 산출량</label>
                         <div class="input-group">
-                          <input class="form-control" type="text" v-model="inventory.expectedQuantity" />
+                          <input class="form-control" type="text" v-model="inventory.expectedQuantity" @change="expectedQuantityRules" />
                           <span class="input-group-text form-control-20">/㎡</span>
+                        </div>
+                        <!-- 경고 문구 -->
+                        <div v-if="cropDetailFormError.expectedQuantity.errorMessage">
+                          <label class="form-control-label text-danger">{{ cropDetailFormError.expectedQuantity.errorMessage }}</label>
                         </div>
                       </div>
                     </div>
+                    <!-- 최대 예측 산출량 -->
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="example-text-input" class="form-control-label">최대 예측 산출량</label>
                         <div class="input-group">
-                          <input class="form-control" type="text" v-model="inventory.maxExpectedQuantity" />
+                          <input class="form-control" type="text" v-model="inventory.maxExpectedQuantity" @change="maxExpectedQuantityRules" />
                           <span class="input-group-text form-control-20">/㎡</span>
+                        </div>
+                        <!-- 경고 문구 -->
+                        <div v-if="cropDetailFormError.maxExpectedQuantity.errorMessage">
+                          <label class="form-control-label text-danger">{{ cropDetailFormError.maxExpectedQuantity.errorMessage }}</label>
                         </div>
                       </div>
                     </div>
@@ -149,7 +296,7 @@ watch(
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-          <button type="button" class="btn btn-primary" @click="updateInventory()">저장</button>
+          <button type="button" class="btn btn-primary" :style="{ color: !isFormValid ? 'white' : '' }" @click="updateInventory()" :disabled="!isFormValid">저장</button>
         </div>
       </div>
     </div>

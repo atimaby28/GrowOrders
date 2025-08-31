@@ -1,9 +1,7 @@
 package org.example.groworders.domain.farms.model.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.farms.model.entity.Farm;
@@ -57,21 +55,6 @@ public class FarmDto {
         }
     }
 
-    // 농장 리스트
-    @Builder
-    @Getter
-    public static class FarmList {
-        private Boolean isSuccess;
-        private List<FarmResponse> result;
-
-        public static FarmList from(List<Farm> entityList) {
-            return FarmList.builder()
-                    .isSuccess(true)
-                    .result(entityList.stream().map(entity -> FarmResponse.from(entity)).toList())
-                    .build();
-        }
-    }
-
     // FarmResponse
     @Getter
     @Builder
@@ -86,7 +69,7 @@ public class FarmDto {
         private String profile_image_url;
         private List<CropDto.CropResponse> cropList;
 
-        public static FarmResponse from(Farm entity) {
+        public static FarmResponse from(Farm entity, String presignedUrl) {
             return FarmResponse.builder()
                     .user_id(entity.getUser().getId())
                     .id(entity.getId())
@@ -95,11 +78,27 @@ public class FarmDto {
                     .address(entity.getAddress())
                     .size(entity.getSize())
                     .contents(entity.getContents())
-                    .profile_image_url(entity.getProfile_image_url())
+                    .profile_image_url(presignedUrl)
                     .cropList(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
                     .build();
         }
     }
 
+    //로그인 시 농장 정보 응답할 데이터
+    @Getter
+    @Builder
+    public static class OwnedFarm {
+        private Long id;
+        private String name;
+        private List<String> cropType;
+
+        public static OwnedFarm from(Farm entity) {
+            return OwnedFarm.builder()
+                    .id(entity.getId())
+                    .name(entity.getName())
+                    .cropType(entity.getCropList().stream().map(Crop::getType).distinct().toList()) //Crop Entity에서 Type 중복 제거하고 가져오기
+                    .build();
+        }
+    }
 
 }

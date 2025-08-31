@@ -59,4 +59,27 @@ const updateInventory = async (inventoryEditForm) => {
   return data
 }
 
-export default { getInventory, getInventoryDetail, updateInventory }
+//재고 검색
+const searchInventory = async (farmId, searchFrom) => {
+  let data = {}
+  let url = '/inventories/search'
+
+  await axios_api
+    .get(url, {
+      params: {
+        farmId: farmId,
+        type: searchFrom.type,
+        status: searchFrom.status,
+        saleStatus: searchFrom.saleStatus,
+      },
+    })
+    .then((response) => {
+      data = response.data
+    })
+    .catch((error) => {
+      data = error.data
+    })
+  return data
+}
+
+export default { getInventory, getInventoryDetail, updateInventory, searchInventory }

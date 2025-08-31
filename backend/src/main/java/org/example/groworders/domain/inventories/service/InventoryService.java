@@ -4,14 +4,19 @@ import lombok.*;
 import org.example.groworders.common.exception.BaseException;
 import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.crops.model.entity.Crop;
+import org.example.groworders.domain.crops.repository.CropQueryRepository;
 import org.example.groworders.domain.crops.repository.CropRepository;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.farms.repository.FarmRepository;
 import org.example.groworders.domain.inventories.model.dto.InventoryDto;
+import org.example.groworders.domain.users.service.S3PresignedUrlService;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.example.groworders.common.model.BaseResponseStatus.INVALID_CROP_INFO;
 import static org.example.groworders.common.model.BaseResponseStatus.INVALID_FARM_INFO;
@@ -19,8 +24,10 @@ import static org.example.groworders.common.model.BaseResponseStatus.INVALID_FAR
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
+    private final CropQueryRepository cropQueryRepository;
     private final CropRepository cropRepository;
     private final FarmRepository farmRepository;
+    private final S3PresignedUrlService s3PresignedUrlService;
 
     //재고 등록
     public void save(InventoryDto.Register dto) {
@@ -51,6 +58,17 @@ public class InventoryService {
     //재고 목록 조회
     public FarmDto.FarmResponse list(Long farmId) {
         Farm farm = cropRepository.findByIdWithCrop(farmId).orElseThrow(() -> BaseException.from(INVALID_FARM_INFO));
-        return FarmDto.FarmResponse.from(farm);
+
+        String presignedUrl = farm.getProfile_image_url() != null ?
+                s3PresignedUrlService.generatePresignedUrl(farm.getProfile_image_url(), Duration.ofMinutes(60)) :
+                s3PresignedUrlService.generatePresignedUrl("not-found-image.jpg", Duration.ofMinutes(60));
+
+        return FarmDto.FarmResponse.from(farm, presignedUrl);
+    }
+
+    //재고 검색 조회
+    public List<CropDto.CropResponse> search(Long farmId, CropDto.Search dto) {
+        List<Crop> crop = cropQueryRepository.search(farmId, dto);
+        return crop.stream().map(CropDto.CropResponse::from).toList();
     }
 }

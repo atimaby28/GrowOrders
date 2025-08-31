@@ -3,6 +3,8 @@ package org.example.groworders.domain.users.model.dto;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
+import org.example.groworders.domain.farms.model.dto.FarmDto;
+import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.Role;
 import org.example.groworders.domain.users.model.entity.User;
 import org.example.groworders.domain.users.service.S3PresignedUrlService;
@@ -51,7 +53,7 @@ public class UserDto {
         private String name;
         private Role role;
         private String profileImage;
-        private List<Long> ownedFarm;
+        private List<FarmDto.OwnedFarm> ownedFarm;
 
         public static SignInResponse from(AuthUser authUser) {
 
@@ -61,7 +63,7 @@ public class UserDto {
                     .name(authUser.getName())
                     .role(authUser.getRole())
                     .profileImage(authUser.getProfileImage())
-                    .ownedFarm(authUser.getOwnedFarms())
+                    .ownedFarm(authUser.getOwnedFarm())
                     .build();
         }
     }
@@ -138,7 +140,7 @@ public class UserDto {
         private Boolean enabled;
         private String profileImage;
         private Map<String, Object> attributes;
-        private List<Long> ownedFarms;
+        private List<FarmDto.OwnedFarm> ownedFarm;
 
         @Override
         public Map<String, Object> getAttributes() {
@@ -164,16 +166,16 @@ public class UserDto {
         }
 
         // 클라이언트용 Presigned URL 포함
-        public static AuthUser from(User entity, String presignedUrl, List<Long> ownedFarms) {
+        public static AuthUser from(User userEntity, String presignedUrl, List<Farm> farmEntity) {
             return AuthUser.builder()
-                    .id(entity.getId())
-                    .email(entity.getEmail())
-                    .password(entity.getPassword())
-                    .name(entity.getName())
-                    .role(entity.getRole() != null ? entity.getRole() : Role.USER)
-                    .enabled(entity.getEnabled())
+                    .id(userEntity.getId())
+                    .email(userEntity.getEmail())
+                    .password(userEntity.getPassword())
+                    .name(userEntity.getName())
+                    .role(userEntity.getRole() != null ? userEntity.getRole() : Role.USER)
+                    .enabled(userEntity.getEnabled())
                     .profileImage(presignedUrl) // Presigned URL
-                    .ownedFarms(ownedFarms)
+                    .ownedFarm(farmEntity.stream().map(FarmDto.OwnedFarm::from).toList())
                     .build();
         }
 

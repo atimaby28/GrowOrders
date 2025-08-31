@@ -49,7 +49,7 @@ const navItems = computed(() => [
     active: 'tables',
   },
   {
-    to: `/inventory?farmId=${userStore.user.ownedFarm?.[0]}`,
+    to: `/inventory?farmId=${userStore.user.ownedFarm?.[0].id}`,
     label: '재고관리',
     icon: 'ni ni-calendar-grid-58 text-warning text-sm opacity-10',
     role: ['FARMER'], // 문자열 타입 role

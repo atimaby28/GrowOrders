@@ -53,6 +53,15 @@ public class CropDto {
         }
     }
 
+    //검색 요청 데이터
+    @Getter
+    @Setter
+    public static class Search {
+        private String type;
+        private CropStatus status;
+        private SaleStatus saleStatus;
+    }
+
     //응답 데이터
     @Getter
     @Builder

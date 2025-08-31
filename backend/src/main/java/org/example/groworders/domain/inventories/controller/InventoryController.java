@@ -12,6 +12,8 @@ import org.example.groworders.domain.inventories.model.dto.InventoryDto;
 import org.example.groworders.domain.inventories.service.InventoryService;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +45,9 @@ public class InventoryController {
     }
 
     //재고 상세 조회
+    @Operation(
+            summary = "예측 재고 상세 조회",
+            description = "parameter로 작물 및 재고 아이디를 전달 받아 예측 재고를 상세 조회")
     @GetMapping("/details")
     public ResponseEntity<BaseResponse<CropDto.CropResponse>> details(Long cropId) {
         CropDto.CropResponse result = inventoryService.details(cropId);
@@ -51,11 +56,18 @@ public class InventoryController {
 
     //재고 목록 조회
     @Operation(
-            summary = "재고 목록 조회",
+            summary = "예측 재고 목록 조회",
             description = "parameter로 농장 아이디를 전달 받아 농부가 소유한 농장의 재고 목록 조회")
     @GetMapping("/list")
     public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> list(Long farmId) {
         FarmDto.FarmResponse result = inventoryService.list(farmId);
+        return ResponseEntity.ok(BaseResponse.success(result));
+    }
+
+    //재고 검색 조회
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<CropDto.CropResponse>>> search(Long farmId, CropDto.Search dto) {
+        List<CropDto.CropResponse> result = inventoryService.search(farmId, dto);
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 }
