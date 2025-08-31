@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.groworders.common.model.BaseResponse;
 import org.example.groworders.domain.orders.model.dto.OrderDto;
 import org.example.groworders.domain.orders.model.entity.ShippingStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/order")
 @RequiredArgsConstructor
@@ -68,9 +70,9 @@ public class OrderController {
     public ResponseEntity<BaseResponse<?>> register(
             @AuthenticationPrincipal UserDto.AuthUser authUser,
             @Valid @RequestBody OrderDto.Register dto) {
-        orderService.register(authUser, dto);
+        OrderDto.Register response = orderService.register(authUser, dto);
 
-        return ResponseEntity.status(200).body(BaseResponse.success(dto));
+        return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
 
     @Operation(
@@ -112,8 +114,8 @@ public class OrderController {
             @AuthenticationPrincipal UserDto.AuthUser authUser,
             @PathVariable @Schema(description = "Id값으로 조회", required = true, example = "10111")Long id,
             @Valid @RequestBody OrderDto.Modify dto) {
-        orderService.updateOrder(authUser, id, dto);
-        return ResponseEntity.status(200).body(BaseResponse.success(dto));
+        OrderDto.Modify response = orderService.updateOrder(authUser, id, dto);
+        return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
 
     @Operation(
@@ -156,6 +158,8 @@ public class OrderController {
             @Schema(description = "페이지 번호, 1번부터 시작", required = true, example = "1") Integer page,
             @Schema(description = "각 페이지당 게시글 수", required = true, example = "10") Integer size) {
 
+        log.debug("###############>>>>>>>!!!!!!");
+
         if (page == null || page < 1) page = 1;
         if (size == null || size < 1) size = 10;
 
@@ -165,8 +169,9 @@ public class OrderController {
     }
 
     @Operation(
-            summary = "주문생성상세 - 주문생성페이지랑 주문생성상세페이지가 같음",
-            description =  "주문관리에서 버튼 눌렀을때 상세 페이지로 가서 주문생성정보들 불러오는 기능 "
+            summary = "주문생성상세 - 주문생성완료랑 주문생성상세페이지가 같음",
+            description =  "1. 구매자가 주문관리에서 상세보기버튼 눌렀을때 상세 페이지로 가서 주문생성정보를 불러오는 기능," +
+                    "2. 판매자가 주문관리에서 상세보기버튼 눌렀을때 상세페이지로 가서 주문생성정보를 불러오는 기능  "
     )
     @ApiResponse(
             responseCode = "200",
@@ -198,18 +203,24 @@ public class OrderController {
                     )
             )
     )
-    @GetMapping("/readCreate")
-    public ResponseEntity<BaseResponse<?>> readBuyer(
+
+    @GetMapping("/readCreate/{id}")
+    public ResponseEntity<BaseResponse<?>> readCreate(
             @AuthenticationPrincipal UserDto.AuthUser authUser,
-            @Schema(description = "Id값으로 조회", required = true, example = "10111")Long id) {
-        OrderDto.Register response = orderService.readBuyer(authUser,id);
+            @Schema(description = "Id값으로 조회", required = true, example = "10111")
+            @PathVariable Long id) {
+
+        System.out.println(">>>>>>>>>>>>>" + id);
+        OrderDto.Register response = orderService.readCreate(authUser,id);
 
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
 
+
     @Operation(
             summary = "주문수정상세 - 주문수정페이지랑 주문수정상세페이지가 같음",
-            description =  "주문관리에서 버튼 눌렀을때 상세 페이지로 가서 주문수정정보들 불러오는 기능 "
+            description =  "1. 구매자가 주문관리에서 환불버튼 눌렀을때 상세 페이지로 가서 주문수정정보들 불러오는 기능 "+
+            "2. 판매자가 주문관리에서 환불버튼 눌렀을때 상세페이지로 가서 주문수정정보를 불러오는 기능  "
     )
     @ApiResponse(
             responseCode = "200",
@@ -242,10 +253,11 @@ public class OrderController {
             )
     )
     @GetMapping("/readModify")
-    public ResponseEntity<BaseResponse<?>> readFarmer(
+    public ResponseEntity<BaseResponse<?>> readModify(
             @AuthenticationPrincipal UserDto.AuthUser authUser,
+            @RequestParam
             @Schema(description = "Id값으로 조회", required = true, example = "10111")Long id) {
-        OrderDto.Modify response = orderService.readFarmer(authUser,id);
+        OrderDto.Modify response = orderService.readModify(authUser,id);
 
         return ResponseEntity.status(200).body(BaseResponse.success(response));
     }
@@ -384,8 +396,14 @@ public class OrderController {
         if (page == null || page < 1) page = 1;
         if (size == null || size < 1) size = 10;
 
+        log.info("👉 listFarmer 요청 userId={}, role={}, page={}, size={}",
+                (authUser != null ? authUser.getId() : null),
+                (authUser != null ? authUser.getRole() : null),
+                page, size);
+
         OrderDto.OrderList<OrderDto.OrderResFarmer> response = orderService.listFarmer(authUser,page - 1, size);
         return ResponseEntity.status(200).body(BaseResponse.success(response));
+
     }
 
     

@@ -2,10 +2,10 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/api/order'
-import api2 from '@/api/order/userlist.js'
+import api2 from '@/api/order/userlist.js' //eslint-disable-line no-unused-vars
 
-const data = ref([])
-const data2 = ref([])
+const data = ref([]) //eslint-disable-line no-unused-vars
+const data2 = ref([]) //eslint-disable-line no-unused-vars
 const item = ref(null)
 const farm = ref(null)
 const route = useRoute()
@@ -16,12 +16,16 @@ const cropValue = ref('')
 
 onMounted(async () => {
   try {
-    const orderResponse = await api.orderList()
-    const farmResponse = await api2.farmList()
-    data.value = orderResponse
-    data2.value = farmResponse
-    item.value = data.value.find(obj => obj.orderId == orderId)
-    farm.value = data2.value.find(obj => obj.farmId == item.value.farmId)
+    const orderResponse = await api.orderListOne(orderId);
+    //const farmResponse = await api2.farmList();
+    console.log(orderResponse);
+
+    //data.value = orderResponse
+    item.value = orderResponse.data;
+    //data2.value = farmResponse
+    //item.value = data.value.find(obj => obj.orderId == orderId)
+    console.log(">>>>123>>>>>>>>>>>"+item.value);
+    //farm.value = data2.value.find(obj => obj.farmId == item.value.farmId)
 
     if (!item.value) {
       console.warn('해당 orderId의 주문 정보가 없습니다.')

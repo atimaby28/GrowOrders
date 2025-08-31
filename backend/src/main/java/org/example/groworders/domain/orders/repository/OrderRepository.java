@@ -15,18 +15,19 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> findByFarmOrder_Name(String farmName);
 
     // 작물 이름으로 검색
-    List<Order> findByCropOrder_CropName(String cropName);
+    List<Order> findByCropOrder_Type(String cropName);
 
     // 농장 이름 또는 작물 이름으로 검색
-    List<Order> findByFarmOrder_NameOrCropOrder_CropName(String farmName, String cropName);
+    List<Order> findByFarmOrder_NameOrCropOrder_Type(String farmName, String cropName);
 
     // status 단독
     List<Order> findByShippingStatus(ShippingStatus status);
 
     // cropName + status (OR 조건)
-    List<Order> findByShippingStatusOrCropOrder_CropName(ShippingStatus status, String cropName);
+    List<Order> findByShippingStatusOrCropOrder_Type(ShippingStatus status, String cropName);
 
-    // 판매자(농부) 본인 주문만 조회 (페이징 포함)
-    Page<Order> findByFarmOrder_Id(Long farmId, Pageable pageable);
+
+    Page<Order> findByFarmOrder_User_Id(Long userId, Pageable pageable);
+
 }
 

@@ -60,10 +60,10 @@ public class SecurityConfig {
                         // BUYER 전용
                         .requestMatchers("/order/register").hasRole("BUYER")
                         .requestMatchers("/order/modify/**").hasRole("BUYER")
-                        .requestMatchers("/order/listBuyer").hasRole("BUYER")
+                        //.requestMatchers("/order/listBuyer").hasRole("BUYER") // 202508_주석해제해야함
                         .requestMatchers("/order/searchBuyer").hasRole("BUYER")
                         // FARMER 전용
-                        .requestMatchers("/order/listFarmer").hasRole("FARMER")
+                       //.requestMatchers("/order/listFarmer").hasRole("FARMER")// 202508_주석해제해야함
                         .requestMatchers("/order/searchFarmer").hasRole("FARMER")
                         // BUYER, FARMER 모두 접근 가능
                         .requestMatchers("/order/readCreate", "/order/readModify").hasAnyRole("BUYER", "FARMER")

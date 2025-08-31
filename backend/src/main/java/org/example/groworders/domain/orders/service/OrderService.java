@@ -22,9 +22,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     //주문생성
-    public void register(UserDto.AuthUser authUser,OrderDto.Register dto) {
+    public OrderDto.Register register(UserDto.AuthUser authUser,OrderDto.Register dto) {
 
-        orderRepository.save(dto.toEntity(authUser));//고쳐야됨
+        Order order = dto.toEntity(authUser);
+
+        orderRepository.save(order);
+
+        return OrderDto.Register.from(order);
     }
 
 
@@ -33,8 +37,8 @@ public class OrderService {
         Page<Order> orders = orderRepository.findAll(PageRequest.of(page, size));
         return OrderDto.OrderList.from(orders, OrderDto.OrderResBuyer::from);
     }
-    //구매자가 주문관리에서 상세페이지로
-    public OrderDto.Register readBuyer(UserDto.AuthUser authUser, Long id) {
+    //주문생성완료 상세페이지
+    public OrderDto.Register readCreate(UserDto.AuthUser authUser, Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("해당 주문을 찾을 수 없습니다."));
         return OrderDto.Register.from(order);
@@ -52,8 +56,8 @@ public class OrderService {
 //    }
 
 
-    //판매자가 주문관리에서 상세페이지로
-    public OrderDto.Modify readFarmer(UserDto.AuthUser authUser, Long id) {
+    //주문수정완료 상세페이지
+    public OrderDto.Modify readModify(UserDto.AuthUser authUser, Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("해당 주문을 찾을 수 없습니다."));
         return OrderDto.Modify.from(order);
@@ -77,7 +81,7 @@ public class OrderService {
             return List.of();
         }
 
-        List<Order> result = orderRepository.findByFarmOrder_NameOrCropOrder_CropName(farmName, cropName);
+        List<Order> result = orderRepository.findByFarmOrder_NameOrCropOrder_Type(farmName, cropName);
         return result.stream()
                 .map(OrderDto.OrderResBuyer::from)
                 .toList();
@@ -89,7 +93,7 @@ public class OrderService {
             return List.of();
         }
 
-        List<Order> result = orderRepository.findByShippingStatusOrCropOrder_CropName(shippingStatus, cropName);
+        List<Order> result = orderRepository.findByShippingStatusOrCropOrder_Type(shippingStatus, cropName);
 
         return result.stream()
                 .map(OrderDto.OrderResFarmer::from)
@@ -100,12 +104,13 @@ public class OrderService {
 
 
     //주문수정완료
-    public void updateOrder(UserDto.AuthUser authUser, Long id, OrderDto.Modify dto) {//고쳐야됨
+    public OrderDto.Modify updateOrder(UserDto.AuthUser authUser, Long id, OrderDto.Modify dto) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("해당 주문을 찾을 수 없습니다."));
 
         Order updatedOrder = dto.updateEntity(order, authUser);
-        orderRepository.save(updatedOrder);
+        Order entity = orderRepository.save(updatedOrder);
+        return OrderDto.Modify.from(entity);
     }
 
 //    public void updateOrder(Long id, OrderDto.Modify dto) {
@@ -116,7 +121,7 @@ public class OrderService {
 //    }
     //판매자(농부) 주문관리조회
     public OrderDto.OrderList<OrderDto.OrderResFarmer> listFarmer(UserDto.AuthUser authUser, int page, int size) {
-        Page<Order> orders = orderRepository.findByFarmOrder_Id(authUser.getId(), PageRequest.of(page, size));
+        Page<Order> orders = orderRepository.findByFarmOrder_User_Id(authUser.getId(), PageRequest.of(page, size));
         return OrderDto.OrderList.from(orders, OrderDto.OrderResFarmer::from);
     }
 

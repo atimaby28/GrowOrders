@@ -3,35 +3,33 @@ import api from "@/plugins/axiosinterceptor";
 // 백엔드 호출 후 받은 데이터를 반환
 
 
-const farmerList = async (req) => {
-    let data = {};
-    let url = '/api/FarmerList.json';
 
-    await api.get(url, req)
-        .then((res) => {
-            data = res.data;
-        })
-        .catch((error) => {
-            data = error.data;
-        });
+const farmerList = async (req = {}) => {
+    const params = {
+    page: Number(req.page ?? 1), 
+    size: Number(req.size ?? 10),
+    };
 
-    return data;
-}
+    const { data } = await api.get("http://localhost:8080/order/listFarmer", {
+    params,
+    withCredentials: true,
+    });
+    return data; 
+};
 
-const buyerList = async (req) => {
-    let data = {};
-    let url = '/api/BuyerList.json';
 
-    await api.get(url, req)
-        .then((res) => {
-            data = res.data;
-        })
-        .catch((error) => {
-            data = error.data;
-        });
+const buyerList = async (req = {}) => {
+    const params = {
+    page: Number(req.page ?? 1), 
+    size: Number(req.size ?? 10),
+    };
 
-    return data;
-}
+    const { data } = await api.get('http://localhost:8080/order/listBuyer', {
+    params,
+    withCredentials: true
+    });
+    return data; 
+};
 
 const farmList = async () => {
     let data = {};

@@ -18,7 +18,7 @@ import org.example.groworders.domain.users.model.entity.User;
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, length = 10)
     private String name;

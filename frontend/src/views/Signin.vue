@@ -62,7 +62,7 @@ const onSubmit = async () => {
 
     if (userResp.success) {
       console.log("Remember Me:", rememberMe.value);
-      userStore.setWithEncrypt(userResp, rememberMe.value); // true → localStorage, false → sessionStorage
+      userStore.setWithEncrypt(userResp.data, rememberMe.value); // true → localStorage, false → sessionStorage
       router.push(
           signinForm.loginType === 1 ? "/farmer/dashboard" : "/buyer/dashboard"
       );
