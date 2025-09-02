@@ -1,17 +1,13 @@
 <script setup>
 import api from '@/api/inventory'
-import { useRoute, useRouter } from 'vue-router'
-import { reactive, watch, computed } from 'vue'
-import { useUserStore } from '@/store/users/useUserStore.js'
+import { useRoute } from 'vue-router'
+import { reactive, watch, computed, defineProps, defineEmits } from 'vue'
 
 const props = defineProps(['inventoryId'])
+const emits = defineEmits(['getInventoryList'])
 const route = useRoute()
-const router = useRouter()
-const userStore = useUserStore()
 
-const currentFarmIndex = userStore.user.ownedFarm.findIndex((f) => f.id == route.query.farmId) //현재 농장의 인덱스 번호
-
-//화면에 그릴 재고 상세 데이터
+// 화면에 렌더링할 재고 상세 데이터
 let inventory = reactive({
   id: null, //재고 ID 및 작물 ID
   cropType: '', //작물 종류
@@ -127,30 +123,28 @@ const maxExpectedQuantityRules = [
   },
 ]
 
-//재고 수정 요청 데이터
+// 재고 수정 요청 데이터
 const inventoryEditForm = reactive({
   cropId: null,
 })
 
-//수정 버튼 클릭시, 수정 api 호출
+// 수정 버튼 클릭시, 수정 api 호출
 const updateInventory = async () => {
   Object.assign(inventoryEditForm, inventory) //reactive 객체 내부 값 업데이트
-  inventoryEditForm.cropId = props.inventoryId
+  inventoryEditForm.cropId = props.inventoryId //전달받은 선택한 재고 아이디 값
 
   const data = await api.updateInventory(inventoryEditForm)
   if (data && data.success) {
-    //다시 목록으로 돌아가도록 redirect
-    console.log('수정 성공')
-    router.push({
-      path: '/inventory',
-      query: { farmId: userStore.user.ownedFarm[currentFarmIndex].id },
-    })
+    // 모달 닫기
+
+    // 재고 목록 새로고침
+    emits('getInventoryList', route.query.farmId)
   } else {
     alert('재고를 수정하지 못하였습니다.')
   }
 }
 
-//재고 상세 조회 api 호출
+// 재고 상세 조회 api 호출
 const getInventoryDetail = async () => {
   const data = await api.getInventoryDetail(props.inventoryId)
 
@@ -168,7 +162,7 @@ const getInventoryDetail = async () => {
   }
 }
 
-//선택한 inventoryId 값이 바뀔 때마다 호출
+// 선택한 inventoryId 값이 바뀔 때마다 상세 조회 함수 호출
 watch(
   () => props.inventoryId,
   (newInventoryId) => {

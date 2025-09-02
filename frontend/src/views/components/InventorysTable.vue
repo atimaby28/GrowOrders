@@ -6,8 +6,13 @@ import { defineProps, defineEmits, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const props = defineProps(['inventories'])
-const emits = defineEmits(['updateCropList'])
+const emits = defineEmits(['updateCropList', 'getInventoryList'])
 const route = useRoute()
+
+//부모 vue에서 전달받은 메소드 실행
+const getInventoryList = (farmId) => {
+  emits('getInventoryList', farmId)
+}
 
 //선택된 재고 ID
 const selectedInventoryId = ref(null)
@@ -47,7 +52,6 @@ watch(searchForm, async () => {
   if (data) {
     if (data.success) {
       emits('updateCropList', data.data)
-      console.log('검색 성공')
     } else {
       console.log('데이터가 없습니다.')
     }
@@ -59,7 +63,7 @@ watch(searchForm, async () => {
   <div class="mt-4 row">
     <div class="col-12">
       <!-- 재고 상세 페이지 및 수정 페이지 -->
-      <modal :inventoryId="selectedInventoryId" />
+      <modal :inventoryId="selectedInventoryId" @getInventoryList="getInventoryList" />
 
       <!-- 재고 관리 테이블 컴포넌트-->
       <div class="card">

@@ -29,11 +29,10 @@ public class Crop {
     @ColumnDefault("'BEST'")
     private CropStatus status;
 
-/*
     //단가 : not null
     @Column(nullable = false)
+    @ColumnDefault("0")
     private Integer price;
-*/
 
     //파종 시작일 : not null, 기본값 현재 시간
     @Column(nullable = false)
@@ -66,6 +65,10 @@ public class Crop {
         expectedHarvestDate = dto.getExpectedHarvestDate();
         expectedQuantity = dto.getExpectedQuantity();
         maxExpectedQuantity = dto.getMaxExpectedQuantity();
+
+        if(dto.getExpectedQuantity() != 0) {
+            saleStatus = SaleStatus.AVAILABLE;
+        }
     }
 
     public void updateInventory(InventoryDto.Update dto) {

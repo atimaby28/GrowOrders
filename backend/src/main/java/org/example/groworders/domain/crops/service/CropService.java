@@ -41,7 +41,7 @@ public class CropService {
     }
 
 
-    //예측 생산량을 재고로 등록할 값으로 가공
+    //예측 생산량을 재고로 등록할 DTO로 가공
     public InventoryDto.Register transform(Crop crop, PredictionDto.Response prediction) {
 
         Integer expectedQuantity = (int) Math.floor(Double.parseDouble(prediction.getPredictedYield())); //예측 수확량

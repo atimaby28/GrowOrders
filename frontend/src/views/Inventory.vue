@@ -43,7 +43,7 @@ onMounted(() => {
   getInventoryList(route.query.farmId)
 })
 
-//쿼리 param 변경 감지
+//쿼리 param 변경 감지시 재고 목록 조회 함수 호출
 watch(
   () => route.query.farmId,
   (newParamFarmId) => {
@@ -54,7 +54,7 @@ watch(
 
 <template>
   <div v-if="userStore.user.ownedFarm" class="py-4 container-fluid">
-    <FarmInfoSlider :key="route.query.farmId" :currentFarmId="route.query.farmId" :farmInfo="farmInfo" />
-    <InventorysTable :inventories="farmInfo.cropList" @updateCropList="updateCropList" @change="updateCropList" />
+    <FarmInfoSlider :key="route.query.farmId" :farmInfo="farmInfo" />
+    <InventorysTable :inventories="farmInfo.cropList" @updateCropList="updateCropList" @getInventoryList="getInventoryList" />
   </div>
 </template>

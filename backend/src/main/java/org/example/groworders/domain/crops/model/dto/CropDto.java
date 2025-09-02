@@ -8,6 +8,7 @@ import org.example.groworders.domain.crops.model.entity.SaleStatus;
 import org.example.groworders.domain.farms.model.entity.Farm;
 
 import java.time.LocalDate;
+import java.util.Random;
 
 public class CropDto {
 
@@ -20,6 +21,9 @@ public class CropDto {
 
         @NotNull(message = "작물 상태의 값을 올바르게 선택 해주세요.")
         private CropStatus status;
+
+        @PositiveOrZero //0이상 숫자
+        private Integer price;
 
         @NotNull(message = "파종 시작일을 선택 해주세요.") //날짜 형식, 윤년까지 체크
         private LocalDate sowingStartDate;
@@ -37,6 +41,13 @@ public class CropDto {
         private Long farmId;
 
         public Crop toEntity() {
+            //랜덤 단가 생성
+            Random random = new Random();
+            Integer min = 1000;
+            Integer max = 10000;
+            Integer value = random.nextInt(max - min + 1) + min;
+            Integer randomPrice = (int) (Math.round(value / 10.0) * 10); //일의 자리에서 반올림
+
             Farm farm = Farm.builder()
                     .id(farmId)
                     .build();
@@ -44,6 +55,7 @@ public class CropDto {
             return Crop.builder()
                     .type(type)
                     .status(status)
+                    .price(randomPrice)
                     .sowingStartDate(sowingStartDate)
                     .area(area)
                     .cultivateType(cultivateType)
@@ -69,6 +81,7 @@ public class CropDto {
         private Long id;
         private String type; //작물 종류(이름)
         private String status; //작물 상태
+        private Integer price; //단가
         private LocalDate sowingStartDate; //파종 시작일
         private Integer area; //재배 면적
         private String cultivateType; //재배 방식
@@ -83,6 +96,7 @@ public class CropDto {
                     .id(entity.getId())
                     .type(entity.getType())
                     .status(entity.getStatus().getStatus())
+                    .price(entity.getPrice())
                     .sowingStartDate(entity.getSowingStartDate())
                     .area(entity.getArea())
                     .cultivateType(entity.getCultivateType())
