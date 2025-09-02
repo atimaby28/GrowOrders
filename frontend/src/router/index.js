@@ -13,10 +13,11 @@ import FarmerList from "../views/order/FarmerList.vue";
 import OrderDetail from "../views/order/OderDetail.vue";
 import OrderCreate from "../views/order/OrderCreate.vue";
 import Error from "../views/Error.vue";
-
+import FarmDetail from "../views/FarmRegisterDetail.vue"
+import FarmEdit from "../views/FarmRegisterEdit.vue";
 
 // 알림 추가
-import Notification from "../views/Notification.vue";
+import Push from "../views/Push.vue";
 // 생물 등록
 import CropRegister from "../views/CropRegister.vue";
 // 농장 등록
@@ -84,12 +85,6 @@ const routes = [
     props: true,
   },
   {
-    path: "/farms/:id",
-    name: "farmDetail",
-    component: FarmRegister,
-    props: true,
-  },
-  {
     path: "/farms/list",
     name: "FarmList",
     component: FarmList
@@ -101,9 +96,9 @@ const routes = [
   },
   // 알림 추가
   {
-    path: "/notification",
-    name: "Notification",
-    component: Notification
+    path: "/push/history",
+    name: "Push",
+    component: Push
   },
   // 생물 추가
   {
@@ -116,6 +111,20 @@ const routes = [
     path: "/farms/register",
     name: "FarmRegister",
     component: FarmRegister
+  },
+  // 농장 디테일
+    {
+    path: "/farms/:id",
+    name: "FarmDetail",
+    component: FarmDetail,
+    props: true
+  },
+  // 농장 편집
+    {
+    path: "/farms/:id/edit",
+    name: "FarmEdit",
+    component: FarmEdit,
+    props: true
   },
   // 주문 추가
   {

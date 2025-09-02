@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 
@@ -46,7 +48,7 @@ public class FarmController {
     public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> register(
             @RequestPart("dto") @Valid FarmDto.Register dto,
             @RequestPart(value = "farmImageUrl", required = false) MultipartFile farmImageUrl,
-            @AuthenticationPrincipal UserDto.AuthUser authUser) {
+            @AuthenticationPrincipal UserDto.AuthUser authUser) throws IOException {
         FarmDto.FarmResponse result = farmservice.register(dto, farmImageUrl, authUser.getId());
         return ResponseEntity.ok(BaseResponse.success(result));
     }
@@ -67,7 +69,7 @@ public class FarmController {
             summary = "농장 정보 수정",
             description = "농장 정보를 수정한다."
     )
-    @PutMapping(value="/{farmId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value="/{farmId}/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> update(
             @PathVariable Long farmId,
             @Valid @RequestPart("dto") FarmDto.Update dto,
@@ -84,8 +86,8 @@ public class FarmController {
             description = "농장 목록을 출력한다."
     )
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<List<FarmDto.FarmResponse>>> list() {
-        List<FarmDto.FarmResponse> result = farmservice.listAll();
+    public ResponseEntity<BaseResponse<List<FarmDto.FarmListResponse>>> list() {
+        List<FarmDto.FarmListResponse> result = farmservice.listAll();
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 }
