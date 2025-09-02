@@ -12,6 +12,8 @@ import org.example.groworders.domain.inventories.model.dto.InventoryDto;
 import org.example.groworders.domain.inventories.service.InventoryService;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 public class InventoryController {
     private final InventoryService inventoryService;
 
+/*
     //재고 등록
     @Operation(
             summary = "재고 등록",
@@ -29,15 +32,22 @@ public class InventoryController {
         inventoryService.save(dto);
         return ResponseEntity.ok(BaseResponse.successMessage("재고 등록 성공"));
     }
+*/
 
     //재고 수정
+    @Operation(
+            summary = "예측 재고 수정",
+            description = "예측 재고 생산량, 예측 수확일, 파종 시작일을 입력 받고 농부의 각 농장에 있는 작물에 대한 예측 재고 수정한다.")
     @PostMapping("/update")
-    public ResponseEntity<BaseResponse<Object>> update(@RequestBody InventoryDto.Register dto) {
-        inventoryService.save(dto);
+    public ResponseEntity<BaseResponse<Object>> update(@Valid @RequestBody InventoryDto.Update dto) {
+        inventoryService.update(dto);
         return ResponseEntity.ok(BaseResponse.successMessage("재고 수정 성공"));
     }
 
     //재고 상세 조회
+    @Operation(
+            summary = "예측 재고 상세 조회",
+            description = "parameter로 작물 및 재고 아이디를 전달 받아 예측 재고를 상세 조회")
     @GetMapping("/details")
     public ResponseEntity<BaseResponse<CropDto.CropResponse>> details(Long cropId) {
         CropDto.CropResponse result = inventoryService.details(cropId);
@@ -46,11 +56,18 @@ public class InventoryController {
 
     //재고 목록 조회
     @Operation(
-            summary = "재고 목록 조회",
-            description = "param으로 농장 아이디를 전달 받아 농부가 소유한 농장의 재고 목록 조회")
+            summary = "예측 재고 목록 조회",
+            description = "parameter로 농장 아이디를 전달 받아 농부가 소유한 농장의 재고 목록 조회")
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> list(Long farmId) {
-        FarmDto.FarmResponse result = inventoryService.list(farmId);
+    public ResponseEntity<BaseResponse<FarmDto.FarmListResponse>> list(Long farmId) {
+        FarmDto.FarmListResponse result = inventoryService.list(farmId);
+        return ResponseEntity.ok(BaseResponse.success(result));
+    }
+
+    //재고 검색 조회
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<CropDto.CropResponse>>> search(Long farmId, CropDto.Search dto) {
+        List<CropDto.CropResponse> result = inventoryService.search(farmId, dto);
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 }

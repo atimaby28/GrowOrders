@@ -4,16 +4,19 @@ import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.groworders.config.push.event.PushEvent;
+import org.example.groworders.domain.crops.repository.CropRepository;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.farms.repository.FarmRepository;
+import org.example.groworders.domain.users.service.S3PresignedUrlService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.example.groworders.domain.users.service.S3UploadService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 
 @Slf4j
@@ -21,7 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FarmService {
     private final FarmRepository farmRepository;
-    private final S3UploadService s3UploadService;
+    private final CropRepository cropRepository;
+    private final S3UploadService s3UploadService; //업로드
+    private final S3PresignedUrlService s3PresignedUrlService; //불러오기
     private final ApplicationEventPublisher publisher;
 
     @Value("${spring.cloud.aws.s3.bucket}")
@@ -38,6 +43,7 @@ public class FarmService {
 
         // 테스트용: 농장 등록 시 농부에게 알림 전송
         farmRegisterPush(farm);
+
         return FarmDto.FarmResponse.from(farm);
     }
 
@@ -69,7 +75,12 @@ public class FarmService {
     // 농장 리스트
     public List<FarmDto.FarmListResponse> listAll() {
         List<Farm> farmList = farmRepository.findAll();
-        return farmList.stream().map(FarmDto.FarmListResponse::from).toList();
+        return farmList.stream().map(farm -> {
+            String presignedUrl = farm.getFarmImage() != null ?
+                    s3PresignedUrlService.generatePresignedUrl(farm.getFarmImage(), Duration.ofMinutes(60)) :
+                    s3PresignedUrlService.generatePresignedUrl("not-found-image.jpg", Duration.ofMinutes(60));
+            return FarmDto.FarmListResponse.from(farm, presignedUrl);
+        }).toList();
     }
 
     // 농장 등록 알림 발송

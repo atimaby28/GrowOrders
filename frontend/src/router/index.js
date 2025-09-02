@@ -96,9 +96,9 @@ const routes = [
   },
   // 알림 추가
   {
-    path: "/push/history",
-    name: "Push",
-    component: Push
+    path: "/notification",
+    name: "Notification",
+    component: Notification
   },
   // 생물 추가
   {
