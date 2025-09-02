@@ -111,6 +111,7 @@ public class FarmDto {
         }
     }
 
+/*
     // 농장 리스트
     @Builder
     @Getter
@@ -124,9 +125,10 @@ public class FarmDto {
                     .build();
         }
     }
+*/
 
 
-    // FarmListResponse (작물 포함)
+    /*// FarmListResponse (작물 포함)
     @Getter
     @Builder
     public static class FarmListResponse {
@@ -154,6 +156,42 @@ public class FarmDto {
                     .size(entity.getSize())
                     .contents(entity.getContents())
                     .farmImage(entity.getFarmImage())
+                    .cropType(entity.getCropList().stream().map(Crop::getType).toList())
+                    .cropCultivateType(entity.getCropList().stream().map(Crop::getCultivateType).toList())
+                    .cropExpectedQuantity(entity.getCropList().stream().map(Crop::getExpectedQuantity).toList())
+                    .build();
+        }
+    }*/
+
+    // FarmListResponse (작물 포함)
+    @Getter
+    @Builder
+    public static class FarmListResponse {
+        private Long user_id;
+        private Long id;
+        private String name;
+        private String region;
+        private String address;
+        private Integer size;
+        private String contents;
+        private String farmImage;
+        private List<CropDto.CropResponse> cropList;
+        private List<String> cropType;
+        private List<String> cropCultivateType;
+        private List<Integer> cropExpectedQuantity;
+        // private Integer cropPrice;
+
+        public static FarmListResponse from(Farm entity, String presignedUrl) {
+            return FarmListResponse.builder()
+                    .user_id(entity.getUser().getId())
+                    .id(entity.getId())
+                    .name(entity.getName())
+                    .region(entity.getRegion())
+                    .address(entity.getAddress())
+                    .size(entity.getSize())
+                    .contents(entity.getContents())
+                    .farmImage(presignedUrl)
+                    .cropList(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
                     .cropType(entity.getCropList().stream().map(Crop::getType).toList())
                     .cropCultivateType(entity.getCropList().stream().map(Crop::getCultivateType).toList())
                     .cropExpectedQuantity(entity.getCropList().stream().map(Crop::getExpectedQuantity).toList())
@@ -189,6 +227,7 @@ public class FarmDto {
     }
 
 
+/*
     // FarmResponse
     @Getter
     @Builder
@@ -200,7 +239,7 @@ public class FarmDto {
         private String address;
         private Integer size;
         private String contents;
-        private String profile_image_url;
+        private String farmImage;
         private List<CropDto.CropResponse> cropList;
 
         public static FarmResponse from(Farm entity, String presignedUrl) {
@@ -212,11 +251,12 @@ public class FarmDto {
                     .address(entity.getAddress())
                     .size(entity.getSize())
                     .contents(entity.getContents())
-                    .profile_image_url(presignedUrl)
+                    .farmImage(presignedUrl)
                     .cropList(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
                     .build();
         }
     }
+*/
 
     //로그인 시 농장 정보 응답할 데이터
     @Getter

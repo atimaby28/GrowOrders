@@ -32,7 +32,8 @@ public class FarmService {
     private final CropRepository cropRepository;
     private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
-    private final S3UploadService s3UploadService;
+    private final S3UploadService s3UploadService; //업로드
+    private final S3PresignedUrlService s3PresignedUrlService; //불러오기
     //private final ApplicationEventPublisher publisher;
 
     @Value("${spring.cloud.aws.s3.bucket}")
@@ -41,13 +42,13 @@ public class FarmService {
     // 농장 등록
     @Transactional
     public FarmDto.FarmResponse register(FarmDto.Register dto,
-                                         @Nullable MultipartFile image,
+                                         @Nullable MultipartFile farmImageUrl,
                                          Long userId) {
         // 농장 이미지 업로드
         String filePath = s3UploadService.upload(farmImageUrl);
         Farm farm = farmRepository.save(dto.toEntity(userId, filePath));
 
-/*
+/* 현경 코드
 * Farm farm = farmRepository.save(dto.toEntity(userId));
         //publisher.publishEvent(new Push.FarmRegisterEvent(farm.getId(), farm.getUser().getId()));
 
@@ -87,13 +88,13 @@ public class FarmService {
     }
 
     // 농장 리스트
-    public List<FarmDto.FarmResponse> listAll() {
+    public List<FarmDto.FarmListResponse> listAll() {
         List<Farm> farmList = farmRepository.findAll();
         return farmList.stream().map(farm -> {
-            String presignedUrl = farm.getProfile_image_url() != null ?
-                    s3PresignedUrlService.generatePresignedUrl(farm.getProfile_image_url(), Duration.ofMinutes(60)) :
+            String presignedUrl = farm.getFarmImage() != null ?
+                    s3PresignedUrlService.generatePresignedUrl(farm.getFarmImage(), Duration.ofMinutes(60)) :
                     s3PresignedUrlService.generatePresignedUrl("not-found-image.jpg", Duration.ofMinutes(60));
-            return FarmDto.FarmResponse.from(farm, presignedUrl);
+            return FarmDto.FarmListResponse.from(farm, presignedUrl);
         }).toList();
 
         /**
@@ -107,6 +108,7 @@ public class FarmService {
          *             })
          *             .toList();
          *             */
+
 /* 소민 코드
         List<Farm> farmList = farmRepository.findAll();
         return farmList.stream().map(FarmDto.FarmResponse::from).toList();

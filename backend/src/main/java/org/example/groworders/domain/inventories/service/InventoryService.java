@@ -56,14 +56,14 @@ public class InventoryService {
 
 
     //재고 목록 조회
-    public FarmDto.FarmResponse list(Long farmId) {
+    public FarmDto.FarmListResponse list(Long farmId) {
         Farm farm = cropRepository.findByIdWithCrop(farmId).orElseThrow(() -> BaseException.from(INVALID_FARM_INFO));
 
-        String presignedUrl = farm.getProfile_image_url() != null ?
-                s3PresignedUrlService.generatePresignedUrl(farm.getProfile_image_url(), Duration.ofMinutes(60)) :
+        String presignedUrl = farm.getFarmImage() != null ?
+                s3PresignedUrlService.generatePresignedUrl(farm.getFarmImage(), Duration.ofMinutes(60)) :
                 s3PresignedUrlService.generatePresignedUrl("not-found-image.jpg", Duration.ofMinutes(60));
 
-        return FarmDto.FarmResponse.from(farm, presignedUrl);
+        return FarmDto.FarmListResponse.from(farm, presignedUrl);
     }
 
     //재고 검색 조회
