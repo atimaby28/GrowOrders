@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface FarmRepository extends JpaRepository<Farm, Long> {
-    List<Farm> findByName(String name);
     Optional<Farm> findById(@NotNull(message = "농장은 필수 선택입니다.") @Positive(message = "농장을 확인 해주세요.") Long farmId);
 
 }

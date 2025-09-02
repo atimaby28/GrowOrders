@@ -3,6 +3,7 @@ package org.example.groworders.domain.users.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.example.groworders.config.push.model.entity.PushHistory;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.dto.EmailVerify;
 import org.hibernate.annotations.ColumnDefault;
@@ -59,6 +60,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     List<Farm> farmList;
+
+    @OneToMany(mappedBy = "user")
+    List<PushHistory> pushHistoryList;
 
     public void userVerify() {
         this.enabled = true;

@@ -3,19 +3,17 @@ package org.example.groworders.domain.farms.service;
 import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.groworders.config.notification.model.entity.NotificationSub;
-import org.example.groworders.config.notification.repository.NotificationRepository;
-import org.example.groworders.config.notification.service.NotificationService;
-import org.example.groworders.domain.crops.model.entity.Crop;
-import org.example.groworders.domain.crops.repository.CropRepository;
+import org.example.groworders.config.push.event.PushEvent;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.farms.repository.FarmRepository;
 import org.example.groworders.domain.users.service.S3UploadService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -23,11 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FarmService {
     private final FarmRepository farmRepository;
-    private final CropRepository cropRepository;
-    private final NotificationService notificationService;
-    private final NotificationRepository notificationRepository;
     private final S3UploadService s3UploadService;
-    //private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String s3BucketName;
@@ -36,16 +31,13 @@ public class FarmService {
     @Transactional
     public FarmDto.FarmResponse register(FarmDto.Register dto,
                                          @Nullable MultipartFile farmImageUrl,
-                                         Long userId) {
+                                         Long userId) throws IOException {
         // 농장 이미지 업로드
         String filePath = s3UploadService.upload(farmImageUrl);
         Farm farm = farmRepository.save(dto.toEntity(userId, filePath));
 
         // 테스트용: 농장 등록 시 농부에게 알림 전송
-        //publisher.publishEvent(new PushEvent().farmRegisterEvent(userId));
-        //Optional<NotificationSub> sub = notificationRepository.findById(farm.getUser().getId());
-        //notificationService.send();
-
+        farmRegisterPush(farm);
         return FarmDto.FarmResponse.from(farm);
     }
 
@@ -75,8 +67,20 @@ public class FarmService {
     }
 
     // 농장 리스트
-    public List<FarmDto.FarmResponse> listAll() {
+    public List<FarmDto.FarmListResponse> listAll() {
         List<Farm> farmList = farmRepository.findAll();
-        return farmList.stream().map(FarmDto.FarmResponse::from).toList();
+        return farmList.stream().map(FarmDto.FarmListResponse::from).toList();
+    }
+
+    // 농장 등록 알림 발송
+    public void farmRegisterPush(Farm farm) {
+        publisher.publishEvent(PushEvent.builder()
+                .userId(farm.getUser().getId())
+                .title("농장이 등록되었습니다.")
+                .message(String.format("'%s' 농장이 등록되었습니다.", farm.getName()))
+                .icon("iconimage")
+                .url("/farms/" + farm.getId())
+                .build()
+        );
     }
 }
