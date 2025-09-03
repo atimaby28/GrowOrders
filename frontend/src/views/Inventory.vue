@@ -2,6 +2,7 @@
 import api from '@/api/inventory'
 import InventorysTable from '@/views/components/InventorysTable.vue'
 import FarmInfoSlider from '@/views/components/FarmInfoSlider.vue'
+import PageNation from '@/views/components/PageNation.vue'
 import { useUserStore } from '@/store/users/useUserStore.js'
 import { reactive, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -38,11 +39,6 @@ const getInventoryList = async (farmId) => {
   }
 }
 
-//페이지 로드시 데이터 가져오기
-onMounted(() => {
-  getInventoryList(route.query.farmId)
-})
-
 //쿼리 param 변경 감지시 재고 목록 조회 함수 호출
 watch(
   () => route.query.farmId,
@@ -50,11 +46,19 @@ watch(
     getInventoryList(newParamFarmId)
   },
 )
+
+//페이지 로드시 데이터 가져오기
+onMounted(() => {
+  getInventoryList(route.query.farmId)
+})
 </script>
 
 <template>
   <div v-if="userStore.user.ownedFarm" class="py-4 container-fluid">
     <FarmInfoSlider :key="route.query.farmId" :farmInfo="farmInfo" />
     <InventorysTable :inventories="farmInfo.cropList" @updateCropList="updateCropList" @getInventoryList="getInventoryList" />
+  </div>
+  <div class="mt-4 row col-12">
+    <PageNation :pageCount="3" />
   </div>
 </template>

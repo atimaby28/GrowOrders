@@ -43,6 +43,7 @@ const searchForm = reactive({
   type: '',
   status: '',
   saleStatus: '',
+  order: '',
 })
 
 //검색 변경 감지시 api 호출
@@ -91,6 +92,14 @@ watch(searchForm, async () => {
               <option value="AVAILABLE">판매중</option>
               <option value="SOLD_OUT">판매완료</option>
               <option value="DISCONTINUED">폐기</option>
+            </select>
+            <!-- 정렬 -->
+            <select v-model="searchForm.order" id="orderFilter" class="form-select form-select-sm" style="width: 120px">
+              <option value="">정렬</option>
+              <option value="ID">재고ID</option>
+              <option value="LASTEST">최신순</option>
+              <option value="POPULAR">인기순</option>
+              <option value="RECOMMENDED">추천순</option>
             </select>
           </div>
         </div>

@@ -72,6 +72,7 @@ public class CropDto {
         private String type;
         private CropStatus status;
         private SaleStatus saleStatus;
+        private String order;
     }
 
     //응답 데이터

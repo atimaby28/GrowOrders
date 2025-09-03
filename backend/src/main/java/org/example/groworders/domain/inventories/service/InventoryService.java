@@ -26,7 +26,6 @@ import static org.example.groworders.common.model.BaseResponseStatus.INVALID_FAR
 public class InventoryService {
     private final CropQueryRepository cropQueryRepository;
     private final CropRepository cropRepository;
-    private final FarmRepository farmRepository;
     private final S3PresignedUrlService s3PresignedUrlService;
 
     //재고 등록
@@ -56,7 +55,7 @@ public class InventoryService {
 
 
     //재고 목록 조회
-    public FarmDto.FarmListResponse list(Long farmId) {
+    public FarmDto.FarmListResponse list(Long farmId, Integer page, Integer size) {
         Farm farm = cropRepository.findByIdWithCrop(farmId).orElseThrow(() -> BaseException.from(INVALID_FARM_INFO));
 
         String presignedUrl = farm.getFarmImage() != null ?

@@ -59,12 +59,15 @@ public class InventoryController {
             summary = "예측 재고 목록 조회",
             description = "parameter로 농장 아이디를 전달 받아 농부가 소유한 농장의 재고 목록 조회")
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<FarmDto.FarmListResponse>> list(Long farmId) {
-        FarmDto.FarmListResponse result = inventoryService.list(farmId);
+    public ResponseEntity<BaseResponse<FarmDto.FarmListResponse>> list(Long farmId, Integer page, Integer size) {
+        FarmDto.FarmListResponse result = inventoryService.list(farmId, page, size);
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 
     //재고 검색 조회
+    @Operation(
+            summary = "예측 재고 목록 필터 조회",
+            description = "작물 종류, 작물 상태, 판매 상태, 정렬 기준 를 각각 선택할 수 있으며 해당하는 재고만 조회")
     @GetMapping("/search")
     public ResponseEntity<BaseResponse<List<CropDto.CropResponse>>> search(Long farmId, CropDto.Search dto) {
         List<CropDto.CropResponse> result = inventoryService.search(farmId, dto);

@@ -71,6 +71,7 @@ const searchInventory = async (farmId, searchFrom) => {
         type: searchFrom.type,
         status: searchFrom.status,
         saleStatus: searchFrom.saleStatus,
+        order: searchFrom.order,
       },
     })
     .then((response) => {

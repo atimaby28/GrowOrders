@@ -1,5 +1,6 @@
 package org.example.groworders.domain.crops.repository;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -31,6 +32,7 @@ public class CropQueryRepository {
                         statusEq(dto.getStatus()),
                         saleStatusEq(dto.getSaleStatus())
                 )
+                .orderBy(orderByCustom(dto.getOrder()))
                 .fetch();
     }
 
@@ -51,5 +53,16 @@ public class CropQueryRepository {
     //판매 상태
     private BooleanExpression saleStatusEq(SaleStatus saleStatus) {
         return saleStatus != null ? crop.saleStatus.eq(saleStatus) : null;
+    }
+
+    //정렬
+    private OrderSpecifier<?> orderByCustom(String order) {
+        if(order == null) return crop.id.asc();
+
+        return switch (order) {
+            case "ID" -> crop.id.asc();
+            case "LASTEST", "RECOMMENDED", "POPULAR" -> crop.expectedHarvestDate.desc();
+            default -> crop.id.asc(); //기본 정렬 : 재고 id순
+        };
     }
 }
