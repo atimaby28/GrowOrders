@@ -31,7 +31,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: cowmin104@gmail.com
+    username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
       mail:
@@ -78,3 +78,8 @@ logging:
 api:
   weather:
     apikey: ${WEATHER_API_KEY}
+
+webpush:
+  public-key: ${PUBLIC_KEY}
+  private-key: ${PRIVATE_KEY}
+  subject: ${WEBPUSH_SUBJECT}
