@@ -2,8 +2,6 @@ import { reactive, computed } from "vue";
 import api from "@/api/order";
 import defaultFarmImage from "@/assets/img/default-farm-image.png";
 
-const S3_BASE = "https://cowmin-s3.s3.ap-northeast-2.amazonaws.com/";
-
 const toArr = (v) => (Array.isArray(v) ? v : v != null ? [v] : []);
 
 const buildCropsFromFarmFields = (farm) => {
@@ -28,23 +26,17 @@ const buildCropsFromFarmFields = (farm) => {
 export function farmCrops() {
   const farmData = reactive({ list: [] });
 
-  const farmImageUrl = (farm) => {
-    const key = farm?.farmImage;
-    if (!key) return defaultFarmImage;
-    const base = S3_BASE.replace(/\/+$/, "");
-    const path = String(key).replace(/^\/+/, "");
-    return `${base}/${path}`;
-  };
+  const farmImageUrl = (farm) => farm?.farmImage || defaultFarmImage;
 
   const flatCrops = computed(() => {
     const out = [];
     for (const farm of farmData.list ?? []) {
-      if (Array.isArray(farm?.crops) && farm.crops.length) {
-        for (const crop of farm.crops) out.push({ farm, crop });
+       if (Array.isArray(farm?.cropList) && farm.cropList.length) {
+        for (const crop of farm.cropList) out.push({ farm, crop });
         continue;
       }
-      if (Array.isArray(farm?.cropList) && farm.cropList.length) {
-        for (const crop of farm.cropList) out.push({ farm, crop });
+      if (Array.isArray(farm?.crops) && farm.crops.length) {
+        for (const crop of farm.crops) out.push({ farm, crop });
         continue;
       }
       const rebuilt = buildCropsFromFarmFields(farm);
