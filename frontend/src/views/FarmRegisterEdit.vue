@@ -1,22 +1,22 @@
 <script setup>
 import { ref, watchEffect, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useFarm } from "@/views/components/farm/useFarm.js"
 import axios from '@/plugins/axiosinterceptor.js'
 import FarmHeader from '@/views/components/farm/FarmHeader.vue'
 import FarmForm from '@/views/components/farm/FarmForm.vue'
 import FarmImageUploader from '@/views/components/farm/FarmImageUploader.vue'
-import { useFarm } from "@/views/components/farm/useFarm.js"
 
+const { farm, loading, error, loadFarm, canEdit } = useFarm()
 const route = useRoute()
 const router = useRouter()
-const { farm, loading, error, loadFarm, canEdit } = useFarm()
 
 const farmName = ref('')
 const selectedLocation = ref('')
 const addressDetail = ref('')
 const area = ref('')
 const description = ref('')
-const profileFile = ref(null)
+const farmImage = ref('')
 
 onMounted(async () => {
   await loadFarm(route.params.id)
@@ -30,6 +30,7 @@ watchEffect(() => {
     addressDetail.value = farm.value.address ?? ''
     area.value = farm.value.size ?? ''
     description.value = farm.value.contents ?? ''
+    farmImage.value = farm.value.farmImage ?? ''
   }
 })
 
@@ -40,12 +41,12 @@ async function handleUpdate() {
     address: addressDetail.value,
     size: area.value ? Number(area.value) : null,
     contents: description.value,
+    farmImage: farmImage.value,
   }
   const fd = new FormData()
   fd.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }))
-  if (profileFile.value) fd.append('farmImageUrl', profileFile.value) // 선택 시에만 보냄
 
-  await axios.put(`/farms/${farm.value.id}`, fd)
+  await axios.post(`/farms/${farm.value.id}`, fd)
   alert('농장 정보가 저장되었습니다.')
   router.push({ name: 'FarmDetail', params: { id: farm.value.id } })
 }
@@ -68,6 +69,7 @@ async function handleUpdate() {
                 v-model:addressDetail="addressDetail"
                 v-model:area="area"
                 v-model:description="description"
+                v-model:farmImage="farmImage"
                 :locationOptions="[farm.region].filter(Boolean)"/>
               <div class="row"><div class="col-md-12">
                 <FarmImageUploader v-model:file="profileFile" :disabled="false" :initialUrl="farm.imageUrl" />

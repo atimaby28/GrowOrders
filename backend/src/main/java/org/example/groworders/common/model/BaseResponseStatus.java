@@ -36,6 +36,7 @@ public enum BaseResponseStatus {
     EMAIL_VERIFY_FAIL(false, 20014, "이메일 검증 실패"),
     METHOD_ARGUMENT_NOT_VALID(false, 20015, "MethodArgumentNotValid 오류"),
 
+    REQUIRED_FIELD_ERROR(false, 20016, "폼 필수 입력 내용 미기입 오류"),
 
 
     /**

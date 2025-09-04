@@ -10,6 +10,7 @@ import FarmHeader from '@/views/components/farm/FarmHeader.vue'
 import FarmForm from '@/views/components/farm/FarmForm.vue'
 import FarmImageUploader from '@/views/components/farm/FarmImageUploader.vue'
 
+
 const router = useRouter()
 const store = useStore()
 const userStore = useUserStore()
@@ -35,6 +36,7 @@ async function handleCreate() {
     address: addressDetail.value,
     size: area.value ? Number(area.value) : null,
     contents: description.value,
+    farmImage: profileFile,
   }
   const fd = new FormData()
   fd.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }))
@@ -47,7 +49,6 @@ async function handleCreate() {
   alert('농장이 등록되었습니다.')
 }
 
-// 레이아웃 효과 (기존과 동일)
 const body = document.getElementsByTagName('body')[0]
 onMounted(() => { store.state.isAbsolute = true; setNavPills(); setTooltip(); })
 onBeforeMount(() => {
@@ -75,7 +76,6 @@ onBeforeUnmount(() => {
       </div>
       <div class="card shadow-lg mt-n6"></div>
     </div>
-
     <div class="py-4 container-fluid">
       <div class="row">
         <div class="col-md-8">

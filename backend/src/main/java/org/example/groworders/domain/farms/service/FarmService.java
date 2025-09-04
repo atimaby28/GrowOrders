@@ -3,7 +3,6 @@ package org.example.groworders.domain.farms.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.groworders.config.push.event.PushEvent;
-import org.example.groworders.domain.crops.repository.CropRepository;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.farms.repository.FarmRepository;

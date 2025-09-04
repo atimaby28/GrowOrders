@@ -48,12 +48,25 @@ public class PushDto {
         private String payload;
         private Long userId;
 
-        public Notification toEntity() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+//        public Notification toEntity() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+//            return Notification.builder()
+//                    .endpoint(endpoint)
+//                    .userPublicKey(keys.p256dh)
+//                    .userAuth(keys.auth)
+//                    .payload(payload)
+//                    .build();
+//        }
+
+        public Notification toEntity()
+                throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+
+            String safe = (payload == null) ? "" : payload; // ← 절대 null 금지
+
             return Notification.builder()
                     .endpoint(endpoint)
                     .userPublicKey(keys.p256dh)
                     .userAuth(keys.auth)
-                    .payload(payload)
+                    .payload(safe) // ← 반드시 호출 (빈 문자열 허용)
                     .build();
         }
     }

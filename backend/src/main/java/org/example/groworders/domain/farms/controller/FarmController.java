@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -59,8 +58,9 @@ public class FarmController {
             description = "농장 정보를 조회한다."
     )
     @GetMapping(value="/{farmId}")
-    public ResponseEntity<BaseResponse<FarmDto.FarmResponse>>  detail(@PathVariable Long farmId) {
-        FarmDto.FarmResponse result = farmservice.read(farmId);
+    public ResponseEntity<BaseResponse<FarmDto.FarmListResponse>>  detail(
+            @PathVariable Long farmId) {
+        FarmDto.FarmListResponse result = farmservice.read(farmId);
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 
@@ -69,14 +69,14 @@ public class FarmController {
             summary = "농장 정보 수정",
             description = "농장 정보를 수정한다."
     )
-    @PutMapping(value="/{farmId}/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value="/{farmId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> update(
             @PathVariable Long farmId,
-            @Valid @RequestPart("dto") FarmDto.Update dto,
-            @RequestPart(value="image", required=false) MultipartFile image,
+            @RequestPart("dto") @Valid FarmDto.Update dto,
+            @RequestPart(value="farmImageUrl", required=false) MultipartFile farmImageUrl,
             @AuthenticationPrincipal UserDto.AuthUser authUser
     ) {
-        FarmDto.FarmResponse result = farmservice.update(farmId, dto, image, authUser.getId());
+        FarmDto.FarmResponse result = farmservice.update(farmId, dto, authUser.getId());
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 

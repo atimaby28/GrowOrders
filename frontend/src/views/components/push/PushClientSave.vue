@@ -1,5 +1,5 @@
 <script setup>
-// // [푸시 알림] 클라이언트 endpoints, keys 디비에 저장 
+// [푸시 알림] 클라이언트 endpoints, keys 디비에 저장 
 import { onMounted } from "vue";
 import axios from 'axios'
 
