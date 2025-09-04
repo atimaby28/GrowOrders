@@ -42,21 +42,21 @@ const navItems = computed(() => [
     active: 'tables',
   },
   {
-    to: '/farmlist',
+    to: '/farms/list',
     label: '상품 검색',
     icon: 'ni ni-basket text-success text-sm opacity-10',
     role: ['FARMER'],
     active: 'tables',
   },
   {
-    to: `/inventory?farmId=${userStore.user.ownedFarm?.[0].id}`,
+    to: `/inventory?farmId=${userStore.user.ownedFarm?.[0]?.id}`,
     label: '재고관리',
     icon: 'ni ni-calendar-grid-58 text-warning text-sm opacity-10',
     role: ['FARMER'], // 문자열 타입 role
     active: 'inventory',
   },
   {
-    to: '/farm-register',
+    to: '/farms/register',
     label: '농장등록',
     icon: 'ni ni-credit-card text-success text-sm opacity-10',
     role: ['FARMER'],
