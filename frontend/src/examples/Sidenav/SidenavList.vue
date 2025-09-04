@@ -42,27 +42,6 @@ const navItems = computed(() => [
     active: "tables",
   },
   {
-<<<<<<< HEAD
-    to: "/farmlist",
-    label: "상품 검색",
-    icon: "ni ni-basket text-success text-sm opacity-10",
-    role: ["FARMER"],
-    active: "tables",
-  },
-  {
-    to: `/inventory?farmId=${userStore.user.ownedFarm?.[0]?.id}`,
-    label: "재고관리",
-    icon: "ni ni-calendar-grid-58 text-warning text-sm opacity-10",
-    role: ["FARMER"], // 문자열 타입 role
-    active: "inventory",
-  },
-  {
-    to: "/farm-register",
-    label: "농장등록",
-    icon: "ni ni-credit-card text-success text-sm opacity-10",
-    role: ["FARMER"],
-    active: "Farm Register",
-=======
     to: '/farms/list',
     label: '상품 검색',
     icon: 'ni ni-basket text-success text-sm opacity-10',
@@ -82,7 +61,6 @@ const navItems = computed(() => [
     icon: 'ni ni-credit-card text-success text-sm opacity-10',
     role: ['FARMER'],
     active: 'Farm Register',
->>>>>>> 676967daaffc0966203645d9c3de01a649362de1
   },
   {
     to: "/crops/register",

@@ -16,11 +16,6 @@ import Error from "../views/Error.vue";
 import FarmDetail from "../views/FarmRegisterDetail.vue";
 import FarmEdit from "../views/FarmRegisterEdit.vue";
 
-<<<<<<< HEAD
-// 알림 추가
-// import Push from "../views/Push.vue";
-=======
->>>>>>> 676967daaffc0966203645d9c3de01a649362de1
 // 생물 등록
 import CropRegister from "../views/CropRegister.vue";
 // 농장 등록
@@ -99,15 +94,6 @@ const routes = [
     name: "FarmerList",
     component: FarmerList,
   },
-<<<<<<< HEAD
-  // 알림 추가
-  {
-    path: "/notification",
-    name: "Notification",
-    component: Notification,
-  },
-=======
->>>>>>> 676967daaffc0966203645d9c3de01a649362de1
   // 생물 추가
   {
     path: "/crops/register",
@@ -128,13 +114,8 @@ const routes = [
     props: true,
   },
   // 농장 편집
-<<<<<<< HEAD
-  {
-    path: "/farms/:id/edit",
-=======
     {
     path: "/farms/:id",
->>>>>>> 676967daaffc0966203645d9c3de01a649362de1
     name: "FarmEdit",
     component: FarmEdit,
     props: true,
