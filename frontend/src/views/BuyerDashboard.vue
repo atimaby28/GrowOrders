@@ -5,6 +5,8 @@ import PaymentCard from "./components/PaymentCard.vue";
 import InvoiceCard from "./components/InvoiceCard.vue";
 import BillingCard from "./components/BillingCard.vue";
 import TransactionCard from "./components/TransactionCard.vue";
+import PushClientSave from "@/views/components/push/PushClientSave.vue"
+
 </script>
 <template>
   <div class="container-fluid">
@@ -56,6 +58,7 @@ import TransactionCard from "./components/TransactionCard.vue";
       <div class="col-md-5">
         <transaction-card />
       </div>
+      <PushClientSave/>
     </div>
   </div>
 </template>

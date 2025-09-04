@@ -1,0 +1,39 @@
+package org.example.groworders.config.notification.model.entity;
+
+import static com.querydsl.core.types.PathMetadataFactory.*;
+
+import com.querydsl.core.types.dsl.*;
+
+import com.querydsl.core.types.PathMetadata;
+import javax.annotation.processing.Generated;
+import com.querydsl.core.types.Path;
+
+
+/**
+ * QNotificationKeys is a Querydsl query type for NotificationKeys
+ */
+@Generated("com.querydsl.codegen.DefaultEmbeddableSerializer")
+public class QNotificationKeys extends BeanPath<NotificationKeys> {
+
+    private static final long serialVersionUID = -860628986L;
+
+    public static final QNotificationKeys notificationKeys = new QNotificationKeys("notificationKeys");
+
+    public final StringPath auth = createString("auth");
+
+    public final StringPath p256dh = createString("p256dh");
+
+    public QNotificationKeys(String variable) {
+        super(NotificationKeys.class, forVariable(variable));
+    }
+
+    public QNotificationKeys(Path<? extends NotificationKeys> path) {
+        super(path.getType(), path.getMetadata());
+    }
+
+    public QNotificationKeys(PathMetadata metadata) {
+        super(NotificationKeys.class, metadata);
+    }
+
+}
+

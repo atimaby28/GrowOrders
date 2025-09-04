@@ -1,14 +1,13 @@
 package org.example.groworders.domain.farms.model.dto;
 
-import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.User;
-
 import java.util.List;
+import java.util.Optional;
 
 public class FarmDto {
 
@@ -61,7 +60,6 @@ public class FarmDto {
         private String address;
         private Integer size;
         private String contents;
-        @Nullable
         private String farmImage;
 
         public static Farm from(Farm entity) {
@@ -166,6 +164,8 @@ public class FarmDto {
     // FarmListResponse (작물 포함)
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class FarmListResponse {
         private Long user_id;
         private Long id;
@@ -174,14 +174,16 @@ public class FarmDto {
         private String address;
         private Integer size;
         private String contents;
-        private String farmImage;
+        private String farmImage; // presigned URL
         private List<CropDto.CropResponse> cropList;
-        private List<String> cropType;
-        private List<String> cropCultivateType;
-        private List<Integer> cropExpectedQuantity;
+//        private List<String> cropType;
+//        private List<String> cropCultivateType;
+//        private List<Integer> cropExpectedQuantity;
         // private Integer cropPrice;
 
         public static FarmListResponse from(Farm entity, String presignedUrl) {
+            List<Crop> crops = Optional.ofNullable(entity.getCropList()).orElseGet(List::of);
+
             return FarmListResponse.builder()
                     .user_id(entity.getUser().getId())
                     .id(entity.getId())
@@ -191,10 +193,10 @@ public class FarmDto {
                     .size(entity.getSize())
                     .contents(entity.getContents())
                     .farmImage(presignedUrl)
-                    .cropList(entity.getCropList().stream().map(CropDto.CropResponse::from).toList())
-                    .cropType(entity.getCropList().stream().map(Crop::getType).toList())
-                    .cropCultivateType(entity.getCropList().stream().map(Crop::getCultivateType).toList())
-                    .cropExpectedQuantity(entity.getCropList().stream().map(Crop::getExpectedQuantity).toList())
+                    .cropList(crops.stream().map(CropDto.CropResponse::from).toList())
+//                    .cropType(crops.stream().map(Crop::getType).toList())
+//                    .cropCultivateType(crops.stream().map(Crop::getCultivateType).toList())
+//                    .cropExpectedQuantity(crops.stream().map(Crop::getExpectedQuantity).toList())
                     .build();
         }
     }

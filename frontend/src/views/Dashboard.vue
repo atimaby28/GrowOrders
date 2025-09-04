@@ -3,6 +3,7 @@ import { onMounted, computed, reactive } from "vue";
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 import Carousel from "./components/Carousel.vue";
 import CategoriesList from "./components/CategoriesList.vue";
+import PushClientSave from "@/views/components/push/PushClientSave.vue"
 
 // import US from "@/assets/img/orderlabs/girl.png";
 // import DE from "@/assets/img/orderlabs/boy.png";
@@ -258,6 +259,7 @@ onMounted(fetchData);
       <div class="col-lg-5">
         <carousel :chartsData="state.chartData" />
       </div>
+      <PushClientSave/>
     </div>
   </div>
 </template>

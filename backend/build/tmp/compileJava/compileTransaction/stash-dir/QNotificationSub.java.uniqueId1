@@ -1,0 +1,55 @@
+package org.example.groworders.config.notification.model.entity;
+
+import static com.querydsl.core.types.PathMetadataFactory.*;
+
+import com.querydsl.core.types.dsl.*;
+
+import com.querydsl.core.types.PathMetadata;
+import javax.annotation.processing.Generated;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
+
+
+/**
+ * QNotificationSub is a Querydsl query type for NotificationSub
+ */
+@Generated("com.querydsl.codegen.DefaultEntitySerializer")
+public class QNotificationSub extends EntityPathBase<NotificationSub> {
+
+    private static final long serialVersionUID = -2105964050L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
+
+    public static final QNotificationSub notificationSub = new QNotificationSub("notificationSub");
+
+    public final StringPath endpoint = createString("endpoint");
+
+    public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final QNotificationKeys keys;
+
+    public final NumberPath<Long> userId = createNumber("userId", Long.class);
+
+    public QNotificationSub(String variable) {
+        this(NotificationSub.class, forVariable(variable), INITS);
+    }
+
+    public QNotificationSub(Path<? extends NotificationSub> path) {
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+    }
+
+    public QNotificationSub(PathMetadata metadata) {
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QNotificationSub(PathMetadata metadata, PathInits inits) {
+        this(NotificationSub.class, metadata, inits);
+    }
+
+    public QNotificationSub(Class<? extends NotificationSub> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.keys = inits.isInitialized("keys") ? new QNotificationKeys(forProperty("keys")) : null;
+    }
+
+}
+

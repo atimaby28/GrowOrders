@@ -78,3 +78,8 @@ logging:
 api:
   weather:
     apikey: ${WEATHER_API_KEY}
+
+webpush:
+  public-key: ${PUBLIC_KEY}
+  private-key: ${PRIVATE_KEY}
+  subject: ${WEBPUSH_SUBJECT}
