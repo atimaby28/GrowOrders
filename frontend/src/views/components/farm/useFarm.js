@@ -22,7 +22,8 @@ export function useFarm() {
         size: data.size,
         contents: data.contents,
         userId: data.userId ?? data.user?.id ?? data.user_id,
-        imageUrl: data.farmImageUrl ?? data.imageUrl ?? data.image,
+        farmImage: data.farmImageUrl ?? data.farmImage,
+        cropList: data.cropList,
       }
     } catch (e) {
       error.value = e
