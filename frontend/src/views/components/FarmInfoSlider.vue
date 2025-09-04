@@ -1,12 +1,12 @@
 <script setup>
-import { defineProps } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@/store/users/useUserStore.js";
+import { useInventoryStore } from "@/store/inventories/useInventoryStore.js";
 
-const props = defineProps(["farmInfo"]);
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
+const inventoryStore = useInventoryStore();
 
 const currentFarmIndex = userStore.user.ownedFarm.findIndex(
   (f) => f.id == route.query.farmId
@@ -74,12 +74,14 @@ const changeFarmNext = () => {
               ]"
             >
               <div class="farm-card">
-                <img :src="props.farmInfo.farmImage" alt="" />
+                <img :src="inventoryStore.farmInfo.farmImage" alt="" />
                 <!-- 블러 처리-->
                 <div class="overlay"></div>
                 <div class="carousel-caption text-start">
-                  <h5 class="farm-title">{{ props.farmInfo.name }}</h5>
-                  <p class="farm-contents">{{ props.farmInfo.contents }}</p>
+                  <h5 class="farm-title">{{ inventoryStore.farmInfo.name }}</h5>
+                  <p class="farm-contents">
+                    {{ inventoryStore.farmInfo.contents }}
+                  </p>
                   <button class="btn bg-gradient-success">농장 보기</button>
                 </div>
               </div>

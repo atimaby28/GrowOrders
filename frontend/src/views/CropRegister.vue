@@ -4,15 +4,12 @@ import ArgonInput from "@/components/ArgonInput.vue"; //입력 컴포넌트
 import CropCard from "@/components/CropCard.vue"; //오른쪽 작물 카드 컴포넌트
 import ArgonButton from "@/components/ArgonButton.vue"; //버튼 컴포넌트
 import { useUserStore } from "../store/users/useUserStore.js";
+import { ref, reactive, computed } from "vue";
 
 const mode = ref("register");
 const userStore = useUserStore();
 
-console.log("@@@@@@@@@");
-console.log(userStore.user.ownedFarm);
-
 // 드롭다운 목록
-import { ref, reactive, computed } from "vue";
 const cropRegisterForm = reactive({
   farmId: "", // 01. 농장
   type: "", // 02. 품목
@@ -22,37 +19,10 @@ const cropRegisterForm = reactive({
   cultivateType: "", //06. 재배 방식
 });
 
-// 에러 메세지
-const cropRegisterFormError = reactive({
-  farmId: {
-    errorMessage: "",
-    isValid: false,
-  },
-  type: {
-    errorMessage: "",
-    isValid: false,
-  },
-  status: {
-    errorMessage: "",
-    isValid: false,
-  },
-  sowingStartDate: {
-    errorMessage: "",
-    isValid: false,
-  },
-  area: {
-    errorMessage: "",
-    isValid: false,
-  },
-  cultivateType: {
-    errorMessage: "",
-    isValid: false,
-  },
-});
-
 // 농장 선택에 따라 선택 가능한 작물 종류 재계산
 const availableCropTypeOptions = computed(() => {
-  const allCropTypeOptions = ["토마토", "딸기", "파프리카"];
+  const allCropTypeOptions = ["토마토", "딸기", "파프리카"]; //const allCropTypeOptions = ["토마토"];
+
   if (!cropRegisterForm.farmId) return allCropTypeOptions;
 
   const farm = userStore.user.ownedFarm.find(
@@ -104,6 +74,34 @@ const cropInfoMap = {
   },
 };
 
+// 에러 메세지
+const cropRegisterFormError = reactive({
+  farmId: {
+    errorMessage: "",
+    isValid: false,
+  },
+  type: {
+    errorMessage: "",
+    isValid: false,
+  },
+  status: {
+    errorMessage: "",
+    isValid: false,
+  },
+  sowingStartDate: {
+    errorMessage: "",
+    isValid: false,
+  },
+  area: {
+    errorMessage: "",
+    isValid: false,
+  },
+  cultivateType: {
+    errorMessage: "",
+    isValid: false,
+  },
+});
+
 // 모든 필드 입력값 검증
 const isFormValid = computed(() => {
   return (
@@ -116,12 +114,22 @@ const isFormValid = computed(() => {
   );
 });
 
+// 농장 선택 바뀌면 내용 초기화
+const cropRegisterFormInitial = () => {
+  cropRegisterForm.type = "";
+  cropRegisterForm.sowingStartDate = "";
+  cropRegisterForm.status = "";
+  cropRegisterForm.area = "";
+  cropRegisterForm.cultivateType = "";
+};
+
 // 농장 아이디 선택 검증
 const farmIdRules = [
   (event) => {
     if (event.target.value) {
       cropRegisterFormError.farmId.errorMessage = null;
       cropRegisterFormError.farmId.isValid = true;
+      cropRegisterFormInitial();
       return true;
     } else {
       cropRegisterFormError.farmId.errorMessage = "농장을 선택 해주세요.";
@@ -210,13 +218,13 @@ const cultivateTypeRules = [
 
 // 등록 버튼 클릭시, 등록 api 호출
 const onSubmit = async () => {
-  console.log(JSON.stringify(cropRegisterForm));
-
   const data = await api.cropRegister(cropRegisterForm);
 
   if (data) {
     if (data.success) {
-      console.log("정상 처리");
+      userStore.user.ownedFarm = data.data.ownedFarm;
+      cropRegisterFormInitial();
+      alert("작물 등록 성공했습니다.");
     } else {
       for (const key in cropRegisterFormError) {
         cropRegisterFormError[key].errorMessage = data.data[key];
