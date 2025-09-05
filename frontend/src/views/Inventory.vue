@@ -14,7 +14,7 @@ const inventoryStore = useInventoryStore();
 
 //재고 검색 필터 변경시 재고 값 변경
 const updateCropList = (cropList) => {
-  inventoryStore.cropList = cropList;
+  inventoryStore.farmInfo.cropList = cropList;
 };
 
 //재고 목록 조회 api 호출
