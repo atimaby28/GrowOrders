@@ -56,7 +56,7 @@
           <div class="col-auto my-auto">
             <div class="h-100">
               <h5 class="mb-1">
-                주문이 생성되었습니다.
+                주문이 수정되었습니다.
               </h5>
             </div>
           </div>
@@ -165,6 +165,18 @@
                     <input class="form-control" type="text" value="경상북도 구미시 도봉로 5길 21-높은유통">
                   </div>
                 </div>
+                              <div class="form-check">
+                <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault1">
+                <label class="form-check-label" for="radioDefault1">
+                  환불요청
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="radioDefault" id="radioDefault2" checked>
+                <label class="form-check-label" for="radioDefault2">
+                  교환요청
+                </label>
+              </div>
               </div>
               <hr class="horizontal dark">
               <p class="text-uppercase text-sm">요구사항</p>
@@ -187,12 +199,12 @@
         </div>
         <div class="col-md-4">
           <div class="card card-profile">
-            <img src="../assets/img/bg-profile.jpg" alt="Image placeholder" class="card-img-top">
+                            <img src="@/assets/img/bg-profile.jpg" alt="Image placeholder" class="card-img-top">
             <div class="row justify-content-center">
               <div class="col-4 col-lg-4 order-lg-2">
                 <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">
                   <a href="javascript:;">
-                    <img src="../assets/img/team-2.jpg" class="rounded-circle img-fluid border border-2 border-white">
+                    <img src="@/assets/img/team-2.jpg" class="rounded-circle img-fluid border border-2 border-white">
                   </a>
                 </div>
               </div>

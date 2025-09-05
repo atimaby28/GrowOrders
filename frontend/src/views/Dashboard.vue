@@ -1,16 +1,12 @@
 <script setup>
+/* ----------------- 📦 Imports ----------------- */
 import { onMounted, computed, reactive } from "vue";
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 import Carousel from "./components/Carousel.vue";
 import CategoriesList from "./components/CategoriesList.vue";
-
-// import US from "@/assets/img/orderlabs/girl.png";
-// import DE from "@/assets/img/orderlabs/boy.png";
-// import GB from "@/assets/img/orderlabs/man.png";
-// import BR from "@/assets/img/orderlabs/woman.png";
-
 import ProjectCard from "./components/ProjectCard.vue";
 import api from "@/api/dashboard";
+import apii from "@/api/order";
 
 /* ----------------- 🖼 Assets ----------------- */
 import logoXD from "@/assets/img/orderlabs/sun.png";
@@ -121,7 +117,8 @@ const fetchData = async () => {
       api.chartData(),
       api.farmStatus(),
       api.orderList(),
-      await api.weatherData()
+      await api.weatherData(),
+      await apii.orderList()
     ]);
 
     state.summaryData = summary?.summary ?? [];

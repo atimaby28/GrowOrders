@@ -1,38 +1,18 @@
-<!-- <script setup> -->
-// import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
-// import { useStore } from "vuex";
+<script setup>
+import { useRouter, useRoute } from 'vue-router';
 
-// import setNavPills from "@/assets/js/nav-pills.js";
-// import setTooltip from "@/assets/js/tooltip.js";
-// import ProfileCard from "./components/ProfileCard.vue";
-// // import ArgonInput from "@/components/ArgonInput.vue";
-// // import ArgonButton from "@/components/ArgonButton.vue";
+const router = useRouter();
+const route = useRoute();
 
-// const body = document.getElementsByTagName("body")[0];
+// 주문수정 함수
+const modifyOrder = () => {
+  // 주문 수정 로직
+  console.log('주문이 수정되었습니다.');
+  // OrderModifyComplete 페이지로 이동
+  router.push(`/order-modify-complete/${route.params.orderId}/MODIFIED`);
+};
+</script>
 
-// const store = useStore();
-
-// onMounted(() => {
-//   store.state.isAbsolute = true;
-//   setNavPills();
-//   setTooltip();
-// });
-// onBeforeMount(() => {
-//   store.state.imageLayout = "profile-overview";
-//   store.state.showNavbar = false;
-//   store.state.showFooter = true;
-//   store.state.hideConfigButton = true;
-//   body.classList.add("profile-overview");
-// });
-// onBeforeUnmount(() => {
-//   store.state.isAbsolute = false;
-//   store.state.imageLayout = "default";
-//   store.state.showNavbar = true;
-//   store.state.showFooter = true;
-//   store.state.hideConfigButton = false;
-//   body.classList.remove("profile-overview");
-// });
-// <!-- </script> -->
 <template>
   <main>
     <div class="container-fluid">
@@ -91,7 +71,7 @@
             <div class="card-header pb-0">
               <div class="d-flex align-items-center">
                 <p class="mb-0">주문상세</p>
-                <button class="btn btn-primary btn-sm ms-auto">주문수정</button>
+                <button class="btn btn-primary btn-sm ms-auto" @click="modifyOrder">주문수정</button>
               </div>
             </div>
             <div class="card-body">
