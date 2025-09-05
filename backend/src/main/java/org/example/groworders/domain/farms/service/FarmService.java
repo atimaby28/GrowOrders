@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.groworders.config.push.event.PushEvent;
 import org.example.groworders.domain.farms.model.dto.FarmDto;
 import org.example.groworders.domain.farms.model.entity.Farm;
+import org.example.groworders.domain.farms.repository.FarmQueryRepository;
 import org.example.groworders.domain.farms.repository.FarmRepository;
 import org.example.groworders.domain.users.service.S3PresignedUrlService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -20,6 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FarmService {
+    private final FarmQueryRepository farmQueryRepository;
     private final FarmRepository farmRepository;
     private final S3UploadService s3UploadService; //업로드
     private final S3PresignedUrlService s3PresignedUrlService; //불러오기
@@ -27,7 +29,7 @@ public class FarmService {
 
     // 농장 등록
     @Transactional
-    public FarmDto.FarmResponse register(FarmDto.Register dto,
+    public FarmDto.FarmRegisterResponse register(FarmDto.Register dto,
                                          MultipartFile farmImageUrl,
                                          Long userId) throws IOException {
         // 농장 이미지 업로드
@@ -36,7 +38,11 @@ public class FarmService {
 
         // 푸시 테스트용: 농장 등록 시 농부에게 알림 전송
         farmRegisterPush(farm);
-        return FarmDto.FarmResponse.from(farm);
+//        return FarmDto.FarmResponse.from(farm);
+
+        //소유하고 있는 농장 리스트 응답
+        List<Farm> ownedFarm = farmQueryRepository.findByIdWithFarmWithCrop(userId);
+        return FarmDto.FarmRegisterResponse.from(ownedFarm);
     }
 
     // 농장 정보

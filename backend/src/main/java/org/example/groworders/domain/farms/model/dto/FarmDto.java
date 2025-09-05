@@ -6,6 +6,9 @@ import org.example.groworders.domain.crops.model.dto.CropDto;
 import org.example.groworders.domain.crops.model.entity.Crop;
 import org.example.groworders.domain.farms.model.entity.Farm;
 import org.example.groworders.domain.users.model.entity.User;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -228,6 +231,18 @@ public class FarmDto {
         }
     }
 
+    @Getter
+    @Builder
+    public static class FarmRegisterResponse {
+        private List<FarmDto.OwnedFarm> ownedFarm;
+
+        public static  FarmRegisterResponse from(List<Farm> entity) {
+            return FarmRegisterResponse.builder()
+                    .ownedFarm(entity.stream().map(FarmDto.OwnedFarm::from).toList())
+                    .build();
+        }
+    }
+
 
 /*
     // FarmResponse
@@ -272,7 +287,12 @@ public class FarmDto {
             return OwnedFarm.builder()
                     .id(entity.getId())
                     .name(entity.getName())
-                    .cropType(entity.getCropList().stream().map(Crop::getType).distinct().toList()) //Crop Entity에서 Type 중복 제거하고 가져오기
+                    .cropType(Optional.ofNullable(entity.getCropList())
+                            .orElseGet(Collections::emptyList)
+                            .stream()
+                            .map(Crop::getType)
+                            .distinct()
+                            .toList()) //Crop Entity에서 Type 중복 제거하고 가져오기
                     .build();
         }
     }

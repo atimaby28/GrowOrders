@@ -44,11 +44,11 @@ public class FarmController {
             description = "농장 이름, 농장 지역, 농장 주소, 농장 크기, 농장 설명, 농장 프로필 사진을 입력받아 농장을 등록한다."
     )
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BaseResponse<FarmDto.FarmResponse>> register(
+    public ResponseEntity<BaseResponse<FarmDto.FarmRegisterResponse>> register(
             @RequestPart("dto") @Valid FarmDto.Register dto,
             @RequestPart(value = "farmImageUrl", required = false) MultipartFile farmImageUrl,
             @AuthenticationPrincipal UserDto.AuthUser authUser) throws IOException {
-        FarmDto.FarmResponse result = farmservice.register(dto, farmImageUrl, authUser.getId());
+        FarmDto.FarmRegisterResponse result = farmservice.register(dto, farmImageUrl, authUser.getId());
         return ResponseEntity.ok(BaseResponse.success(result));
     }
 
