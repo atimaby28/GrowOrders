@@ -2,10 +2,10 @@
 module.exports = {
   devServer: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080', // 백엔드 주소
+      "/api": {
+        target: "http://localhost:8080", // 백엔드 주소
         changeOrigin: true,
-        // pathRewrite: { '^/api': '' },
+        pathRewrite: { "^/api": "" },
         secure: false,
       },
     },

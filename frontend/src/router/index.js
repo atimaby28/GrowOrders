@@ -144,6 +144,11 @@ const routes = [
     name: "OrderCartComplete",
     component: OrderCartComplete,
   },
+  {
+    path: "/cart",
+    name: "Cart",
+    component: Cart,
+  },
   // 생물 추가
   {
     path: "/crops/register",
@@ -222,27 +227,26 @@ const routes = [
     name: "Payment",
     component: PaymentView,
   },
-    {
-        path: '/crop',
-        name: 'Crop',
-        component: CropPage
-    },
-    {
-        path: '/ordercreate2',
-        name: 'OrderCreate2',
-        component: OrderCreate2
-    },
-    {
-        path: '/orderCart2',
-        name: 'OrderCart2',
-        component: OrderCart2
-    },
-    {
-        path: '/cartview2',
-        name: 'CartView2',
-        component: CartView2
-    }
-
+  {
+    path: "/crop",
+    name: "Crop",
+    component: CropPage,
+  },
+  {
+    path: "/ordercreate2",
+    name: "OrderCreate2",
+    component: OrderCreate2,
+  },
+  {
+    path: "/orderCart2",
+    name: "OrderCart2",
+    component: OrderCart2,
+  },
+  {
+    path: "/cartview2",
+    name: "CartView2",
+    component: CartView2,
+  },
 ];
 
 const router = createRouter({

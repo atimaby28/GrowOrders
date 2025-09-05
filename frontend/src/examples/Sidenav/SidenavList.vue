@@ -36,14 +36,14 @@ const navItems = [
     label: "주문관리",
     icon: "ni ni-calendar-grid-58 text-warning text-sm opacity-10",
     role: ["FARMER"],
-    active: "FarmerList"
+    active: "FarmerList",
   },
   {
-    to: '/farms/list',
+    to: "/farms/list",
     label: "상품 검색",
     icon: "ni ni-basket text-success text-sm opacity-10",
     role: ["BUYER"],
-    active: "FarmList"
+    active: "FarmList",
   },
   {
     to: `/inventory?farmId=${userStore.user.ownedFarm?.[0]?.id}`,
@@ -53,11 +53,11 @@ const navItems = [
     active: "inventory",
   },
   {
-    to: '/farms/register',
-    label: '농장등록',
-    icon: 'ni ni-credit-card text-success text-sm opacity-10',
-    role: ['FARMER'],
-    active: 'Farm Register',
+    to: "/farms/register",
+    label: "농장등록",
+    icon: "ni ni-credit-card text-success text-sm opacity-10",
+    role: ["FARMER"],
+    active: "Farm Register",
   },
   {
     to: "/crops/register",
@@ -85,12 +85,12 @@ const navItems = [
     icon: "ni ni-single-02 text-dark text-sm opacity-10",
     active: "profile",
   },
-]);
+];
 
 // 현재 role에 맞는 항목 필터링 (getUserRole 사용)
 const filteredNavItems = computed(() => {
   const role = userStore.getUserRole()?.toUpperCase() || null;
-  return navItems.filter(item => {
+  return navItems.filter((item) => {
     if (!item.role) return true; // role 제한 없는 경우
     return item.role.includes(role);
   });
