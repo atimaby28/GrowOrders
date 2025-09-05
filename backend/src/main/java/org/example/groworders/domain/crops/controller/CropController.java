@@ -12,9 +12,11 @@ import org.example.groworders.domain.inventories.model.dto.InventoryDto;
 import org.example.groworders.domain.inventories.service.InventoryService;
 import org.example.groworders.domain.predict.model.dto.PredictionDto;
 import org.example.groworders.domain.predict.service.PredictionService;
+import org.example.groworders.domain.users.model.dto.UserDto;
 import org.example.groworders.domain.weather.model.dto.WeatherDto;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,7 +38,10 @@ public class CropController {
             description = "작물 타입, 작물 상태, 재배 면적, 파종 시작일, 재배 방식, 농장 아이디를 입력 받고 작물을 등록함과 동시에 예측 재고를 등록 한다."
     )
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse<Object>> register(@Valid @RequestBody CropDto.Register dto) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<BaseResponse<Object>> register(
+            @Valid @RequestBody CropDto.Register dto,
+            @AuthenticationPrincipal UserDto.AuthUser authUser
+    ) throws ChangeSetPersister.NotFoundException {
         /** 작물 등록 */
         Crop crop = cropService.register(dto);
 
@@ -46,9 +51,9 @@ public class CropController {
         PredictionDto.Response prediction = predictionService.predictDaily(requestDaily.getCropName(), requestDaily.getCultivationType(), requestDaily.getGrowthStage(), weather);
 
         /** 재고 등록 */
-        InventoryDto.Register inventoryDTO = cropService.transform(crop, Objects.requireNonNull(prediction));
-        inventoryService.save(inventoryDTO);
+        InventoryDto.Register inventoryDTO = cropService.transform(crop, prediction);
+        InventoryDto.InventoryResponse result = inventoryService.save(inventoryDTO, authUser.getId());
 
-        return ResponseEntity.ok(BaseResponse.successMessage("작물 등록 성공"));
+        return ResponseEntity.ok(BaseResponse.success(result));
     }
 }
