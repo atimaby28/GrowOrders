@@ -3,7 +3,7 @@ import api from "@/plugins/axiosinterceptor";
 // 백엔드 호출 후 받은 데이터를 반환
 const orderList = async () => {
     let data = {};
-    let url = '/api/orderList.json';
+    let url = '/dashboard/recent';
 
     await api.get(url)
         .then((res) => {
@@ -18,22 +18,7 @@ const orderList = async () => {
 
 const dashboardNav = async () => {
     let data = {};
-    let url = '/api/dashboardNav.json';
-
-    await api.get(url)
-        .then((res) => {
-            data = res.data;
-        })
-        .catch((error) => {
-            data = error.data;
-        });
-
-    return data;
-}
-
-const farmStatus = async () => {
-    let data = {};
-    let url = '/api/farmStatus.json';
+    let url = '/dashboard/summary';
 
     await api.get(url)
         .then((res) => {
@@ -48,7 +33,7 @@ const farmStatus = async () => {
 
 const chartData = async () => {
     let data = {};
-    let url = '/api/charts.json';
+    let url = '/dashboard/charts';
 
     await api.get(url)
         .then((res) => {
@@ -61,4 +46,19 @@ const chartData = async () => {
     return data;
 }
 
-export default { orderList, dashboardNav, farmStatus, chartData }
+const weatherData = async () => {
+    let data ={};
+    let url = '/weather'
+
+        await api.get(url)
+        .then((res) => {
+            data = res.data;
+        })
+        .catch((error) => {
+            data = error.data;
+        });
+
+    return data;
+}
+
+export default { orderList, dashboardNav, chartData, weatherData }

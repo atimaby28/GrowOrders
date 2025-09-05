@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useUserStore } from "../store/users/useUserStore.js";
 import FarmerDashboard from "../views/Dashboard.vue";
 import BuyerDashboard from "../views/BuyerDashboard.vue";
 import Tables from "../views/Tables.vue";
@@ -12,6 +13,18 @@ import FarmerList from "../views/order/FarmerList.vue";
 import OrderDetail from "../views/order/OderDetail.vue";
 import OrderCreate from "../views/order/OrderCreate.vue";
 import Error from "../views/Error.vue";
+
+import CartView from "../views/test/CartView.vue";
+import OrderView from "../views/test/OrderView.vue";
+import PaymentView from "../views/test/PaymentView.vue";
+import CropPage from "../views/test/CropPage.vue";
+
+
+import OrderCreate2 from "../views/test/OrderCreate2.vue";
+import OrderCart2 from "../views/test/OrderCart2.vue";
+import CartView2 from "../views/test/CartView2.vue";
+
+import Chat from "../views/Chat.vue";
 
 // 알림 추가
 import Notification from "../views/Notification.vue";
@@ -76,10 +89,9 @@ const routes = [
     component: BuyerList
   },
   {
-    path: "/orders/:orderId",
+    path: "/ordersdetial",
     name: "OrderDetail",
     component: OrderDetail,
-    props: true,
   },
   {
     path: "/Farms/:FarmId",
@@ -121,6 +133,11 @@ const routes = [
     name: "Sales",
     component: Sales
   },
+    {
+    path: "/chat",
+    name: "Chat",
+    component: Chat
+  },
   // 재고 관리
   {
     path: "/inventory",
@@ -135,12 +152,62 @@ const routes = [
       },
     ],
   },
+
+      {
+      path: '/cart',
+      name: 'Cart',
+      component: CartView
+    },
+    {
+      path: '/order',
+      name: 'Order',
+      component: OrderView
+    },
+    {
+      path: '/payment',
+      name: 'Payment',
+      component: PaymentView
+    },
+    {
+      path: '/crop',
+      name: 'Crop',
+      component: CropPage
+    },
+    {
+      path: '/ordercreate2',
+      name: 'OrderCreate2',
+      component: OrderCreate2
+    },
+    {
+      path: '/orderCart2',
+      name: 'OrderCart2',
+      component: OrderCart2
+    },
+    {
+      path: '/cartview2',
+      name: 'CartView2',
+      component: CartView2
+    }
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
   linkActiveClass: "active",
+});
+
+router.beforeEach((to) => {
+  const userStore = useUserStore();
+  const loggedIn = userStore.checkLogin();
+
+  if (to.meta.requiresAuth && !loggedIn) {
+    return "/signin"; // 로그인 안 됐으면 /signin으로 이동
+  }
+
+  if (to.path === "/signin" && loggedIn) {
+    // 이미 로그인 되어있으면 대시보드로 리다이렉트
+    return userStore.user.role === "FARMER" ? "/farmer/dashboard" : "/buyer/dashboard";
+  }
 });
 
 export default router;

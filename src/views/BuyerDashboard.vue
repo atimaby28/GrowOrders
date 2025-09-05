@@ -5,7 +5,15 @@ import PaymentCard from "./components/PaymentCard.vue";
 import InvoiceCard from "./components/InvoiceCard.vue";
 import BillingCard from "./components/BillingCard.vue";
 import TransactionCard from "./components/TransactionCard.vue";
+
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const goToCart = () => {
+  router.push("/cartview2");
+};
 </script>
+
 <template>
   <div class="container-fluid">
     <div class="row">
@@ -17,15 +25,18 @@ import TransactionCard from "./components/TransactionCard.vue";
           <div class="col-xl-6">
             <div class="row">
               <div class="col-md-6">
-                <default-info-card
-                  :icon="{
-                    component: 'fas fa-cart-plus',
-                    background: 'bg-gradient-success',
-                  }"
-                  title="장바구니"
-                  description="현재 담긴 상품: 12개"
-                  value="총액: 2,000 ₩"
-                />
+                <!-- 클릭 영역을 div로 감쌈 -->
+                <div @click="goToCart" style="cursor: pointer;">
+                  <default-info-card
+                    :icon="{
+                      component: 'fas fa-cart-plus',
+                      background: 'bg-gradient-success',
+                    }"
+                    title="장바구니"
+                    description="현재 담긴 상품: 12개"
+                    value="총액: 2,000 ₩"
+                  />
+                </div>
               </div>
               <div class="col-md-6">
                 <default-info-card
