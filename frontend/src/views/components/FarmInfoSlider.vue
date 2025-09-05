@@ -44,6 +44,11 @@ const changeFarmNext = () => {
     });
   }
 };
+
+//농장 보기 버튼 클릭시
+const farmDetail = (farmId) => {
+  router.push(`/farms/${farmId}`);
+};
 </script>
 
 <template>
@@ -82,7 +87,12 @@ const changeFarmNext = () => {
                   <p class="farm-contents">
                     {{ inventoryStore.farmInfo.contents }}
                   </p>
-                  <button class="btn bg-gradient-success">농장 보기</button>
+                  <button
+                    class="btn bg-gradient-success"
+                    @click="farmDetail(farm.id)"
+                  >
+                    농장 보기
+                  </button>
                 </div>
               </div>
             </div>

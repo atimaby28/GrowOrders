@@ -10,7 +10,7 @@ const emits = defineEmits(["updateCropList", "getInventoryList"]);
 const route = useRoute();
 const inventoryStore = useInventoryStore();
 
-//부모 vue에서 전달받은 메소드 실행
+//부모의 재고 목록 조회 api 호출 메소드 실행
 const getInventoryList = (farmId) => {
   emits("getInventoryList", farmId);
 };

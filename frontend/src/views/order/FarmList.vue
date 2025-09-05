@@ -20,13 +20,8 @@ const {
   filtered,
 } = farmListFilter(flatCrops);
 
-const {
-  visibleItems,
-  canLoadMore,
-  loadMore,
-  sentinel,
-  loadingMore,
-} = farmListScroll(filtered, { batchSize: 30, threshold: 0.2 });
+const { visibleItems, canLoadMore, loadMore, sentinel, loadingMore } =
+  farmListScroll(filtered, { batchSize: 30, threshold: 0.2 });
 
 onMounted(load);
 </script>
@@ -35,7 +30,7 @@ onMounted(load);
   <div class="container-narrow mx-auto">
     <div class="card mb-4">
       <FarmToolbar
-        title="농장 목록"
+        title="상품 목록"
         :crop-options="cropTypeOptions"
         :region-options="regionOptions"
         :cultivate-options="cultivateOptions"
@@ -53,7 +48,10 @@ onMounted(load);
             :default-image="DEFAULT_FARM_IMG"
           >
             <template #empty>
-              <div v-if="farmData.list.length" class="text-center text-secondary py-5">
+              <div
+                v-if="farmData.list.length"
+                class="text-center text-secondary py-5"
+              >
                 해당 조건의 농장이 없습니다.
               </div>
             </template>
@@ -71,7 +69,7 @@ onMounted(load);
             :disabled="loadingMore"
             @click="loadMore"
           >
-            {{ loadingMore ? '불러오는 중…' : '더 보기' }}
+            {{ loadingMore ? "불러오는 중…" : "더 보기" }}
           </button>
         </div>
       </div>
@@ -82,6 +80,10 @@ onMounted(load);
 </template>
 
 <style scoped>
-.container-narrow { max-width: 1200px; }
-.infinite-sentinel { min-height: 24px; }
+.container-narrow {
+  max-width: 1200px;
+}
+.infinite-sentinel {
+  min-height: 24px;
+}
 </style>
