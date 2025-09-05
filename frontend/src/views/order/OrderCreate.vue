@@ -1,45 +1,57 @@
-<!-- <script setup> -->
-// import { onBeforeMount, onMounted, onBeforeUnmount } from "vue";
-// import { useStore } from "vuex";
+<script setup>
+import { useRouter, useRoute } from "vue-router";
+import { ref, computed } from "vue";
+import { addToCart } from "@/api/product/cart.js"; // ✅ named import
 
-// import setNavPills from "@/assets/js/nav-pills.js";
-// import setTooltip from "@/assets/js/tooltip.js";
-// import ProfileCard from "./components/ProfileCard.vue";
-// // import ArgonInput from "@/components/ArgonInput.vue";
-// // import ArgonButton from "@/components/ArgonButton.vue";
+const router = useRouter();
+const route = useRoute();
 
-// const body = document.getElementsByTagName("body")[0];
+// 상품 관리 ID (CropOrderManagementId) - URL 파라미터에서 가져옴
+const cropMgtId = Number(route.params.cropMgtId) || 1;
+const quantity = ref(1);
+const userName = ref("심시경")
+const userEmail = ref("SSG1999@gmail.com")
+const name = ref("심시경")
+const cropName = ref("토마토")
+const price = ref(5000)
+const totalPrice =computed(() => price.value * quantity.value)
+const address = ref("경상북도 구미시 도봉로 5길 21-높은유통")
+const orderRequest = ref("내용물 안터지게 포장해주세요")
+const deliveryRequest = ref("아기가 자고 있으니 초인종 누르지 말아주세요")
 
-// const store = useStore();
 
-// onMounted(() => {
-//   store.state.isAbsolute = true;
-//   setNavPills();
-//   setTooltip();
-// });
-// onBeforeMount(() => {
-//   store.state.imageLayout = "profile-overview";
-//   store.state.showNavbar = false;
-//   store.state.showFooter = true;
-//   store.state.hideConfigButton = true;
-//   body.classList.add("profile-overview");
-// });
-// onBeforeUnmount(() => {
-//   store.state.isAbsolute = false;
-//   store.state.imageLayout = "default";
-//   store.state.showNavbar = true;
-//   store.state.showFooter = true;
-//   store.state.hideConfigButton = false;
-//   body.classList.remove("profile-overview");
-// });
-// <!-- </script> -->
+// 장바구니 담기
+const handleAddToCart = async () => {
+  try {
+    const res = await addToCart({ cropMgtId, quantity: quantity.value });
+
+    let msg = "";
+    if (typeof res.data === "string") {
+      msg = res.data;
+    } else {
+      msg = res?.data?.message || "장바구니에 추가되었습니다.";
+    }
+    alert(msg);
+  } catch (e) {
+    console.error("장바구니 담기 실패:", e);
+    alert("장바구니 담기 실패");
+  }
+};
+
+// 주문 생성 (더미, 백엔드 호출 ❌)
+const createOrder = () => {
+  console.log("주문이 생성되었습니다. (더미)");
+  router.push("/order-create-complete");
+};
+</script>
+
 <template>
   <main>
     <div class="container-fluid">
       <div
         class="page-header min-height-300"
         style="
-          background-image: url(&quot;https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80&quot;);
+          background-image: url('https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?auto=format&fit=crop&w=1920&q=80');
           margin-right: -24px;
           margin-left: -34%;
         "
@@ -48,50 +60,73 @@
       </div>
       <div class="card shadow-lg mt-n6">
         <div class="card-body p-3">
-        <div class="row gx-4">
-          <div class="col-auto">
-            <div class="avatar avatar-xl position-relative">
-              <img src="@/assets/img/team-1.jpg" alt="profile_image" class="w-100 border-radius-lg shadow-sm">
+          <div class="row gx-4">
+            <div class="col-auto">
+              <div class="avatar avatar-xl position-relative">
+                <img
+                  src="@/assets/img/team-1.jpg"
+                  alt="profile_image"
+                  class="w-100 border-radius-lg shadow-sm"
+                />
+              </div>
             </div>
-          </div>
-          <div class="col-auto my-auto">
-            <div class="h-100">
-              <h5 class="mb-1">
-                심시경
-              </h5>
-              <p class="mb-0 font-weight-bold text-sm">
-                SSG1999@gmail.com
-              </p>
+            <div class="col-auto my-auto">
+              <div class="h-100">
+                <h5 class="mb-1">{{ userName }}</h5>
+                <p class="mb-0 font-weight-bold text-sm">{{ userEmail }}</p>
+              </div>
             </div>
-          </div>
-          <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-1">
-            <div class="nav-wrapper position-relative end-0">
-              <ul class="nav nav-pills nav-fill p-1" role="tablist">
-                <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
-                    <span class="ms-2">내정보</span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false">
-                    <span class="ms-2">주문목록</span>
-                  </a>
-                </li>
-              </ul>
+            <div
+              class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-1"
+            >
+              <div class="nav-wrapper position-relative end-0">
+                <ul class="nav nav-pills nav-fill p-1" role="tablist">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center"
+                      href="javascript:;"
+                      role="tab"
+                      aria-selected="true"
+                    >
+                      <span class="ms-2">내정보</span>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link mb-0 px-0 py-1 d-flex align-items-center justify-content-center"
+                      href="javascript:;"
+                      role="tab"
+                      aria-selected="false"
+                    >
+                      <span class="ms-2">주문목록</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    </div>
+
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-md-8">
           <div class="card">
             <div class="card-header pb-0">
               <div class="d-flex align-items-center">
-                <p class="mb-0">주문상세</p>
-                <button class="btn btn-primary btn-sm ms-auto">주문생성</button>
+                <p class="mb-0">주문생성</p>
+                <div class="ms-auto">
+                  <button
+                    class="btn btn-info btn-sm me-2"
+                    @click="handleAddToCart"
+                  >
+                    🛒 장바구니 담기
+                  </button>
+                  <button class="btn btn-primary btn-sm" @click="createOrder">
+                    주문생성
+                  </button>
+                </div>
               </div>
             </div>
             <div class="card-body">
@@ -99,148 +134,116 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="example-text-input" class="form-control-label">주문자 성명</label>
-                    <input class="form-control" type="text" value="심시경">
+                    <label class="form-control-label">주문자 성명</label>
+                    <input class="form-control" type="text" v-model=name />
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="crop-select" class="form-control-label">품목명</label>
-
-                    <!-- 선택 드롭다운 -->
-                    <select class="form-control" id="crop-select" onchange="handleCropChange()" style="display: block;">
-                      <option value="">-- 품목 선택 --</option>
-                      <option value="토마토">토마토</option>
-                      <option value="딸기">딸기</option>
-                      <option value="배추">파프리카</option>
-                    </select>
-
-                    <!-- 직접입력 input -->
-                    <input class="form-control mt-2" id="crop-input" type="text" placeholder="품목을 입력하세요" style="display: none;">
-                  </div>
-                </div>
-
-                <!-- <script>
-                  function handleCropChange() {
-                    const select = document.getElementById('crop-select');
-                    const input = document.getElementById('crop-input');
-
-                    if (select.value === '직접입력') {
-                      select.style.display = 'none';
-                      input.style.display = 'block';
-                      input.focus();
-                    }
-                  }
-
-                  document.getElementById('crop-input').addEventListener('blur', () => {
-                    const input = document.getElementById('crop-input');
-                    const select = document.getElementById('crop-select');
-
-                    if (input.value.trim() === '') {
-                      input.style.display = 'none';
-                      select.style.display = 'block';
-                      select.value = '';
-                    }
-                  });
-                </script> -->
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="example-text-input" class="form-control-label">단가</label>
-                    <input class="form-control" type="text" value="5000원/kg">
+                    <label class="form-control-label">품목명</label>
+                    <input class="form-control" type="text" :value="cropName" readonly />
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="example-text-input" class="form-control-label">수량</label>
-                    <input class="form-control" type="text" value="4kg">
+                    <label class="form-control-label">단가</label>
+                    <input class="form-control" type="text" :value="price + '원'" readonly />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label">수량/kg</label>
+                    <input
+                      class="form-control"
+                      type="number"
+                      v-model="quantity"
+                      min="1"
+                    />
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group">
-                    <label for="example-text-input" class="form-control-label">총합</label>
-                    <input class="form-control" type="text" value="20000원">
+                    <label class="form-control-label">총합</label>
+                    <input class="form-control" type="text" :value="totalPrice + '원'" readonly />
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group">
-                    <label for="example-text-input" class="form-control-label">주소</label>
-                    <input class="form-control" type="text" value="경상북도 구미시 도봉로 5길 21-높은유통">
+                    <label class="form-control-label">주소</label>
+                    <input
+                      class="form-control"
+                      type="text"
+                      v-model="address"
+                    />
                   </div>
                 </div>
               </div>
-              <hr class="horizontal dark">
+              <hr class="horizontal dark" />
               <p class="text-uppercase text-sm">요구사항</p>
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group">
-                    <label for="example-text-input" class="form-control-label">주문 요청사항</label>
-                    <input class="form-control" type="text" value="내용물 안터지게 포장해주세요">
+                    <label class="form-control-label">주문 요청사항</label>
+                    <input
+                      class="form-control"
+                      type="text"
+                      v-model="orderRequest"
+                    />
                   </div>
                 </div>
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <label for="example-text-input" class="form-control-label">배달 요청사항</label>
-                      <input class="form-control" type="text" value="개조심, 아기가 자고 있어요 초인종 누르지 말아주세요">
-                    </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label">배달 요청사항</label>
+                    <input
+                      class="form-control"
+                      type="text"
+                      v-model="deliveryRequest"
+                    />
                   </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- 판매자 프로필 카드 -->
         <div class="col-md-4">
           <div class="card card-profile">
-            <img src="@/assets/img/bg-profile.jpg" alt="Image placeholder" class="card-img-top">
+            <img
+              src="@/assets/img/bg-profile.jpg"
+              alt="Image placeholder"
+              class="card-img-top"
+            />
             <div class="row justify-content-center">
               <div class="col-4 col-lg-4 order-lg-2">
                 <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">
                   <a href="javascript:;">
-                    <img src="@/assets/img/team-2.jpg" class="rounded-circle img-fluid border border-2 border-white">
+                    <img
+                      src="@/assets/img/team-2.jpg"
+                      class="rounded-circle img-fluid border border-2 border-white"
+                    />
                   </a>
                 </div>
               </div>
             </div>
             <div class="card-header text-center border-0 pt-0 pt-lg-2 pb-4 pb-lg-3">
               <div class="d-flex justify-content-between">
-                <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-none d-lg-block">전화번호</a>
-                <a href="javascript:;" class="btn btn-sm btn-info mb-0 d-block d-lg-none"><i class="ni ni-collection"></i></a>
-                <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-none d-lg-block">메세지</a>
-                <a href="javascript:;" class="btn btn-sm btn-dark float-right mb-0 d-block d-lg-none"><i class="ni ni-email-83"></i></a>
+                <a href="javascript:;" class="btn btn-sm btn-info mb-0"
+                  >전화번호</a
+                >
+                <a href="javascript:;" class="btn btn-sm btn-dark mb-0"
+                  >메세지</a
+                >
               </div>
             </div>
             <div class="card-body pt-0">
-              <div class="row">
-                <div class="col">
-                  <div class="d-flex justify-content-center">
-                    <div class="d-grid text-center">
-                      <span class="text-lg font-weight-bolder">12562</span>
-                      <span class="text-sm opacity-8">판매수</span>
-                    </div>
-                    <div class="d-grid text-center mx-4">
-                      <span class="text-lg font-weight-bolder"></span>
-                      <span class="text-sm opacity-8"></span>
-                    </div>
-                    <div class="d-grid text-center">
-                      <span class="text-lg font-weight-bolder">1142</span>
-                      <span class="text-sm opacity-8">리뷰수</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
               <div class="text-center mt-4">
-                <h5>
-                  김농사
-                </h5>
-                <div class="h6 font-weight-300">
-                  <i class="ni location_pin mr-2"></i>우리아기들농장
-                </div>
-                <div class="h6 mt-4">
-                  <i class="ni business_briefcase-24 mr-2"></i>충청북도 증평군 증평읍 사곡리 1434
-                </div>
-                <div>
-                  <i class="ni education_hat mr-2"></i>사랑으로 열정으로 보답하겠습니다
-                </div>
+                <h5>김농사</h5>
+                <div class="h6 font-weight-300">우리아기들농장</div>
+                <div class="h6 mt-4">충청북도 증평군 증평읍 사곡리 1434</div>
+                <div>사랑으로 열정으로 보답하겠습니다</div>
               </div>
             </div>
           </div>

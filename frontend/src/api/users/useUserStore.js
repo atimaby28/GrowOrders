@@ -2,7 +2,9 @@ import { defineStore } from "pinia";
 import { ref, reactive } from "vue";
 import { EncryptStorage } from "encrypt-storage";
 
-const encryptKey = process.env.VUE_APP_STORAGE_KEY || "default-secret-key-here";
+const encryptKey = process.env.VUE_APP_ENCRYPTION_KEY || "default-secret-key-here";
+
+console.log(process.env.VUE_APP_ENCRYPTION_KEY)
 
 const encryptLocalStorage = new EncryptStorage(encryptKey, { prefix: 'OL_', storageType: 'localStorage' });
 const encryptSessionStorage = new EncryptStorage(encryptKey, { prefix: 'OL_', storageType: 'sessionStorage' });
@@ -63,5 +65,17 @@ export const useUserStore = defineStore('user', () => {
     user.role = '';
   };
 
-  return { isLogin, user, checkLogin, setWithEncrypt, logout };
+  const getUserId = () => {
+    const key = "user";
+    let stored = encryptLocalStorage.getItem(key);
+    if (!stored) stored = encryptSessionStorage.getItem(key);
+
+    if (stored) {
+      const data = stored.data;
+      
+      return data.id;
+    } 
+  };
+
+  return { isLogin, user, checkLogin, setWithEncrypt, logout, getUserId };
 });

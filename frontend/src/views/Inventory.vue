@@ -30,10 +30,10 @@ const getInventoryList = async (farmId) => {
 
 //쿼리 param 변경 감지시 재고 목록 조회 함수 호출
 watch(
-  () => route.query.farmId,
-  (newParamFarmId) => {
-    getInventoryList(newParamFarmId);
-  }
+    () => route.query.farmId,
+    (newParamFarmId) => {
+      getInventoryList(newParamFarmId);
+    }
 );
 
 //페이지 로드시 데이터 가져오기
@@ -46,8 +46,8 @@ onMounted(() => {
   <div v-if="userStore.user.ownedFarm" class="py-4 container-fluid">
     <FarmInfoSlider :key="route.query.farmId" />
     <InventorysTable
-      @updateCropList="updateCropList"
-      @getInventoryList="getInventoryList"
+        @updateCropList="updateCropList"
+        @getInventoryList="getInventoryList"
     />
   </div>
   <div class="mt-4 row col-12">

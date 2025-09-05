@@ -1,10 +1,45 @@
 <script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import MasterCard from "@/examples/Cards/MasterCard.vue";
 import DefaultInfoCard from "@/examples/Cards/DefaultInfoCard.vue";
 import PaymentCard from "./components/PaymentCard.vue";
 import InvoiceCard from "./components/InvoiceCard.vue";
 import BillingCard from "./components/BillingCard.vue";
 import TransactionCard from "./components/TransactionCard.vue";
+import { useCartStore } from "../store/test/cartStore";
+import { useUserStore } from "../store/users/useUserStore";
+
+const router = useRouter();
+const cartStore = useCartStore();
+const userStore = useUserStore();
+
+const cartItemCount = ref(0);
+const cartTotalPrice = ref(0);
+
+onMounted(async () => {
+  await loadCartData();
+});
+
+const loadCartData = async () => {
+  if (!userStore.user.id) {
+    console.log("사용자가 로그인하지 않았습니다.");
+    return;
+  }
+
+  try {
+    await cartStore.fetchCarts(Number(userStore.user.id));
+    cartItemCount.value = cartStore.carts.length;
+    cartTotalPrice.value = cartStore.carts.reduce((total, cart) => total + cart.totalPrice, 0);
+  } catch (error) {
+    console.error("장바구니 데이터 로드 실패:", error);
+  }
+};
+
+const goToCart = async () => {
+  await loadCartData(); // 최신 장바구니 데이터 로드
+  router.push('/cart');
+};
 import PushClientSave from "@/views/components/push/PushClientSave.vue"
 
 </script>
@@ -25,8 +60,10 @@ import PushClientSave from "@/views/components/push/PushClientSave.vue"
                     background: 'bg-gradient-success',
                   }"
                   title="장바구니"
-                  description="현재 담긴 상품: 12개"
-                  value="총액: 2,000 ₩"
+                  :description="`현재 담긴 상품: ${cartItemCount}개`"
+                  :value="`총액: ${cartTotalPrice.toLocaleString()} ₩`"
+                  @click="goToCart"
+                  style="cursor: pointer;"
                 />
               </div>
               <div class="col-md-6">

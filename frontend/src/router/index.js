@@ -12,10 +12,21 @@ import FarmList from "../views/order/FarmList.vue";
 import FarmerList from "../views/order/FarmerList.vue";
 import OrderDetail from "../views/order/OderDetail.vue";
 import OrderCreate from "../views/order/OrderCreate.vue";
+import OrderModify from "../views/order/OrderModify.vue";
+import OrderModifyComplete from "../views/order/OrderModifyComplete.vue";
+import OrderCreateComplete from "../views/order/OrderCreateComplete.vue";
 import Error from "../views/Error.vue";
-import FarmDetail from "../views/FarmRegisterDetail.vue";
-import FarmEdit from "../views/FarmRegisterEdit.vue";
+import Cart from "../views/CartView.vue";
+import OrderCartComplete from "../views/order/OrderCartComplete.vue";
 
+import CartView from "../views/test/CartView.vue";
+import OrderView from "../views/test/OrderView.vue";
+import PaymentView from "../views/test/PaymentView.vue";
+
+import Chat from "../views/Chat.vue";
+
+// 알림 추가
+import Push from "../views/Push.vue";
 // 생물 등록
 import CropRegister from "../views/CropRegister.vue";
 // 농장 등록
@@ -79,12 +90,19 @@ const routes = [
     component: BuyerList,
   },
   {
-    path: "/orders/:orderId",
+    path: "/readCreate/:orderId",
     name: "OrderDetail",
     component: OrderDetail,
     props: true,
   },
-  {
+    {
+        path: "/Farms/:FarmId",
+        name: "OrderCreate",
+        component: OrderCreate,
+        props: true,
+    },
+
+    {
     path: "/farms/list",
     name: "FarmList",
     component: FarmList,
@@ -92,7 +110,34 @@ const routes = [
   {
     path: "/farmerlist",
     name: "FarmerList",
-    component: FarmerList,
+    component: FarmerList
+  },
+  {
+    path: "/order-modify/:orderId",
+    name: "OrderModify",
+    component: OrderModify,
+    props: true,
+  },
+  {
+    path: "/order-modify-complete/:orderId/:status",
+    name: "OrderModifyComplete",
+    component: OrderModifyComplete,
+    props: true,
+  },
+  {
+    path: "/order-create-complete",
+    name: "OrderCreateComplete",
+    component: OrderCreateComplete,
+  },
+  {
+    path: "/cart",
+    name: "Cart",
+    component: Cart
+  },
+  {
+    path: "/order-cart-complete",
+    name: "OrderCartComplete",
+    component: OrderCartComplete
   },
   // 생물 추가
   {
@@ -130,7 +175,12 @@ const routes = [
   {
     path: "/sales",
     name: "Sales",
-    component: Sales,
+    component: Sales
+  },
+    {
+    path: "/chat",
+    name: "Chat",
+    component: Chat
   },
   // 재고 관리
   {
@@ -152,6 +202,21 @@ const routes = [
     name: "Push",
     component: Push
   },
+  {
+    path: '/cart',
+    name: 'Cart',
+    component: CartView
+  },
+  {
+    path: '/order',
+    name: 'Order',
+    component: OrderView
+  },
+  {
+    path: '/payment',
+    name: 'Payment',
+    component: PaymentView
+  }
 ];
 
 const router = createRouter({
