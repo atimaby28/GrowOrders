@@ -59,11 +59,13 @@ async function handleCreate() {
   );
   if (profileFile.value) fd.append("farmImageUrl", profileFile.value); // 백엔드 @RequestPart("image")
 
-  const res = await axios.post("/farms/register", fd);
-  const created = res.data?.data ?? res.data;
+  const res = await axios.post("/farms/register", fd); //농장 등록 api 호출
+  const created = res.data?.data ?? res.data; //응답 데이터
   const newId = created.ownedFarm[created.ownedFarm.length - 1].id;
+
   userStore.user.ownedFarm = created.ownedFarm;
   console.log(userStore.user.ownedFarm);
+
   router.push({ name: "FarmDetail", params: { id: newId } });
   alert("농장이 등록되었습니다.");
 }

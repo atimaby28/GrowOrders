@@ -4,16 +4,23 @@ import { EncryptStorage } from "encrypt-storage";
 
 const encryptKey = process.env.VUE_APP_STORAGE_KEY || "default-secret-key-here";
 
-const encryptLocalStorage = new EncryptStorage(encryptKey, { prefix: 'OL_', storageType: 'localStorage' });
-const encryptSessionStorage = new EncryptStorage(encryptKey, { prefix: 'OL_', storageType: 'sessionStorage' });
+const encryptLocalStorage = new EncryptStorage(encryptKey, {
+  prefix: "OL_",
+  storageType: "localStorage",
+});
+const encryptSessionStorage = new EncryptStorage(encryptKey, {
+  prefix: "OL_",
+  storageType: "sessionStorage",
+});
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   const isLogin = ref(false);
   const user = reactive({
     id: null,
-    email: '',
-    name: '',
-    role: ''
+    email: "",
+    name: "",
+    ownedFarm: null,
+    role: "",
   });
 
   // 로그인 상태 체크
@@ -23,11 +30,12 @@ export const useUserStore = defineStore('user', () => {
     if (!stored) stored = encryptSessionStorage.getItem(key);
 
     if (stored) {
-      const data = typeof stored === 'string' ? JSON.parse(stored) : stored;
+      const data = typeof stored === "string" ? JSON.parse(stored) : stored;
       user.id = data.id;
       user.email = data.email;
       user.name = data.name;
       user.role = data.role;
+      user.ownedFarm = data.ownedFarm;
       isLogin.value = true;
       return true;
     } else {
@@ -43,6 +51,7 @@ export const useUserStore = defineStore('user', () => {
     user.email = data.email;
     user.name = data.name;
     user.role = data.role;
+    user.ownedFarm = data.ownedFarm;
     isLogin.value = true;
 
     if (rememberMe) {
@@ -58,9 +67,10 @@ export const useUserStore = defineStore('user', () => {
     encryptSessionStorage.removeItem("user");
     isLogin.value = false;
     user.id = null;
-    user.email = '';
-    user.name = '';
-    user.role = '';
+    user.email = "";
+    user.name = "";
+    user.role = "";
+    user.ownedFarm = null;
   };
 
   return { isLogin, user, checkLogin, setWithEncrypt, logout };

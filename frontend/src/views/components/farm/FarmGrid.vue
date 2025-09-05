@@ -2,8 +2,8 @@
 import FarmCard from "@/views/components/farm/FarmCard.vue";
 
 defineProps({
-  items: { type: Array, required: true },            
-  farmImageUrl: { type: Function, required: true },   
+  items: { type: Array, required: true },
+  farmImageUrl: { type: Function, required: true },
   defaultImage: { type: String, default: "" },
   detailRouteName: { type: String, default: "FarmDetail" },
 });
