@@ -1,29 +1,52 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import api from '../../plugins/axiosinterceptor';
+// src/store/test/cartStore.js
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import api from "@/plugins/axiosinterceptor";
 
-export const useCartStore = defineStore('cart', () => {
-  // state
+export const useCartStore = defineStore("cart", () => {
+  // ✅ state
   const carts = ref([]);
 
-  // actions
-  const fetchCarts = async (userId) => {
-    const res = await api.get(`/cart/${userId}`, {
-      withCredentials: true
-    });
-    carts.value = res.data;
+  // ✅ computed
+  const totalQuantity = computed(() =>
+    carts.value.reduce((sum, cart) => sum + (cart.quantity || 0), 0)
+  );
+
+  const totalPrice = computed(() =>
+    carts.value.reduce((sum, cart) => sum + (cart.totalPrice || 0), 0)
+  );
+
+  // ✅ actions
+  const addToCart = async (cropMgtId, cartData) => {
+    try {
+      const res = await api.post(`/cart/add/${cropMgtId}`, cartData, {
+        withCredentials: true,
+      });
+      console.log("장바구니 추가 성공:", res.data);
+      return res.data;
+    } catch (error) {
+      console.error("장바구니 추가 실패:", error.response || error);
+      throw error;
+    }
   };
 
-  const addToCart = async (cropMgtId, cartData) => {
-    await api.post(`/cart/add/${cropMgtId}`, cartData, {
-      withCredentials: true
-    });
-    await fetchCarts(cartData.userId);
+  const fetchCarts = async (userId) => {
+    try {
+      const res = await api.get(`/cart/${userId}`);
+      carts.value = res.data;
+    } catch (error) {
+      console.error("장바구니 불러오기 실패:", error.response || error);
+    }
   };
 
   return {
+    // state
     carts,
+    // computed
+    totalQuantity,
+    totalPrice,
+    // actions
+    addToCart,
     fetchCarts,
-    addToCart
   };
 });

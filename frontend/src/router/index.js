@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useUserStore } from "../store/users/useUserStore.js";
+
 import FarmerDashboard from "../views/Dashboard.vue";
 import BuyerDashboard from "../views/BuyerDashboard.vue";
 import Tables from "../views/Tables.vue";
@@ -7,25 +8,33 @@ import VirtualReality from "../views/VirtualReality.vue";
 import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Signin from "../views/Signin.vue";
+
 import BuyerList from "../views/order/BuyerList.vue";
 import FarmList from "../views/order/FarmList.vue";
 import FarmerList from "../views/order/FarmerList.vue";
+
 import OrderDetail from "../views/order/OderDetail.vue";
 import OrderCreate from "../views/order/OrderCreate.vue";
 import OrderModify from "../views/order/OrderModify.vue";
 import OrderModifyComplete from "../views/order/OrderModifyComplete.vue";
 import OrderCreateComplete from "../views/order/OrderCreateComplete.vue";
+
 import Error from "../views/Error.vue";
-import Cart from "../views/CartView.vue";
-import OrderCartComplete from "../views/order/OrderCartComplete.vue";
-import FarmDetail from "../views/FarmRegisterDetail.vue";
-import FarmEdit from "../views/FarmRegisterEdit.vue";
 
 import CartView from "../views/test/CartView.vue";
 import OrderView from "../views/test/OrderView.vue";
 import PaymentView from "../views/test/PaymentView.vue";
+import CropPage from "../views/test/CropPage.vue";
+
+import OrderCreate2 from "../views/test/OrderCreate2.vue";
+import OrderCart2 from "../views/test/OrderCart2.vue";
+import CartView2 from "../views/test/CartView2.vue";
 
 import Chat from "../views/Chat.vue";
+import Cart from "../views/CartView.vue";
+import OrderCartComplete from "../views/order/OrderCartComplete.vue";
+import FarmDetail from "../views/FarmRegisterDetail.vue";
+import FarmEdit from "../views/FarmRegisterEdit.vue";
 
 // 생물 등록
 import CropRegister from "../views/CropRegister.vue";
@@ -112,6 +121,7 @@ const routes = [
     name: "FarmerList",
     component: FarmerList,
   },
+  // 알림 추가
   {
     path: "/order-modify/:orderId",
     name: "OrderModify",
@@ -128,11 +138,6 @@ const routes = [
     path: "/order-create-complete",
     name: "OrderCreateComplete",
     component: OrderCreateComplete,
-  },
-  {
-    path: "/cart",
-    name: "Cart",
-    component: Cart,
   },
   {
     path: "/order-cart-complete",
@@ -217,6 +222,27 @@ const routes = [
     name: "Payment",
     component: PaymentView,
   },
+    {
+        path: '/crop',
+        name: 'Crop',
+        component: CropPage
+    },
+    {
+        path: '/ordercreate2',
+        name: 'OrderCreate2',
+        component: OrderCreate2
+    },
+    {
+        path: '/orderCart2',
+        name: 'OrderCart2',
+        component: OrderCart2
+    },
+    {
+        path: '/cartview2',
+        name: 'CartView2',
+        component: CartView2
+    }
+
 ];
 
 const router = createRouter({

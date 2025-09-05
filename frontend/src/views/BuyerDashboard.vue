@@ -1,16 +1,21 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import MasterCard from "@/examples/Cards/MasterCard.vue";
 import DefaultInfoCard from "@/examples/Cards/DefaultInfoCard.vue";
 import PaymentCard from "./components/PaymentCard.vue";
 import InvoiceCard from "./components/InvoiceCard.vue";
 import BillingCard from "./components/BillingCard.vue";
 import TransactionCard from "./components/TransactionCard.vue";
+
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useCartStore } from "../store/test/cartStore";
 import { useUserStore } from "../store/users/useUserStore";
 
 const router = useRouter();
+const goToCart = () => {
+  router.push("/cartview2");
+};
+
 const cartStore = useCartStore();
 const userStore = useUserStore();
 
@@ -36,13 +41,16 @@ const loadCartData = async () => {
   }
 };
 
+/*
 const goToCart = async () => {
   await loadCartData(); // 최신 장바구니 데이터 로드
   router.push('/cart');
 };
+*/
 import PushClientSave from "@/views/components/push/PushClientSave.vue"
 
 </script>
+
 <template>
   <div class="container-fluid">
     <div class="row">

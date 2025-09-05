@@ -14,6 +14,8 @@ const isRTL = computed(() => store.state.isRTL);
 const route = useRoute();
 const router = useRouter();
 
+console.log(userStore.user);
+
 const currentRouteName = computed(() => {
   return route.name;
 });

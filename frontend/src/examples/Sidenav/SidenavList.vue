@@ -8,18 +8,15 @@ import SidenavItem from "./SidenavItem.vue";
 const userStore = useUserStore();
 const route = useRoute();
 
-// 현재 로그인한 유저 역할
-const role = computed(() => userStore.user?.role || null);
-
-// 현재 라우트의 첫 번째 path segment
-const currentRoute = computed(() => route.path.split("/")[1]);
-
 onMounted(() => {
   userStore.checkLogin();
 });
 
+// 현재 라우트의 첫 번째 path segment
+const currentRoute = computed(() => route.path.split("/")[1]);
+
 // 네비게이션 항목 정의
-const navItems = computed(() => [
+const navItems = [
   {
     to: "/farmer/dashboard",
     label: "농부 메인 화면",
@@ -37,13 +34,6 @@ const navItems = computed(() => [
   {
     to: "/buyerlist",
     label: "주문관리",
-    icon: "ni ni-calendar-grid-58 text-warning text-sm opacity-10",
-    role: ["BUYER"],
-    active: "BuyerList"
-  },
-  {
-    to: "/farmerlist",
-    label: "주문 목록",
     icon: "ni ni-calendar-grid-58 text-warning text-sm opacity-10",
     role: ["FARMER"],
     active: "FarmerList"
@@ -97,13 +87,14 @@ const navItems = computed(() => [
   },
 ]);
 
-// 현재 role에 맞는 항목 필터링
-const filteredNavItems = computed(() =>
-  navItems.value.filter((item) => {
+// 현재 role에 맞는 항목 필터링 (getUserRole 사용)
+const filteredNavItems = computed(() => {
+  const role = userStore.getUserRole()?.toUpperCase() || null;
+  return navItems.filter(item => {
     if (!item.role) return true; // role 제한 없는 경우
-    return item.role.includes(role.value);
-  })
-);
+    return item.role.includes(role);
+  });
+});
 </script>
 
 <template>
