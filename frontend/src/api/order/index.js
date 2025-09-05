@@ -46,25 +46,19 @@ const orderList = async () => {
     return data;
 }
 
-// const farmList = async () => {
-//     let data = {};
-//     let url = '/api/farmList.json';
-
-//     await api.get(url)
-//         .then((res) => {
-//             data = res.data;
-//         })
-//         .catch((error) => {
-//             data = error.data;
-//         });
-
-//     return data;
-// }
-
 const farmList = async () => {
-  const res = await api.get('/farms/list');   
-  return res.data.data;                      
-};
+    let data = {};
+    let url = '/api/farmList.json';
 
+    await api.get(url)
+        .then((res) => {
+            data = res.data;
+        })
+        .catch((error) => {
+            data = error.data;
+        });
+
+    return data;
+}
 
 export default { farmerList, buyerList, orderList, farmList };

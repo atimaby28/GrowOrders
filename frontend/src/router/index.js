@@ -13,15 +13,25 @@ import FarmerList from "../views/order/FarmerList.vue";
 import OrderDetail from "../views/order/OderDetail.vue";
 import OrderCreate from "../views/order/OrderCreate.vue";
 import Error from "../views/Error.vue";
-import FarmDetail from "../views/FarmRegisterDetail.vue";
-import FarmEdit from "../views/FarmRegisterEdit.vue";
+
+import CartView from "../views/test/CartView.vue";
+import OrderView from "../views/test/OrderView.vue";
+import PaymentView from "../views/test/PaymentView.vue";
+import CropPage from "../views/test/CropPage.vue";
+
+
+import OrderCreate2 from "../views/test/OrderCreate2.vue";
+import OrderCart2 from "../views/test/OrderCart2.vue";
+import CartView2 from "../views/test/CartView2.vue";
+
+import Chat from "../views/Chat.vue";
 
 // 알림 추가
-// import Push from "../views/Push.vue";
+import Notification from "../views/Notification.vue";
 // 생물 등록
-import CropRegister from "../views/CropRegister.vue";
+import Crop_register from "../views/Crop_register.vue";
 // 농장 등록
-import FarmRegister from "../views/FarmRegister.vue";
+import Farm_register from "../views/Farm_register.vue";
 // 판매량 조회
 import Sales from "@/views/Sales.vue";
 // 재고 관리
@@ -31,112 +41,102 @@ const routes = [
   {
     path: "/",
     name: "/",
-    component: Signin,
+    component: Signin
   },
   {
     path: "/farmer/dashboard",
     name: "FarmerDashboard",
-    component: FarmerDashboard,
+    component: FarmerDashboard
   },
   {
     path: "/buyer/dashboard",
     name: "BuyerDashboard",
-    component: BuyerDashboard,
+    component: BuyerDashboard
   },
   {
     path: "/tables",
     name: "Tables",
-    component: Tables,
+    component: Tables
   },
   {
     path: "/virtual-reality",
     name: "Virtual Reality",
-    component: VirtualReality,
+    component: VirtualReality
   },
   {
     path: "/error",
     name: "Error",
-    component: Error,
+    component: Error
   },
   {
     path: "/profile",
     name: "Profile",
-    component: Profile,
+    component: Profile
   },
   {
     path: "/signin",
     name: "Signin",
-    component: Signin,
+    component: Signin
   },
   {
     path: "/signup",
     name: "Signup",
-    component: Signup,
+    component: Signup
   },
   {
     path: "/buyerlist",
     name: "BuyerList",
-    component: BuyerList,
+    component: BuyerList
   },
   {
-    path: "/orders/:orderId",
+    path: "/ordersdetial",
     name: "OrderDetail",
     component: OrderDetail,
+  },
+  {
+    path: "/Farms/:FarmId",
+    name: "OrderCreate",
+    component: OrderCreate,
     props: true,
   },
   {
-    path: "/farms/list",
+    path: "/farmlist",
     name: "FarmList",
-    component: FarmList,
+    component: FarmList
   },
   {
     path: "/farmerlist",
     name: "FarmerList",
-    component: FarmerList,
+    component: FarmerList
   },
   // 알림 추가
   {
     path: "/notification",
     name: "Notification",
-    component: Notification,
+    component: Notification
   },
   // 생물 추가
   {
-    path: "/crops/register",
-    name: "CropRegister",
-    component: CropRegister,
+    path: "/crop-register",
+    name: "Crop Register",
+    component: Crop_register
   },
   // 농장 추가
   {
-    path: "/farms/register",
-    name: "FarmRegister",
-    component: FarmRegister,
-  },
-  // 농장 디테일
-  {
-    path: "/farms/:id",
-    name: "FarmDetail",
-    component: FarmDetail,
-    props: true,
-  },
-  // 농장 편집
-  {
-    path: "/farms/:id/edit",
-    name: "FarmEdit",
-    component: FarmEdit,
-    props: true,
-  },
-  // 주문 추가
-  {
-    path: "/orders/register",
-    name: "OrderCreate",
-    component: OrderCreate,
+    path: "/farm-register",
+    name: "Farm Register",
+    component: Farm_register
   },
   // 판매량 조회
   {
     path: "/sales",
     name: "Sales",
-    component: Sales,
+    component: Sales
+  },
+    {
+    path: "/chat",
+    name: "Chat",
+    component: Chat
   },
   // 재고 관리
   {
@@ -152,6 +152,42 @@ const routes = [
       },
     ],
   },
+
+      {
+      path: '/cart',
+      name: 'Cart',
+      component: CartView
+    },
+    {
+      path: '/order',
+      name: 'Order',
+      component: OrderView
+    },
+    {
+      path: '/payment',
+      name: 'Payment',
+      component: PaymentView
+    },
+    {
+      path: '/crop',
+      name: 'Crop',
+      component: CropPage
+    },
+    {
+      path: '/ordercreate2',
+      name: 'OrderCreate2',
+      component: OrderCreate2
+    },
+    {
+      path: '/orderCart2',
+      name: 'OrderCart2',
+      component: OrderCart2
+    },
+    {
+      path: '/cartview2',
+      name: 'CartView2',
+      component: CartView2
+    }
 ];
 
 const router = createRouter({
@@ -170,9 +206,7 @@ router.beforeEach((to) => {
 
   if (to.path === "/signin" && loggedIn) {
     // 이미 로그인 되어있으면 대시보드로 리다이렉트
-    return userStore.user.role === "FARMER"
-      ? "/farmer/dashboard"
-      : "/buyer/dashboard";
+    return userStore.user.role === "FARMER" ? "/farmer/dashboard" : "/buyer/dashboard";
   }
 });
 

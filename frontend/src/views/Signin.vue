@@ -44,7 +44,7 @@ onBeforeUnmount(() => {
 
 const typeMap = {
   1: "FARMER",
-  2: "BUYER",
+  2: "BUYER"
 };
 
 const onSubmit = async () => {
@@ -57,17 +57,14 @@ const onSubmit = async () => {
     const userResp = await api.signIn({
       email: signinForm.email,
       password: signinForm.password,
-      role: typeMap[signinForm.loginType], // "FARMER" or "BUYER"
+      role: typeMap[signinForm.loginType] // "FARMER" or "BUYER"
     });
 
     if (userResp.success) {
       console.log("Remember Me:", rememberMe.value);
-      userStore.setWithEncrypt(userResp.data, rememberMe.value); // true → localStorage, false → sessionStorage
-
-      console.log(userResp);
-      console.log(JSON.stringify(userStore.user));
+      userStore.setWithEncrypt(userResp, rememberMe.value); // true → localStorage, false → sessionStorage
       router.push(
-        signinForm.loginType === 1 ? "/farmer/dashboard" : "/buyer/dashboard"
+          signinForm.loginType === 1 ? "/farmer/dashboard" : "/buyer/dashboard"
       );
     } else {
       alert("로그인에 실패했습니다.");
@@ -98,9 +95,7 @@ const onSubmit = async () => {
         <div class="container">
           <div class="row">
             <!-- 로그인 폼 -->
-            <div
-              class="mx-auto col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0"
-            >
+            <div class="mx-auto col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0">
               <div class="card card-plain">
                 <div class="pb-0 card-header text-start">
                   <h4 class="font-weight-bolder">로그인</h4>
@@ -136,9 +131,7 @@ const onSubmit = async () => {
                     </div>
 
                     <!-- 회원 유형 선택 -->
-                    <label class="form-label fw-bold text-dark"
-                      >회원 유형 선택</label
-                    >
+                    <label class="form-label fw-bold text-dark">회원 유형 선택</label>
                     <SelectPosition v-model="signinForm.loginType" />
 
                     <!-- 기억하기 -->
@@ -200,15 +193,10 @@ const onSubmit = async () => {
             >
               <div
                 class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
-                style="
-                  background-image: url(&quot;https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg&quot;);
-                  background-size: cover;
-                "
+                style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg'); background-size: cover;"
               >
                 <span class="mask bg-gradient-success opacity-6"></span>
-                <h4
-                  class="mt-5 text-white font-weight-bolder position-relative"
-                >
+                <h4 class="mt-5 text-white font-weight-bolder position-relative">
                   "Attention is the new currency"
                 </h4>
                 <p class="text-white position-relative">
