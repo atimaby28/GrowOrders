@@ -2,7 +2,6 @@
 import { defineProps } from 'vue'
 const props = defineProps(['selectedFarm', 'selectData'])
 
-console.log('typeof' + typeof props.selectedFarm.summary.totalSalesVolume.value)
 </script>
 
 <template>

@@ -28,7 +28,6 @@ onMounted(async () => {
 
 const loadCartData = async () => {
   if (!userStore.user.id) {
-    console.log("사용자가 로그인하지 않았습니다.");
     return;
   }
 

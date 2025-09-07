@@ -29,7 +29,6 @@ onMounted(async () => {
     });
   }
 
-  console.log(JSON.stringify(subscription))
   await axios.post('http://localhost:8080/push/sub', subscription, {
     withCredentials: true,
   });

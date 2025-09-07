@@ -63,7 +63,6 @@ const onSubmit = async () => {
     };
 
     const response = await axios.post('http://localhost:3001/crops', payload);
-    console.log('서버 응답:', response.data);
   } catch (error) {
     console.error('등록 실패:', error);
   }

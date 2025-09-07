@@ -66,7 +66,6 @@ onMounted(async () => {
   userStore.checkLogin();
   await cartStore.fetchCarts(Number(userStore.getUserId()));
   await nextTick();
-  console.log("user(after restore):", { ...userStore.user });
 });
 
 const addCartItem = async () => {

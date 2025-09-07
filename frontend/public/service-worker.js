@@ -5,7 +5,6 @@ self.addEventListener('push', (event) => {
     catch { data = { body: event.data.text() }; }
   }
 
-  console.log(data)
   const title = data.title || 'GrowOrders';
   const body  = (data.body ?? data.message) || '새 알림이 도착했습니다.';
   event.waitUntil(self.registration.showNotification(title, { body }));

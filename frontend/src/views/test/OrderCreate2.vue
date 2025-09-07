@@ -30,7 +30,6 @@ const handleAddToCart = async () => {
 
 // 주문 생성 (더미, 백엔드 호출 ❌)
 const createOrder = () => {
-  console.log("주문이 생성되었습니다. (더미)");
   router.push("/order-create-complete");
 };
 </script>

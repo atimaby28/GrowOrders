@@ -32,6 +32,7 @@ const handleAddToCart = async () => {
       msg = res?.data?.message || "장바구니에 추가되었습니다.";
     }
     alert(msg);
+    router.push("/cartview2");
   } catch (e) {
     console.error("장바구니 담기 실패:", e);
     alert("장바구니 담기 실패");
@@ -41,7 +42,7 @@ const handleAddToCart = async () => {
 // 주문 생성 (더미, 백엔드 호출 ❌)
 const createOrder = () => {
   console.log("주문이 생성되었습니다. (더미)");
-  router.push("/order-create-complete");
+  router.push("/cartview2");
 };
 </script>
 

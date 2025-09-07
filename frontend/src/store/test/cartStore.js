@@ -22,7 +22,6 @@ export const useCartStore = defineStore("cart", () => {
       const res = await api.post(`/cart/add/${cropMgtId}`, cartData, {
         withCredentials: true,
       });
-      console.log("장바구니 추가 성공:", res.data);
       return res.data;
     } catch (error) {
       console.error("장바구니 추가 실패:", error.response || error);

@@ -4,16 +4,8 @@ import { onMounted, computed, reactive } from "vue";
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 import Carousel from "./components/Carousel.vue";
 import CategoriesList from "./components/CategoriesList.vue";
-import PushClientSave from "@/views/components/push/PushClientSave.vue"
-
-// import US from "@/assets/img/orderlabs/girl.png";
-// import DE from "@/assets/img/orderlabs/boy.png";
-// import GB from "@/assets/img/orderlabs/man.png";
-// import BR from "@/assets/img/orderlabs/woman.png";
-
 import ProjectCard from "./components/ProjectCard.vue";
 import api from "@/api/dashboard";
-import apii from "@/api/order";
 
 /* ----------------- 🖼 Assets ----------------- */
 import logoXD from "@/assets/img/orderlabs/sun.png";
@@ -31,9 +23,7 @@ import team4 from "@/assets/img/team-4.jpg";
 /* ----------------- 📊 State ----------------- */
 const state = reactive({
   summaryData: [],
-  farmMonitoringData: { farm_monitoring: [] },
   chartData: [],
-  farmStatus: {},
   orderList: [],
   weatherData: {}
 });
@@ -62,7 +52,7 @@ const rows = computed(() => {
       tool: "풍속 (m/s)",
       teamMembers: defaultTeams[0],
       price: wd.ws ?? "-",
-      progress: Math.min(parseInt(wd.ws || 0), 100), // progress는 %라 적당히 변환
+      progress: Math.min(parseInt(wd.ws || 0), 100),
     },
     {
       logo: defaultLogos[1],
@@ -83,22 +73,21 @@ const rows = computed(() => {
       tool: "강수량 (mm)",
       teamMembers: defaultTeams[3],
       price: wd.rn ?? "-",
-      progress: 0, // 음수(-9) 들어오는 경우는 "데이터 없음"으로 보고 0 처리
+      progress: 0, // 음수(-9) 들어오는 경우는 데이터 없음으로 처리
     },
     {
       logo: defaultLogos[4],
       tool: "일사량 (MJ/m²)",
       teamMembers: defaultTeams[4],
       price: wd.si ?? "-",
-      progress: Math.min(parseInt(wd.si * 10 || 0), 100), // 일사량을 %로 스케일링
+      progress: Math.min(parseInt(wd.si * 10 || 0), 100),
     },
   ];
 });
 
 const cardDescription = computed(() => {
-  const date = state.farmMonitoringData.date || "";
   return `<i class="fa fa-check text-info"></i>
-          <span class="font-weight-bold ms-1">농장 지표</span> ${date}`;
+          <span class="font-weight-bold ms-1">농장 지표</span>`;
 });
 
 const top4Orders = computed(() => {
@@ -118,29 +107,28 @@ const getImageUrl = (imgName) => {
 /* ----------------- 🚀 Methods ----------------- */
 const fetchData = async () => {
   try {
-    const [summary, farmStatus, chart, status, orders, weather] = await Promise.all([
+    const [summary, chart, orders, weather] = await Promise.all([
       api.dashboardNav(),
-      api.farmStatus(),
       api.chartData(),
-      api.farmStatus(),
       api.orderList(),
-      await api.weatherData(),
-      await apii.orderList()
+      api.weatherData()
     ]);
 
-    state.summaryData = summary?.summary ?? [];
-    state.farmMonitoringData = farmStatus ?? {};
-    state.chartData = chart ?? [];
-    state.farmStatus = status ?? {};
-    state.orderList = orders ?? [];
+    state.summaryData = summary?.data?.summary ?? [];
+    state.chartData = chart?.data?.charts ?? [];
+    state.orderList = orders.data.orders ?? [];
     state.weatherData = weather ?? {};
+
   } catch (error) {
     console.error("데이터 로딩 실패:", error);
   }
 };
 
+
+
 /* ----------------- ⏳ Lifecycle ----------------- */
 onMounted(fetchData);
+
 </script>
 
 <template>
@@ -195,19 +183,19 @@ onMounted(fetchData);
                   </td>
                   <td class="text-center">
                     <p class="mb-0 text-xs font-weight-bold">판매품목:</p>
-                    <h6 class="mb-0 text-sm">{{ order.crop }}</h6>
+                    <h6 class="mb-0 text-sm">{{ order.item }}</h6>
                   </td>
                   <td class="text-center">
                     <p class="mb-0 text-xs font-weight-bold">총 주문금액:</p>
-                    <h6 class="mb-0 text-sm">{{ order.total }}</h6>
+                    <h6 class="mb-0 text-sm">{{ order.orderAmount }}</h6>
                   </td>
                   <td class="text-center">
                     <p class="mb-0 text-xs font-weight-bold">주문량:</p>
-                    <h6 class="mb-0 text-sm">{{ order.quantity }}</h6>
+                    <h6 class="mb-0 text-sm">{{ order.itemsSold }}</h6>
                   </td>
                   <td class="text-end">
                     <router-link
-                      :to="{ name: 'OrderDetail', params: { orderId: order.orderId } }"
+                      :to="{ name: 'OrderDetail' }"
                       class="btn btn-link btn-icon-only btn-rounded btn-sm text-dark"
                     >
                       <i class="ni ni-bold-right" aria-hidden="true"></i>
@@ -262,7 +250,6 @@ onMounted(fetchData);
       <div class="col-lg-5">
         <carousel :chartsData="state.chartData" />
       </div>
-      <PushClientSave/>
     </div>
   </div>
 </template>

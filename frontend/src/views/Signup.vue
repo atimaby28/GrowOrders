@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onBeforeMount, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 import Navbar from "@/examples/PageLayout/Navbar.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
@@ -15,6 +16,7 @@ import api from "../api/users/login";
 
 const body = document.getElementsByTagName("body")[0];
 const store = useStore();
+const router = useRouter();
 
 onBeforeMount(() => {
   store.state.hideConfigButton = true;
@@ -162,12 +164,11 @@ const onSubmit = async () => {
       formData.append("profileImageUrl", blob, "default-profile.png");
     }
 
-    console.log("폼 데이터 (디버깅):", signupInfo);
-
     const res = await api.signUp(formData);
 
     console.log("서버 응답:", res);
     alert("회원가입이 완료되었습니다!");
+    router.push("/signin"); 
   } catch (err) {
     console.error("회원가입 오류:", err);
     alert("회원가입 중 오류가 발생했습니다.");

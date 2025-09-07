@@ -99,10 +99,9 @@ const routes = [
     component: BuyerList,
   },
   {
-    path: "/readCreate/:orderId",
+    path: "/ordersdetial",
     name: "OrderDetail",
     component: OrderDetail,
-    props: true,
   },
   {
     path: "/Farms/:FarmId",

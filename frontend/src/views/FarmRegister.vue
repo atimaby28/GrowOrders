@@ -64,7 +64,6 @@ async function handleCreate() {
   const newId = created.ownedFarm[created.ownedFarm.length - 1].id;
 
   userStore.user.ownedFarm = created.ownedFarm;
-  console.log(userStore.user.ownedFarm);
 
   router.push({ name: "FarmDetail", params: { id: newId } });
   alert("농장이 등록되었습니다.");

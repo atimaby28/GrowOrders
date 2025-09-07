@@ -37,8 +37,6 @@ const doPayment = async () => {
       },
     })
 
-    console.log(payment);
-
   paymentStore.validatePayment({ paymentId: payment.paymentId, orderId: 1 });
 };
 </script>

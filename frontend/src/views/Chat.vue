@@ -44,7 +44,6 @@ const connectWebSocket = (roomId) => {
   stompClient = Stomp.over(socket);
 
   stompClient.connect({}, () => {
-    console.log("WebSocket connected");
     stompClient.subscribe(`/topic/${roomId}`, (msg) => {
       const messageObj = JSON.parse(msg.body);
       messages.value.push(messageObj);

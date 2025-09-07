@@ -248,9 +248,7 @@ const showAdminControls = ref(false); // 개발/테스트용
 
 onMounted(async () => {
   userStore.checkLogin();
-  console.log(cartStore.carts);
-  console.log("user(after restore):", { ...userStore.user });
-  
+
   // 장바구니 자동 로드
   await loadCarts();
 });
@@ -411,8 +409,7 @@ const handlePaymentConfirmation = async () => {
       };
       
       await orderStore.confirmOrder(orderData);
-      console.log("주문 확정 완료:", selectedItems.value);
-      
+
       // 체크박스 상태 변경
       confirmPayment.value = true;
       
@@ -440,9 +437,6 @@ const proceedToOrder = async () => {
   // PaymentView의 doPayment와 완전히 동일한 처리
   try {
     const paymentId = randomId();
-    
-    console.log("결제 시작 - PaymentView와 동일한 방식");
-    console.log("PaymentId:", paymentId);
 
     const payment = await PortOne.requestPayment({
       storeId: "store-3513dda2-1134-48b8-bc99-e3d1487021d7", // PaymentView와 동일
@@ -456,8 +450,6 @@ const proceedToOrder = async () => {
         productIdxList: [1] // PaymentView와 동일
       },
     });
-
-    console.log(payment);
 
     // PaymentView에서는 결제 성공 후 바로 검증 호출
     if (payment && payment.paymentId) {

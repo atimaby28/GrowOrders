@@ -67,29 +67,30 @@ export const useUserStore = defineStore('user', () => {
     user.ownedFarm = null
   }
 
-    const getUserId = () => {
-        const key = "user";
-        let stored = encryptLocalStorage.getItem(key);
-        if (!stored) stored = encryptSessionStorage.getItem(key);
+const getUserId = () => {
+  const key = "user";
+  let stored = encryptLocalStorage.getItem(key);
+  if (!stored) stored = encryptSessionStorage.getItem(key);
 
-        if (stored) {
-            // const data = stored;
-            return stored.data.id;
-        }
-        return null;
-    };
+  if (stored) {
+    const data = typeof stored === "string" ? JSON.parse(stored) : stored;
+    return data.id;
+  }
+  return null;
+};
 
-    const getUserRole = () => {
-        const key = "user";
-        let stored = encryptLocalStorage.getItem(key);
-        if (!stored) stored = encryptSessionStorage.getItem(key);
+const getUserRole = () => {
+  const key = "user";
+  let stored = encryptLocalStorage.getItem(key);
+  if (!stored) stored = encryptSessionStorage.getItem(key);
 
-        if (stored) {
-            // const data = stored;
-            return stored.data.role;
-        }
-        return null;
-    };
+  if (stored) {
+    const data = typeof stored === "string" ? JSON.parse(stored) : stored;
+    return data.role || "GUEST"; // 안전하게 기본값 설정
+  }
+  return "GUEST";
+};
+
 
   return { isLogin, user, checkLogin, setWithEncrypt, logout, getUserId, getUserRole }
 })

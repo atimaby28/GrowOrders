@@ -13,7 +13,6 @@ const cardSales = reactive({
 })
 
 const clickCrop = (dataSlickName) => {
-  console.log('clickCrop SalesCard = ' + dataSlickName)
   emits('clickCrop', dataSlickName)
 }
 

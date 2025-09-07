@@ -8,7 +8,6 @@ const farmList = async () => {
     .get(url)
     .then((res) => {
       data = res.data?.data ?? res.data;
-      console.log(JSON.stringify(data));
     })
     .catch((error) => {
       data = error.data;
@@ -25,7 +24,6 @@ const orderList = async () => {
     .get(url)
     .then((res) => {
       data = res.data;
-      console.log(data);
     })
     .catch((error) => {
       data = error.data;
@@ -42,7 +40,6 @@ const orderListOne = async (orderId) => {
     .get(url)
     .then((res) => {
       data = res.data;
-      console.log(data);
     })
     .catch((error) => {
       data = error.data;
